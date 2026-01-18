@@ -1,21 +1,153 @@
-# --- NetBeans Specifics ---
-# File cấu hình riêng tư của từng máy (vị trí cửa sổ, file đang mở...)
-/nbproject/private/
+# ═══════════════════════════════════════════════════════════
+# .gitignore for Java Web Project (Multi-IDE Support)
+# NetBeans + IntelliJ IDEA + VSCode + Eclipse
+# ═══════════════════════════════════════════════════════════
 
-# Thư mục chứa code đã biên dịch (file .class) -> NetBeans tự build lại
+# ============================================================
+# BUILD OUTPUT - Không commit file đã compile
+# ============================================================
 /build/
-/web/WEB-INF/classes/
-
-# Thư mục chứa file đóng gói (.war)
 /dist/
+/target/
+/out/
+/bin/
+/web/WEB-INF/classes/
+*.class
+*.war
+*.jar
+*.ear
 
-# --- OS Specifics (File rác hệ điều hành) ---
+# ============================================================
+# NETBEANS SPECIFICS
+# ============================================================
+/nbproject/private/
+/nbproject/Package-*.bash
+nbbuild/
+nbdist/
+.nbattrs
+
+# ============================================================
+# INTELLIJ IDEA SPECIFICS
+# ============================================================
+.idea/
+*.iml
+*.iws
+*.ipr
+/out/
+
+# ============================================================
+# VSCODE SPECIFICS
+# ============================================================
+.vscode/
+.factorypath
+.settings/
+.classpath
+.project
+
+# ============================================================
+# ECLIPSE SPECIFICS
+# ============================================================
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+.cproject
+.project
+.classpath
+.factorypath
+.buildpath
+.target
+
+# ============================================================
+# OS SPECIFICS - File rác hệ điều hành
+# ============================================================
+# MacOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
 
-# --- Secrets / Configuration (QUAN TRỌNG) ---
-# Bỏ qua file chứa mật khẩu thật để tránh lộ thông tin lên Git
-src/java/com/techshop/conf/db.properties
+# Linux
+*~
+.directory
+.Trash-*
 
-# --- Logs ---
+# ============================================================
+# SECRETS / CONFIGURATION - QUAN TRỌNG NHẤT!
+# ============================================================
+# File chứa password database - KHÔNG BAO GIỜ COMMIT!
+**/db.properties
+**/database.properties
+**/application.properties
+**/config.properties
+
+# Các file cấu hình môi trường
+.env
+.env.local
+.env.*.local
+
+# ============================================================
+# LOGS
+# ============================================================
 *.log
+logs/
+*.log.*
+
+# ============================================================
+# TEMPORARY FILES
+# ============================================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+\#*#
+
+# ============================================================
+# TOMCAT SPECIFICS
+# ============================================================
+/catalina.base_IS_UNDEFINED/
+
+# ============================================================
+# NODE MODULES (nếu có dùng npm cho frontend)
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================================
+# BACKUP FILES
+# ============================================================
+*.bak
+*.backup
+*.old
+*-backup
+*-old
+
+# ============================================================
+# PACKAGE FILES (không commit file đóng gói)
+# ============================================================
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ============================================================
+# TEST COVERAGE
+# ============================================================
+.coverage
+htmlcov/
+coverage/
