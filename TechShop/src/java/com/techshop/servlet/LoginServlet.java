@@ -1,6 +1,6 @@
 package com.techshop.servlet;
 
-import com.techshop.dao.UserDAO;
+import com.techshop.dao.UserDAOTest;
 import com.techshop.model.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -46,7 +46,7 @@ public class LoginServlet extends HttpServlet {
         }
         
         // Verify with database
-        UserDAO userDAO = new UserDAO();
+        UserDAOTest userDAO = new UserDAOTest();
         User user = userDAO.getByEmail(email.trim());
         
         if (user == null) {

@@ -1,6 +1,6 @@
 package com.techshop.servlet;
 
-import com.techshop.dao.UserDAO;
+import com.techshop.dao.UserDAOTest;
 import com.techshop.dao.BranchDAOTest;
 import com.techshop.model.User;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class DashboardServlet extends HttpServlet {
     }
     
     private void loadAdminDashboard(HttpServletRequest request) {        
-        UserDAO userDAO = new UserDAO();
+        UserDAOTest userDAO = new UserDAOTest();
         int totalUsers = userDAO.getAll().size();
         
         //BranchDAO branchDAO = new BranchDAO();
@@ -72,7 +72,7 @@ public class DashboardServlet extends HttpServlet {
     
     private void loadManagerDashboard(HttpServletRequest request, User user) {       
         if (user.getBranchId() != null) {
-            UserDAO userDAO = new UserDAO();
+            UserDAOTest userDAO = new UserDAOTest();
             int branchStaff = userDAO.getAllByBranch(user.getBranchId()).size();
             
             request.setAttribute("branchStaff", branchStaff);
