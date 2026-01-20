@@ -288,7 +288,7 @@ public class UserDAOTest extends DBContext {
         return false;
     }
     
-    public boolean isEmailExistExcludeId(String email, int excludeId) {
+/*    public boolean isEmailExistExcludeId(String email, int excludeId) {
         String sql = "SELECT COUNT(*) FROM [User] WHERE email = ? AND user_id != ?";
         
         try {
@@ -314,7 +314,7 @@ public class UserDAOTest extends DBContext {
         
         return false;
     }
-    
+    */
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));

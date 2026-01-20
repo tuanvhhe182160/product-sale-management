@@ -102,6 +102,16 @@
         .info-text strong {
             color: #667eea;
         }
+        .demo-badge {
+            background: #ffc107;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -113,6 +123,13 @@
         </div>
         
         <div class="login-body">
+            <!-- Demo Mode Badge -->
+            <div class="text-center">
+                <span class="demo-badge">
+                    <i class="fas fa-flask"></i> DEMO MODE
+                </span>
+            </div>
+            
             <!-- Error Message -->
             <c:if test="${not empty error}">
                 <div class="alert alert-danger" role="alert">
@@ -130,21 +147,55 @@
                 </div>
             </c:if>
             
-            <!-- Google Login Button -->
+            <!-- Demo Login Form -->
             <form action="${pageContext.request.contextPath}/login" method="post">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" 
+                           name="email" 
+                           class="form-control form-control-lg" 
+                           placeholder="admin@store.com" 
+                           required 
+                           autofocus>
+                    <small class="text-muted">Enter your registered email</small>
+                </div>
+                
                 <button type="submit" class="google-btn">
                     <img src="https://www.google.com/favicon.ico" alt="Google">
-                    Sign in with Google
+                    Sign in with Email
                 </button>
             </form>
             
             <div class="divider">
-                <span>Authorized Access Only</span>
+                <span>Demo Test Accounts</span>
             </div>
             
             <div class="info-text">
-                <i class="fas fa-info-circle"></i>
-                Only registered employees with can access this system.
+                <ul class="list-unstyled text-start small">
+                    <li class="mb-2">
+                        <i class="fas fa-user-shield text-danger"></i> 
+                        <strong>tuanvhhe182160@fpt.edu.vn</strong> (Admin)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-user-tie text-primary"></i> 
+                        <strong>manager.hn1@store.com</strong> (Shop Manager)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-cash-register text-success"></i> 
+                        <strong>cashier.hn1@store.com</strong> (Cashier)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-headset text-info"></i> 
+                        <strong>cs@store.com</strong> (Customer Service)
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="alert alert-warning mt-3 small">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Demo Mode:</strong> No password required. Just enter email from database.
             </div>
         </div>
     </div>

@@ -45,32 +45,6 @@
         .login-body {
             padding: 40px 30px;
         }
-        .google-btn {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background: white;
-            color: #333;
-            font-size: 1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .google-btn:hover {
-            background: #f8f9fa;
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-        .google-btn img {
-            width: 24px;
-            height: 24px;
-        }
         .alert {
             border-radius: 10px;
             padding: 15px;
@@ -102,15 +76,10 @@
         .info-text strong {
             color: #667eea;
         }
-        .demo-badge {
-            background: #ffc107;
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 15px;
+        #google-signin-button {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -123,13 +92,6 @@
         </div>
         
         <div class="login-body">
-            <!-- Demo Mode Badge -->
-            <div class="text-center">
-                <span class="demo-badge">
-                    <i class="fas fa-flask"></i> DEMO MODE
-                </span>
-            </div>
-            
             <!-- Error Message -->
             <c:if test="${not empty error}">
                 <div class="alert alert-danger" role="alert">
@@ -147,59 +109,81 @@
                 </div>
             </c:if>
             
-            <!-- Demo Login Form -->
-            <form action="${pageContext.request.contextPath}/login" method="post">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">
-                        <i class="fas fa-envelope"></i> Email Address
-                    </label>
-                    <input type="email" 
-                           name="email" 
-                           class="form-control form-control-lg" 
-                           placeholder="admin@store.com" 
-                           required 
-                           autofocus>
-                    <small class="text-muted">Enter your registered email</small>
+            <!-- Google One Tap Login -->
+            <div id="g_id_onload"
+                 data-client_id="${googleClientId}"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            
+            <!-- Google Sign-In Button -->
+            <div id="google-signin-button">
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     data-width="350">
                 </div>
-                
-                <button type="submit" class="google-btn">
-                    <img src="https://www.google.com/favicon.ico" alt="Google">
-                    Sign in with Email
-                </button>
-            </form>
+            </div>
             
             <div class="divider">
-                <span>Demo Test Accounts</span>
+                <span>Authorized Access Only</span>
             </div>
             
             <div class="info-text">
-                <ul class="list-unstyled text-start small">
-                    <li class="mb-2">
-                        <i class="fas fa-user-shield text-danger"></i> 
-                        <strong>tuanvhhe182160@fpt.edu.vn</strong> (Admin)
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-user-tie text-primary"></i> 
-                        <strong>manager.hn1@store.com</strong> (Shop Manager)
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-cash-register text-success"></i> 
-                        <strong>cashier.hn1@store.com</strong> (Cashier)
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-headset text-info"></i> 
-                        <strong>cs@store.com</strong> (Customer Service)
-                    </li>
-                </ul>
+                <i class="fas fa-shield-alt"></i>
+                Only registered employees can access this system.<br>
+                <strong>Use your company Google account</strong>
             </div>
             
-            <div class="alert alert-warning mt-3 small">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Demo Mode:</strong> No password required. Just enter email from database.
+            <div class="alert alert-info mt-3 small">
+                <i class="fas fa-info-circle"></i>
+                Your email must be registered in the system by administrator.
             </div>
         </div>
     </div>
     
+    <!-- Google Sign-In JavaScript Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <!-- Handle Google OAuth Response -->
+    <script>
+        function handleCredentialResponse(response) {
+            // Google returns JWT token in response.credential
+            console.log("Google login successful, sending token to server...");
+            
+            // Create hidden form to submit token to server
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '${pageContext.request.contextPath}/login';
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'credential';
+            input.value = response.credential;
+            
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Optional: Handle errors
+        window.addEventListener('load', function() {
+            // Check if Google Sign-In library loaded successfully
+            if (typeof google === 'undefined') {
+                console.error('Google Sign-In library failed to load');
+                document.getElementById('google-signin-button').innerHTML = 
+                    '<div class="alert alert-danger">Failed to load Google Sign-In. Please refresh the page.</div>';
+            }
+        });
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
