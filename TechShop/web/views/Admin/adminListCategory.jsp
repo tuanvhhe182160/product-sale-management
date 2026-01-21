@@ -48,7 +48,6 @@
     }
 </style>
 
-<!-- ===== Header ===== -->
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body py-4 d-flex justify-content-between flex-wrap gap-3">
         <div>
@@ -226,7 +225,7 @@
 
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary"
-                                       href="${pageContext.request.contextPath}/category/edit?id=${c.categoryId}"
+                                       href="${pageContext.request.contextPath}/ProductCategory/edit?categoryId=${c.categoryId}"
                                        onclick="event.stopPropagation();">
                                         <i class="fas fa-pen me-1"></i> Edit
                                     </a>
@@ -350,7 +349,6 @@
     })();
 </script>
 
-<!-- ✅ auto open modal when servlet returns error -->
 <c:if test="${not empty error}">
     <script>
         window.addEventListener('load', function () {
@@ -381,7 +379,7 @@
         document.querySelectorAll(".category-row").forEach(row => {
             row.addEventListener("click", function () {
                 const url = this.dataset.url;
-                console.log("Redirect to:", url); // 🔥 DEBUG
+                console.log("Redirect to:", url); 
                 if (url) {
                     window.location.href = url;
                 }
