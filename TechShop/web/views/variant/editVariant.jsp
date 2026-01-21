@@ -4,127 +4,143 @@
 
 <div class="row">
     <div class="col-12">
+
+        <!-- TITLE -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-edit"></i> Chỉnh sửa Product Variant</h2>
-            <a href="${pageContext.request.contextPath}/variant?action=list" class="btn btn-secondary">
+            <h2 class="page-title">
+                <i class="fas fa-edit"></i> Chỉnh sửa Product Variant
+            </h2>
+            <a href="${pageContext.request.contextPath}/variant?action=list"
+               class="btn btn-outline-primary">
                 <i class="fas fa-arrow-left"></i> Quay lại
             </a>
         </div>
 
+        <!-- ERROR -->
         <c:if test="${error != null}">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show">
                 <i class="fas fa-exclamation-circle"></i> ${error}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         </c:if>
 
+        <!-- NOT FOUND -->
         <c:if test="${variant == null}">
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle"></i> Không tìm thấy variant!
             </div>
         </c:if>
 
+        <!-- FORM -->
         <c:if test="${variant != null}">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                        <form action="${pageContext.request.contextPath}/variant/edit" method="POST" id="variantForm">
+
+                    <form action="${pageContext.request.contextPath}/variant/edit"
+                          method="POST">
+
                         <input type="hidden" name="variantId" value="${variant.variantId}">
 
+                        <!-- MODEL + SKU -->
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="modelId" class="form-label">Product Model <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="modelId" name="modelId" required>
-                                        <option value="">-- Chọn Model --</option>
-                                        <c:forEach var="model" items="${models}">
-                                            <option value="${model.modelId}" 
-                                                    ${model.modelId == variant.modelId ? 'selected' : ''}>
-                                                ${model.categoryName} - ${model.brand} - ${model.modelName} (${model.modelCode})
-                                            </option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Product Model <span class="text-danger">*</span></label>
+                                <select class="form-select" name="modelId" required>
+                                    <option value="">-- Chọn Model --</option>
+                                    <c:forEach var="model" items="${models}">
+                                        <option value="${model.modelId}"
+                                                ${model.modelId == variant.modelId ? 'selected' : ''}>
+                                            ${model.categoryName} - ${model.brand} - ${model.modelName} (${model.modelCode})
+                                        </option>
+                                    </c:forEach>
+                                </select>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="sku" name="sku" 
-                                           value="${variant.sku}" required 
-                                           pattern="[A-Z0-9\-]+" 
-                                           title="SKU chỉ chứa chữ in hoa, số và dấu gạch ngang">
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">SKU <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control sku-input"
+                                       name="sku"
+                                       value="${variant.sku}"
+                                       required
+                                       pattern="[A-Z0-9\-]+"
+                                       title="SKU chỉ chứa chữ in hoa, số và dấu gạch ngang">
                             </div>
                         </div>
 
+                        <!-- NAME -->
                         <div class="mb-3">
-                            <label for="variantName" class="form-label">Tên Variant <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="variantName" name="variantName" 
+                            <label class="form-label">Tên Variant <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control"
+                                   name="variantName"
                                    value="${variant.variantName}" required>
                         </div>
 
+                        <!-- PRICE -->
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="basePrice" class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="basePrice" name="basePrice" 
-                                           value="${variant.basePrice.intValue()}" min="0" step="1000" required>
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control"
+                                       name="basePrice"
+                                       value="${variant.basePrice.intValue()}"
+                                       min="0" step="1000" required>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="costPrice" class="form-label">Giá vốn (VNĐ)</label>
-                                    <input type="number" class="form-control" id="costPrice" name="costPrice" 
-                                           value="${variant.costPrice != null ? variant.costPrice.intValue() : ''}" 
-                                           min="0" step="1000">
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giá vốn (VNĐ)</label>
+                                <input type="number" class="form-control"
+                                       name="costPrice"
+                                       value="${variant.costPrice != null ? variant.costPrice.intValue() : ''}"
+                                       min="0" step="1000">
                             </div>
                         </div>
 
+                        <!-- WARRANTY + STATUS -->
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="warrantyMonths" class="form-label">Thời gian bảo hành (tháng) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="warrantyMonths" name="warrantyMonths" 
-                                           value="${variant.warrantyMonths}" min="0" required>
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Bảo hành (tháng) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control"
+                                       name="warrantyMonths"
+                                       value="${variant.warrantyMonths}" min="0" required>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="status" name="status" required>
-                                        <option value="ACTIVE" ${variant.status == 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
-                                        <option value="INACTIVE" ${variant.status == 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
-                                    </select>
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                <select class="form-select" name="status" required>
+                                    <option value="ACTIVE" ${variant.status == 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+                                    <option value="INACTIVE" ${variant.status == 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
+                                </select>
                             </div>
                         </div>
 
+                        <!-- IMAGE -->
                         <div class="mb-3">
-                            <label for="imageUrl" class="form-label">URL Hình ảnh</label>
-                            <input type="url" class="form-control" id="imageUrl" name="imageUrl" 
-                                   value="${variant.imageUrl != null ? variant.imageUrl : ''}" 
+                            <label class="form-label">URL Hình ảnh</label>
+                            <input type="url" class="form-control"
+                                   name="imageUrl"
+                                   value="${variant.imageUrl != null ? variant.imageUrl : ''}"
                                    placeholder="https://example.com/image.jpg">
                         </div>
 
+                        <!-- INFO -->
                         <div class="mb-3">
                             <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> 
-                                Ngày tạo: ${variant.createdAt != null ? variant.createdAt : 'N/A'} | 
-                                Cập nhật lần cuối: ${variant.updatedAt != null ? variant.updatedAt : 'N/A'}
+                                <i class="fas fa-info-circle"></i>
+                                Ngày tạo: ${variant.createdAt} |
+                                Cập nhật lần cuối: ${variant.updatedAt}
                             </small>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="${pageContext.request.contextPath}/variant?action=list" class="btn btn-secondary">
+                        <!-- ACTION -->
+                        <div class="text-end">
+                            <a href="${pageContext.request.contextPath}/variant?action=list"
+                               class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Hủy
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary ms-2">
                                 <i class="fas fa-save"></i> Cập nhật Variant
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -132,12 +148,48 @@
     </div>
 </div>
 
+<!-- BLUE THEME -->
+<style>
+.page-title {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.page-title i {
+    color: #0d6efd;
+}
+
+.card {
+    border: 1px solid rgba(13,110,253,.25);
+    border-radius: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+</style>
+
 <script>
-    // Format SKU to uppercase on input
-    document.getElementById('sku').addEventListener('input', function(e) {
-        e.target.value = e.target.value.toUpperCase();
-    });
+document.querySelector('.sku-input').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase();
+});
 </script>
 
 <jsp:include page="../common/footer.jsp" />
-
