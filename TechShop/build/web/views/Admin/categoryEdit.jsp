@@ -28,7 +28,7 @@
             <div class="alert alert-danger mb-3">${error}</div>
         </c:if>
 
-        <form method="post" action="${pageContext.request.contextPath}/ProductCategory/edit">
+        <form method="post" action="${pageContext.request.contextPath}/category/edit">
             <input type="hidden" name="categoryId" value="${category.categoryId}" />
 
             <div class="mb-3">
