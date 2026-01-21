@@ -12,12 +12,45 @@ import com.techshop.dal.DBContext;
 import com.techshop.model.ProductModel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductModelDAO extends DBContext {
 
+    /**
+     * Get all product models with category name
+     */
+    public List<ProductModel> getAll() {
+        List<ProductModel> list = new ArrayList<>();
+        String sql = "SELECT m.model_id, m.category_id, m.model_code, m.model_name, m.brand, " +
+                     "       m.description, m.status, m.created_at, m.updated_at, " +
+                     "       c.category_name " +
+                     "FROM ProductModel m " +
+                     "LEFT JOIN ProductCategory c ON m.category_id = c.category_id " +
+                     "ORDER BY m.model_id";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                ProductModel model = extractModelFromResultSet(rs);
+                list.add(model);
+            }
+            
+            rs.close();
+            ps.close();
+            
+        } catch (SQLException e) {
+            System.err.println("ProductModelDAO.getAll() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
+    
     public List<ProductModel> getModelsByCategoryId(int categoryId) {
         List<ProductModel> list = new ArrayList<>();
 
@@ -177,6 +210,35 @@ public class ProductModelDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Helper method to extract ProductModel from ResultSet
+     */
+    private ProductModel extractModelFromResultSet(ResultSet rs) throws SQLException {
+        ProductModel model = new ProductModel();
+        model.setModelId(rs.getInt("model_id"));
+        model.setCategoryId(rs.getInt("category_id"));
+        model.setModelCode(rs.getString("model_code"));
+        model.setModelName(rs.getString("model_name"));
+        model.setBrand(rs.getString("brand"));
+        model.setDescription(rs.getString("description"));
+        model.setStatus(rs.getString("status"));
+        
+        // JOIN data
+        model.setCategoryName(rs.getString("category_name"));
+        
+        Timestamp createdTs = rs.getTimestamp("created_at");
+        if (createdTs != null) {
+            model.setCreatedAt(createdTs.toLocalDateTime());
+        }
+        
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
+        if (updatedTs != null) {
+            model.setUpdatedAt(updatedTs.toLocalDateTime());
+        }
+        
+        return model;
     }
 
     public static void main(String[] args) {

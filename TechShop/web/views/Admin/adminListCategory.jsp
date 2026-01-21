@@ -183,7 +183,7 @@
                     <tbody>
                         <c:forEach items="${categories}" var="c" varStatus="st">
                             <tr class="category-row"
-                                data-url="${pageContext.request.contextPath}/ProductModel?categoryId=${c.categoryId}"
+                                data-url="${pageContext.request.contextPath}/model?categoryId=${c.categoryId}"
                                 style="cursor:pointer;">
 
                                 <td class="text-muted">${st.index + 1}</td>
@@ -225,7 +225,7 @@
 
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary"
-                                       href="${pageContext.request.contextPath}/ProductCategory/edit?categoryId=${c.categoryId}"
+                                       href="${pageContext.request.contextPath}/category/edit?categoryId=${c.categoryId}"
                                        onclick="event.stopPropagation();">
                                         <i class="fas fa-pen me-1"></i> Edit
                                     </a>

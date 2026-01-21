@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 
 
-@WebServlet(name = "ProductModelEditServlet", urlPatterns = "/ProductModel/edit")
+@WebServlet(name = "ProductModelEditServlet", urlPatterns = "/model/edit")
 public class ProductModelEditServlet extends HttpServlet {
 
     ProductModelDAO dao = new ProductModelDAO();
@@ -34,13 +34,13 @@ public class ProductModelEditServlet extends HttpServlet {
         try {
             id = Integer.parseInt(request.getParameter("id"));
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
         ProductModel model = dao.getModelById(id);
         if (model == null) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
@@ -73,7 +73,7 @@ public class ProductModelEditServlet extends HttpServlet {
 
         dao.updateModel(m);
 
-        response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId="
+        response.sendRedirect(request.getContextPath() + "/category?categoryId="
                 + request.getParameter("categoryId"));
     }
 }

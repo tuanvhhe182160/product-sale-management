@@ -76,6 +76,41 @@ public class VariantDAO extends DBContext {
     public List<ProductVariant> getAllVariants() {
         return getAllVariants(null, null);
     }
+    
+    /**
+     * Get all active variants (for sales/inventory)
+     */
+    public List<ProductVariant> getAllActive() {
+        List<ProductVariant> list = new ArrayList<>();
+        String sql = "SELECT v.variant_id, v.model_id, v.sku, v.variant_name, v.base_price, v.cost_price, " +
+                     "       v.warranty_months, v.image_url, v.status, v.created_at, v.updated_at, " +
+                     "       m.model_name, m.brand, " +
+                     "       c.category_name " +
+                     "FROM ProductVariant v " +
+                     "LEFT JOIN ProductModel m ON v.model_id = m.model_id " +
+                     "LEFT JOIN ProductCategory c ON m.category_id = c.category_id " +
+                     "WHERE v.status = 'ACTIVE' " +
+                     "ORDER BY v.variant_name";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                ProductVariant variant = mapVariantFromResultSet(rs);
+                list.add(variant);
+            }
+            
+            rs.close();
+            ps.close();
+            
+        } catch (SQLException e) {
+            System.err.println("ProductVariantDAO.getAllActive() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
 
     // Get variant by ID
     public ProductVariant getVariantById(int variantId) {

@@ -37,18 +37,30 @@
             <h2 class="mb-1 page-title">
                 <i class="fas fa-cubes text-primary me-2"></i> Product Models
             </h2>
-            <div class="sub-title">
-                <i class="fas fa-layer-group text-primary me-1"></i>
-                Category ID: <span class="fw-semibold">${categoryId}</span>
-            </div>
+            <c:if test="${not showCategory}">
+                <div class="sub-title">
+                    <i class="fas fa-layer-group text-primary me-1"></i>
+                        Category ID: <span class="fw-semibold">${categoryId}</span>
+                </div>
+            </c:if>
+
+            <c:if test="${showCategory}">
+                <div class="sub-title">
+                    <i class="fas fa-layer-group text-primary me-1"></i>
+                        All Categories
+                </div>
+            </c:if>
+
         </div>
 
         <!-- Back button -->
         <div class="d-flex align-items-center">
-            <a class="btn btn-outline-secondary"
-               href="${pageContext.request.contextPath}/ProductCategory">
-                <i class="fas fa-arrow-left me-2"></i> Back to Categories
-            </a>
+            <c:if test="${not showCategory}">
+                <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/category">
+                    <i class="fas fa-arrow-left me-2"></i> 
+                        Back to Categories
+                </a>
+            </c:if>
         </div>
     </div>
 </div>
@@ -154,6 +166,9 @@
                             <th style="width: 160px;">Code</th>
                             <th>Name</th>
                             <th style="width: 160px;">Brand</th>
+                            <c:if test="${showCategory}">
+                                <th>Category</th>
+                            </c:if>
                             <th>Description</th>
                             <th style="width: 130px;">Status</th>
                             <th style="width: 180px;">Updated</th>
@@ -175,7 +190,7 @@
 
                                 <td class="fw-semibold">${m.modelName}</td>
 
-                                <td class="text-muted">
+                                <td class="text-muted brand-cell">
                                     <c:choose>
                                         <c:when test="${empty m.brand}">
                                             <i>-</i>
@@ -183,6 +198,10 @@
                                         <c:otherwise>${m.brand}</c:otherwise>
                                     </c:choose>
                                 </td>
+                                
+                                <c:if test="${showCategory}">
+                                    <td class="text-muted">${m.categoryName}</td>
+                                </c:if>
 
                                 <td class="text-muted">
                                     <c:choose>
@@ -282,7 +301,7 @@
                 if (status === "ACTIVE") active++;
                 if (status === "INACTIVE") inactive++;
 
-                const brandCell = row.children[3];
+                const brandCell = row.querySelector(".brand-cell");
                 const brand = brandCell ? brandCell.textContent.trim() : "";
                 if (brand && brand !== "-") brands.add(brand);
             }
@@ -317,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
 
-            fetch('${pageContext.request.contextPath}/ProductModel/edit?id=' + encodeURIComponent(id))
+            fetch('${pageContext.request.contextPath}/model/edit?id=' + encodeURIComponent(id))
                 .then(res => res.text())
                 .then(html => {
                     content.innerHTML = html;

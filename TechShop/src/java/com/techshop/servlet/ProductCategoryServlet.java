@@ -21,7 +21,7 @@ import java.util.Locale;
  *
  * @author Admin
  */
-@WebServlet(name = "ProductCategoryServlet",urlPatterns = "/ProductCategory")
+@WebServlet(name = "ProductCategoryServlet",urlPatterns = "/category")
 public class ProductCategoryServlet extends HttpServlet {
     ProductCategoryDAO dao = new ProductCategoryDAO();
    
