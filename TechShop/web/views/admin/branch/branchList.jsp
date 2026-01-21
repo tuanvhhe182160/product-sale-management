@@ -100,11 +100,6 @@
                 <td>${b.address}</td>
                 <td>
                     <a class="edit" href="branch?action=edit&id=${b.branchId}">Edit</a>
-                    <a class="delete"
-                       href="branch?action=delete&id=${b.branchId}"
-                       onclick="return confirm('Delete this branch?')">
-                        Delete
-                    </a>
                 </td>
             </tr>
         </c:forEach>
