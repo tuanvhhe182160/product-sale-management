@@ -20,7 +20,7 @@ public class BranchServlet extends HttpServlet {
 
         if (action == null) {
             request.setAttribute("list", dao.getAll());
-            request.getRequestDispatcher("views/branch/branchList.jsp").forward(request, response);
+            request.getRequestDispatcher("views/branch/branchManage.jsp").forward(request, response);
         } else if (action.equals("add")) {
             request.getRequestDispatcher("views/branch/branchForm.jsp").forward(request, response);
         } else if (action.equals("edit")) {
