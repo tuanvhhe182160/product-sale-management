@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<jsp:include page="../../common/header.jsp"/>
+<jsp:include page="../common/header.jsp"/>
 
 <style>
     body {
@@ -105,4 +105,4 @@
 
 </div>
 
-<jsp:include page="../../common/footer.jsp"/>
+<jsp:include page="../common/footer.jsp"/>

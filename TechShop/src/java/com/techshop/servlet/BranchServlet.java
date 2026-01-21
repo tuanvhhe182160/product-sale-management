@@ -1,4 +1,4 @@
-package com.techshop.servlet.branch;
+package com.techshop.servlet;
 
 import com.techshop.dao.BranchDAO;
 import com.techshop.model.Branch;
@@ -20,13 +20,13 @@ public class BranchServlet extends HttpServlet {
 
         if (action == null) {
             request.setAttribute("list", dao.getAll());
-            request.getRequestDispatcher("views/admin/branch/branchList.jsp").forward(request, response);
+            request.getRequestDispatcher("views/branch/branchList.jsp").forward(request, response);
         } else if (action.equals("add")) {
-            request.getRequestDispatcher("views/admin/branch/branchForm.jsp").forward(request, response);
+            request.getRequestDispatcher("views/branch/branchForm.jsp").forward(request, response);
         } else if (action.equals("edit")) {
             int id = Integer.parseInt(request.getParameter("id"));
             request.setAttribute("branch", dao.getById(id));
-            request.getRequestDispatcher("views/admin/branch/branchForm.jsp").forward(request, response);
+            request.getRequestDispatcher("views/branch/branchForm.jsp").forward(request, response);
         }
     }
 
