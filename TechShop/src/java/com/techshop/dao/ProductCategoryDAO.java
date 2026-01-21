@@ -106,6 +106,47 @@ public class ProductCategoryDAO extends DBContext {
         return list;
     }
     
+    public int createCategory(ProductCategory c) {
+    String sql = """
+        INSERT INTO ProductCategory (category_code, category_name, description)
+        OUTPUT INSERTED.category_id
+        VALUES (?, ?, ?)
+    """;
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setString(1, c.getCategoryCode());
+        ps.setString(2, c.getCategoryName());
+
+        if (c.getDescription() == null) {
+            ps.setNull(3, java.sql.Types.NVARCHAR);
+        } else {
+            ps.setString(3, c.getDescription());
+        }
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1); // id mới
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+    public boolean existsByCode(String code) {
+    String sql = "SELECT 1 FROM ProductCategory WHERE category_code = ?";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setString(1, code);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next()        ;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+    
     public static void main(String[] args) {
         ProductCategoryDAO dao = new ProductCategoryDAO();
         System.out.println("dsadad");
