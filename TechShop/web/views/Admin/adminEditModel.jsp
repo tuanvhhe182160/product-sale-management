@@ -7,7 +7,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<form method="post" action="${pageContext.request.contextPath}/ProductModel/edit">
+<form method="post" action="${pageContext.request.contextPath}/model/edit">
     <input type="hidden" name="modelId" value="${model.modelId}" />
     <input type="hidden" name="categoryId" value="${model.categoryId}" />
 
