@@ -91,6 +91,7 @@ $RECYCLE.BIN/
 **/database.properties
 **/application.properties
 **/config.properties
+**/oauth.properties
 
 # Các file cấu hình môi trường
 .env
@@ -151,3 +152,5 @@ yarn-error.log*
 .coverage
 htmlcov/
 coverage/
+/TechShop/dist/
+/TechShop/build/
