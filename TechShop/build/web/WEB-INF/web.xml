@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <!-- Session Configuration -->
+    <servlet>
+        <servlet-name>UserManageServlet</servlet-name>
+        <servlet-class>com.techshop.servlet.UserManageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserManageServlet</servlet-name>
+        <url-pattern>/user</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
@@ -13,7 +21,6 @@
         <error-code>403</error-code>
         <location>/views/errors/403.jsp</location>
     </error-page>
-    
     <error-page>
         <error-code>404</error-code>
         <location>/views/errors/404.jsp</location>
