@@ -3,6 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/Admin/adminListCategory.jsp</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductCategoryDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/Admin/categoryEdit.jsp</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CategoryEditServlet.java</file>
             <file>file:/C:/SWP391/product-sale-management/TechShop/src/java/com/techshop/servlet/DashboardServlet.java</file>
             <file>file:/C:/SWP391/product-sale-management/TechShop/src/java/com/techshop/filter/AuthFilter.java</file>
         </group>
