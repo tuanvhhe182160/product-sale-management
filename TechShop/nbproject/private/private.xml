@@ -7,6 +7,8 @@
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductCategoryDAO.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/Admin/categoryEdit.jsp</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CategoryEditServlet.java</file>
+            <file>file:/C:/SWP391/product-sale-management/TechShop/src/java/com/techshop/servlet/DashboardServlet.java</file>
+            <file>file:/C:/SWP391/product-sale-management/TechShop/src/java/com/techshop/filter/AuthFilter.java</file>
         </group>
     </open-files>
 </project-private>
