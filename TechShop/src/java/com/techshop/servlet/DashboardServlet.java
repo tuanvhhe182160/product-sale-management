@@ -2,6 +2,9 @@ package com.techshop.servlet;
 
 import com.techshop.dao.UserDAOTest;
 import com.techshop.dao.BranchDAOTest;
+import com.techshop.dao.ProductCategoryDAOTest;
+import com.techshop.dao.ProductModelDAOTest;
+import com.techshop.dao.ProductVariantDAOTest;
 import com.techshop.model.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -20,19 +23,16 @@ public class DashboardServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         
-        // Get user from session (guaranteed to exist because of AuthFilter)
         User currentUser = (User) session.getAttribute("user");
         String userRole = (String) session.getAttribute("userRole");
         
-        // Load dashboard data based on role
-        loadDashboardData(request, currentUser, userRole);
-        
-        // Forward to dashboard JSP
+        loadDashboardData(request, currentUser, userRole);      
         request.getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
     }
     
+    //dash board data
     private void loadDashboardData(HttpServletRequest request, User user, String role) {
-        try {            
+        try {
             switch (role) {
                 case "Admin":
                     loadAdminDashboard(request);
@@ -46,6 +46,18 @@ public class DashboardServlet extends HttpServlet {
                     loadCashierDashboard(request, user);
                     break;
                     
+                case "Accounting Staff":
+                    loadAccountingDashboard(request, user);
+                    break;
+
+                case "Customer Service":
+                    loadCustomerServiceDashboard(request, user);
+                    break;
+
+                case "Technician":
+                    loadTechnicianDashboard(request, user);
+                    break;
+                    
                 default:
                     loadDefaultDashboard(request);
                     break;
@@ -57,35 +69,69 @@ public class DashboardServlet extends HttpServlet {
         }
     }
     
-    private void loadAdminDashboard(HttpServletRequest request) {        
+
+    private void loadAdminDashboard(HttpServletRequest request) {
         UserDAOTest userDAO = new UserDAOTest();
         int totalUsers = userDAO.getAll().size();
         
-        //BranchDAO branchDAO = new BranchDAO();
         BranchDAOTest branchDAO = new BranchDAOTest();
         int totalBranches = branchDAO.getAll().size();
+        int activeBranches = branchDAO.getAllActive().size();
+        
+        ProductCategoryDAOTest categoryDAO = new ProductCategoryDAOTest();
+        int totalCategories = categoryDAO.getAll().size();
+        
+        ProductModelDAOTest modelDAO = new ProductModelDAOTest();
+        int totalModels = modelDAO.getAll().size();
+        
+        ProductVariantDAOTest variantDAO = new ProductVariantDAOTest();
+        int totalVariants = variantDAO.getAll().size();
+        int activeVariants = variantDAO.getAllActive().size();
         
         request.setAttribute("totalUsers", totalUsers);
         request.setAttribute("totalBranches", totalBranches);
+        request.setAttribute("activeBranches", activeBranches);
+        request.setAttribute("totalCategories", totalCategories);
+        request.setAttribute("totalModels", totalModels);
+        request.setAttribute("totalVariants", totalVariants);
+        request.setAttribute("activeVariants", activeVariants);
         request.setAttribute("dashboardType", "admin");
     }
     
-    private void loadManagerDashboard(HttpServletRequest request, User user) {       
+    //shop manager
+    private void loadManagerDashboard(HttpServletRequest request, User user) {
         if (user.getBranchId() != null) {
             UserDAOTest userDAO = new UserDAOTest();
-            int branchStaff = userDAO.getAllByBranch(user.getBranchId()).size();
-            
+            int branchStaff = userDAO.getAllByBranch(user.getBranchId()).size();                      
             request.setAttribute("branchStaff", branchStaff);
         }
         
         request.setAttribute("dashboardType", "manager");
     }
     
+    //cashier
     private void loadCashierDashboard(HttpServletRequest request, User user) {       
         request.setAttribute("dashboardType", "cashier");
     }
     
+    //accounting
+    private void loadAccountingDashboard(HttpServletRequest request, User user) {
+        request.setAttribute("dashboardType", "accounting");
+    }
+
+    //customer service
+    private void loadCustomerServiceDashboard(HttpServletRequest request, User user) {
+        request.setAttribute("dashboardType", "customer_service");
+    }
+
+    // technician
+    private void loadTechnicianDashboard(HttpServletRequest request, User user) {
+        request.setAttribute("dashboardType", "technician");
+    }
+    
+    //default 
     private void loadDefaultDashboard(HttpServletRequest request) {
         request.setAttribute("dashboardType", "default");
     }
 }
+

@@ -188,7 +188,15 @@
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-headset text-info"></i> 
+                        <strong>accounting@store.com</strong> (Accounting)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-headset text-info"></i> 
                         <strong>cs@store.com</strong> (Customer Service)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-headset text-info"></i> 
+                        <strong>tech@store.com</strong> (Technician)
                     </li>
                 </ul>
             </div>
