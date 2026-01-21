@@ -1,9 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 
 package com.techshop.servlet;
+import com.techshop.dao.BranchDAO;
+import com.techshop.dao.RoleDAO;
 import com.techshop.util.ValidationUtil;
 import com.techshop.dao.UserDAO;
 import java.io.IOException;
@@ -12,43 +10,28 @@ import java.io.PrintWriter;
 import com.techshop.model.User;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-/**
- *
- * @author kminh
- */
-
-/**
- * Sử dụng đường dẫn techshop/user để truy cập
- */
-
+@WebServlet(name = "UserManageServlet", urlPatterns = "/user")
 public class UserManageServlet extends HttpServlet {
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("/views/user.jsp").forward(request, response);
+        UserDAO userDAO = new UserDAO();
+        BranchDAO branchDAO = new BranchDAO();
+        RoleDAO roleDAO = new RoleDAO();
+
+        request.setAttribute("userList", userDAO.getAll());
+        request.setAttribute("branchList", branchDAO.getAll());
+        request.setAttribute("roleList", roleDAO.getAll());
+        request.getRequestDispatcher("/views/user/user.jsp").forward(request, response);
     } 
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -241,10 +224,6 @@ public class UserManageServlet extends HttpServlet {
         }
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

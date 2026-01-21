@@ -1,10 +1,10 @@
 package com.techshop.servlet;
 
-import com.techshop.dao.UserDAOTest;
-import com.techshop.dao.BranchDAOTest;
-import com.techshop.dao.ProductCategoryDAOTest;
-import com.techshop.dao.ProductModelDAOTest;
-import com.techshop.dao.ProductVariantDAOTest;
+import com.techshop.dao.UserDAO;
+import com.techshop.dao.BranchDAO;
+import com.techshop.dao.ProductCategoryDAO;
+import com.techshop.dao.ProductModelDAO;
+import com.techshop.dao.VariantDAO;
 import com.techshop.model.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -71,21 +71,21 @@ public class DashboardServlet extends HttpServlet {
     
 
     private void loadAdminDashboard(HttpServletRequest request) {
-        UserDAOTest userDAO = new UserDAOTest();
+        UserDAO userDAO = new UserDAO();
         int totalUsers = userDAO.getAll().size();
         
-        BranchDAOTest branchDAO = new BranchDAOTest();
+        BranchDAO branchDAO = new BranchDAO();
         int totalBranches = branchDAO.getAll().size();
         int activeBranches = branchDAO.getAllActive().size();
         
-        ProductCategoryDAOTest categoryDAO = new ProductCategoryDAOTest();
-        int totalCategories = categoryDAO.getAll().size();
+        ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
+        int totalCategories = categoryDAO.getAllCategories().size();
         
-        ProductModelDAOTest modelDAO = new ProductModelDAOTest();
+        ProductModelDAO modelDAO = new ProductModelDAO();
         int totalModels = modelDAO.getAll().size();
         
-        ProductVariantDAOTest variantDAO = new ProductVariantDAOTest();
-        int totalVariants = variantDAO.getAll().size();
+        VariantDAO variantDAO = new VariantDAO();
+        int totalVariants = variantDAO.getAllVariants().size();
         int activeVariants = variantDAO.getAllActive().size();
         
         request.setAttribute("totalUsers", totalUsers);
@@ -101,7 +101,7 @@ public class DashboardServlet extends HttpServlet {
     //shop manager
     private void loadManagerDashboard(HttpServletRequest request, User user) {
         if (user.getBranchId() != null) {
-            UserDAOTest userDAO = new UserDAOTest();
+            UserDAO userDAO = new UserDAO();
             int branchStaff = userDAO.getAllByBranch(user.getBranchId()).size();                      
             request.setAttribute("branchStaff", branchStaff);
         }

@@ -6,40 +6,13 @@
 <%@page import="com.techshop.dao.UserDAO"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
-<%@ include file="common/header.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ include file="../common/header.jsp" %>
 
 <%
-    UserDAO userDAO = new UserDAO();
-    BranchDAO branchDAO = new BranchDAO();
-    RoleDAO roleDAO = new RoleDAO();
-
-    List<User> userList = userDAO.getAll();
-    List<Branch> branchList = branchDAO.getAll();
-    List<Role> roleList = roleDAO.getAll();
-%>
-
-<!-- Permission Validation -->
-<%
-    User currentUser = (User) session.getAttribute("user");
-    String userRole = (String) session.getAttribute("userRole");
-    
-    if (currentUser == null || !"Admin".equals(userRole)) {
-%>
-        <div class="container mt-5">
-            <div class="alert alert-danger text-center" role="alert">
-                <h1 class="display-1"><i class="fas fa-ban"></i></h1>
-                <h2>401 - Unauthorized</h2>
-                <p class="lead">You do not have permission to access this page.</p>
-                <p>Only <strong>Admin</strong> users can manage employees.</p>
-                <hr>
-                <a href="${pageContext.request.contextPath}/dashboard" class="btn btn-primary">
-                    <i class="fas fa-home"></i> Back to Dashboard
-                </a>
-            </div>
-        </div>
-<%
-        return;
-    }
+    List<User> userList = (List<User>) request.getAttribute("userList");
+    List<Role> roleList = (List<Role>) request.getAttribute("roleList");
+    List<Branch> branchList = (List<Branch>) request.getAttribute("branchList");
 %>
 
 <style>
@@ -552,4 +525,4 @@
         }
     </script>
 </c:if>
-<%@ include file="common/footer.jsp" %>
+<%@ include file="../common/footer.jsp" %>

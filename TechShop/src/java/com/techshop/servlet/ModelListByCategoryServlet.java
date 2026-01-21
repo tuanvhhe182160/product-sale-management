@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Admin
  */
-@WebServlet(name = "ModelListByCategoryServlet", urlPatterns = "/ProductModel")
+@WebServlet(name = "ModelListByCategoryServlet", urlPatterns = "/model")
 public class ModelListByCategoryServlet extends HttpServlet {
 
     ProductModelDAO dao = new ProductModelDAO();
@@ -46,23 +46,26 @@ public class ModelListByCategoryServlet extends HttpServlet {
 
         // lấy categoryId 
         String raw = request.getParameter("categoryId");
-        int categoryId;
-
-        try {
-            categoryId = Integer.parseInt(raw);
-        } catch (Exception e) {
-            // nếu thiếu/ sai categoryId => quay về list category
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
-            return;
+        List<ProductModel> models;
+        
+        if(raw == null || raw.isEmpty()){
+            models = dao.getAll();
+            request.setAttribute("showCategory", true);
+        }
+        else{
+            try{
+                int categoryId = Integer.parseInt(raw);
+                models = dao.getModelsByCategoryId(categoryId);
+                request.setAttribute("categoryId", categoryId);
+                request.setAttribute("showCategory", false);
+            }
+            catch (NumberFormatException e){
+                response.sendRedirect(request.getContextPath() + "/category");
+                return;
+            }
         }
 
-//lấy models
-        List<ProductModel> models = dao.getModelsByCategoryId(categoryId);
-
         request.setAttribute("models", models);
-        request.setAttribute("categoryId", categoryId);
-
-        System.out.println("Models size = " + models.size() + " | categoryId = " + categoryId);
 
         // chuyển sang trang list model
         request.getRequestDispatcher("/views/Admin/adminListModel.jsp")

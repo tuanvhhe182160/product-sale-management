@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name="ProductCategoryEditServlet", urlPatterns="/ProductCategory/edit")
+@WebServlet(name="ProductCategoryEditServlet", urlPatterns="/category/edit")
 
 public class ProductCategoryEditServlet extends HttpServlet {
 
@@ -29,13 +29,13 @@ public class ProductCategoryEditServlet extends HttpServlet {
         try {
             id = Integer.parseInt(request.getParameter("categoryId"));
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
         ProductCategory category = dao.getById(id);
         if (category == null) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
@@ -54,7 +54,7 @@ public class ProductCategoryEditServlet extends HttpServlet {
         try {
             categoryId = Integer.parseInt(request.getParameter("categoryId"));
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
@@ -72,6 +72,6 @@ public class ProductCategoryEditServlet extends HttpServlet {
 
         dao.updateCategory(c);
 
-        response.sendRedirect(request.getContextPath() + "/ProductCategory");
+        response.sendRedirect(request.getContextPath() + "/category");
     }
 }
