@@ -4,7 +4,7 @@
  */
 
 package com.techshop.servlet;
-
+import com.techshop.util.ValidationUtil;
 import com.techshop.dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -66,6 +66,8 @@ public class UserManageServlet extends HttpServlet {
     private void addUser(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         try {
+            HttpSession session = request.getSession();
+
             // Lấy dữ liệu từ form
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
@@ -76,7 +78,28 @@ public class UserManageServlet extends HttpServlet {
                               ? Integer.parseInt(branchIdStr) 
                               : null;
             String status = request.getParameter("status");
+            
+                        // Validate input
+            if (!ValidationUtil.isNotEmpty(fullName) || fullName.length() < 2 || fullName.length() > 100) {
+                session.setAttribute("message", "Full name must be 2-100 characters!");
+                session.setAttribute("messageType", "danger");
+                response.sendRedirect(request.getContextPath() + "/user");
+                return;
+            }
 
+            if (!ValidationUtil.isValidEmail(email)) {
+                session.setAttribute("message", "Invalid email format!");
+                session.setAttribute("messageType", "danger");
+                response.sendRedirect(request.getContextPath() + "/user");
+                return;
+            }
+
+            if (!ValidationUtil.isValidPhone(phone)) {
+                session.setAttribute("message", "Phone number must be 10-11 digits!");
+                session.setAttribute("messageType", "danger");
+                response.sendRedirect(request.getContextPath() + "/user");
+                return;
+            }
             // Tạo đối tượng User mới
             User newUser = new User();
             newUser.setFullName(fullName);
@@ -88,7 +111,6 @@ public class UserManageServlet extends HttpServlet {
 
             UserDAO userDAO = new UserDAO();
             boolean success = userDAO.insert(newUser);
-            HttpSession session = request.getSession();
             if (success) {
                 session.setAttribute("message", "User added successfully!");
                 session.setAttribute("messageType", "success");
@@ -111,6 +133,8 @@ public class UserManageServlet extends HttpServlet {
     private void editUser(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         try {
+            HttpSession session = request.getSession();
+
             // Lấy dữ liệu từ form
             int userId = Integer.parseInt(request.getParameter("userId"));
             String fullName = request.getParameter("fullName");
@@ -123,6 +147,27 @@ public class UserManageServlet extends HttpServlet {
                               : null;
             String status = request.getParameter("status");
             
+            // Validate input
+            if (!ValidationUtil.isNotEmpty(fullName) || fullName.length() < 2 || fullName.length() > 100) {
+                session.setAttribute("message", "Full name must be 2-100 characters!");
+                session.setAttribute("messageType", "danger");
+                response.sendRedirect(request.getContextPath() + "/user");
+                return;
+            }
+
+            if (!ValidationUtil.isValidEmail(email)) {
+                session.setAttribute("message", "Invalid email format!");
+                session.setAttribute("messageType", "danger");
+                response.sendRedirect(request.getContextPath() + "/user");
+                return;
+            }
+
+            if (!ValidationUtil.isValidPhone(phone)) {
+                session.setAttribute("message", "Phone number must be 10-11 digits!");
+                session.setAttribute("messageType", "danger");
+                response.sendRedirect(request.getContextPath() + "/user");
+                return;
+            }
             // Tạo đối tượng User để update
             User user = new User();
             user.setUserId(userId);
@@ -138,7 +183,6 @@ public class UserManageServlet extends HttpServlet {
             boolean success = userDAO.update(user);
             
             // Set message
-            HttpSession session = request.getSession();
             if (success) {
                 session.setAttribute("message", "User updated successfully!");
                 session.setAttribute("messageType", "success");

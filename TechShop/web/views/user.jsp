@@ -42,6 +42,21 @@
     }
 %>
 
+<style>
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+    .is-valid {
+        border-color: #198754 !important;
+    }
+    .invalid-feedback {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+
 <c:if test="${true}">
     <%
         String message = (String) session.getAttribute("message");
@@ -98,17 +113,17 @@
                                 <% } %>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-info me-1" 
+                                <button class="btn btn-sm btn-outline-primary me-1" 
                                         title="View" 
                                         onclick="viewUser(<%= user.getUserId() %>, '<%= user.getFullName() %>', '<%= user.getEmail() %>', '<%= user.getRoleName() != null ? user.getRoleName() : "N/A" %>', '<%= user.getBranchName() != null ? user.getBranchName() : "N/A" %>', '<%= user.getPhone() != null ? user.getPhone() : "N/A" %>', '<%= user.getStatus() %>', '<%= user.getCreatedAt() != null ? user.getCreatedAt().toString() : "N/A" %>', '<%= user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : "N/A" %>')">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn btn-sm btn-warning me-1" 
+                                <button class="btn btn-sm btn-primary me-1" 
                                         title="Edit"
                                         onclick="editUser(<%= user.getUserId() %>, '<%= user.getFullName() %>', '<%= user.getEmail() %>', <%= user.getRoleId() %>, <%= user.getBranchId() != null ? user.getBranchId() : "null" %>, '<%= user.getPhone() != null ? user.getPhone() : "" %>', '<%= user.getStatus() %>')">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" 
+                                <button class="btn btn-sm btn-outline-danger" 
                                         title="Delete" 
                                         onclick="deleteUser(<%= user.getUserId() %>, '<%= user.getFullName() %>')">
                                     <i class="fas fa-trash"></i>
@@ -135,20 +150,26 @@
     <div class="modal fade" id="addEmployeeModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title"><i class="fas fa-user-plus"></i> Add New Employee</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addEmployeeForm" method="POST" action="${pageContext.request.contextPath}/user">
                         <input type="hidden" name="action" value="add">
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="fullName" name="fullName" required>
+                            <input type="text" class="form-control" id="fullName" name="fullName"
+                                pattern="^[a-zA-Z���������������?????���������������??????????????????????????????????????????????????????????????????????????????????????????�?????????\s]+$"
+                                title="T�n ch? ???c ch?a ch? c�i ti?ng Vi?t v� kho?ng tr?ng"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                                title="Please enter a valid email address"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Role</label>
@@ -184,7 +205,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                pattern="[0-9]{10,11}" 
+                                title="Phone number must be 10-11 digits"
+                                maxlength="11"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Status</label>
@@ -206,9 +231,9 @@
     <div class="modal fade" id="editEmployeeModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title"><i class="fas fa-user-edit"></i> Edit Employee</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editEmployeeForm" method="POST" action="${pageContext.request.contextPath}/user">
@@ -217,11 +242,17 @@
                         
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="editFullName" name="fullName" required>
+                            <input type="text" class="form-control" id="editFullName" name="fullName"
+                                pattern="^[a-zA-Z���������������?????���������������??????????????????????????????????????????????????????????????????????????????????????????�?????????\s]+$"
+                                title="T�n ch? ???c ch?a ch? c�i ti?ng Vi?t v� kho?ng tr?ng"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="editEmail" name="email" required>
+                            <input type="email" class="form-control" id="editEmail" name="email" 
+                                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                                title="Please enter a valid email address"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Role</label>
@@ -257,7 +288,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="editPhone" name="phone" required>
+                            <input type="tel" class="form-control" id="editPhone" name="phone" 
+                                pattern="[0-9]{10,11}" 
+                                title="Phone number must be 10-11 digits"
+                                maxlength="11"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Status</label>
@@ -279,7 +314,7 @@
     <div class="modal fade" id="viewEmployeeModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-info text-white">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title"><i class="fas fa-user"></i> Employee Details</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -396,11 +431,10 @@
 
         // Update employee
         function updateEmployee() {
-            const form = document.getElementById('editEmployeeForm');
-            if (form.checkValidity()) {
-                form.submit();
+            if (validateForm('editEmployeeForm')) {
+                document.getElementById('editEmployeeForm').submit();
             } else {
-                form.reportValidity();
+                alert('Please fill in all required fields correctly.');
             }
         }
 
@@ -411,11 +445,10 @@
 
         // Save employee (you can implement AJAX call here)
         function saveEmployee() {
-            const form = document.getElementById('addEmployeeForm');
-            if (form.checkValidity()) {
-                form.submit(); // Submit form
+            if (validateForm('addEmployeeForm')) {
+                document.getElementById('addEmployeeForm').submit();
             } else {
-                form.reportValidity();
+                alert('Please fill in all required fields correctly.');
             }
         }
 
@@ -442,6 +475,80 @@
                 document.body.appendChild(form);
                 form.submit();
             }
+        }
+
+                // Real-time validation for Add Form
+        document.getElementById('fullName').addEventListener('input', function(e) {
+            validateField(e.target);
+        });
+
+        document.getElementById('email').addEventListener('input', function(e) {
+            validateField(e.target);
+        });
+
+        document.getElementById('phone').addEventListener('input', function(e) {
+            // Only allow numbers
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            validateField(e.target);
+        });
+
+        document.getElementById('roleId').addEventListener('change', function(e) {
+            validateField(e.target);
+        });
+
+        document.getElementById('branchId').addEventListener('change', function(e) {
+            validateField(e.target);
+        });
+
+        // Real-time validation for Edit Form
+        document.getElementById('editFullName').addEventListener('input', function(e) {
+            validateField(e.target);
+        });
+
+        document.getElementById('editEmail').addEventListener('input', function(e) {
+            validateField(e.target);
+        });
+
+        document.getElementById('editPhone').addEventListener('input', function(e) {
+            // Only allow numbers
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            validateField(e.target);
+        });
+
+        document.getElementById('editRoleId').addEventListener('change', function(e) {
+            validateField(e.target);
+        });
+
+        document.getElementById('editBranchId').addEventListener('change', function(e) {
+            validateField(e.target);
+        });
+
+        // Validate individual field
+        function validateField(field) {
+            if (field.validity.valid) {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                return true;
+            } else {
+                field.classList.remove('is-valid');
+                field.classList.add('is-invalid');
+                return false;
+            }
+        }
+
+        // Validate entire form before submit
+        function validateForm(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
         }
     </script>
 </c:if>
