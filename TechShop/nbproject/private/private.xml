@@ -11,6 +11,7 @@
             <file>file:/D:/Workspace/product-sale-management/TechShop/src/java/com/techshop/conf/db.properties</file>
             <file>file:/D:/Workspace/product-sale-management/TechShop/src/java/com/techshop/dao/RoleDAO.java</file>
             <file>file:/D:/Workspace/product-sale-management/TechShop/src/java/com/techshop/dao/UserDAO.java</file>
+            <file>file:/D:/Workspace/product-sale-management/TechShop/src/java/com/techshop/servlet/LoginServlet.java</file>
             <file>file:/D:/Workspace/product-sale-management/TechShop/web/WEB-INF/web.xml</file>
         </group>
     </open-files>

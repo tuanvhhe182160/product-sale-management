@@ -17,9 +17,32 @@
     List<Branch> branchList = branchDAO.getAll();
     List<Role> roleList = roleDAO.getAll();
 %>
-<!-- Check permission -->
+
+<!-- Permission Validation -->
+<%
+    User currentUser = (User) session.getAttribute("user");
+    String userRole = (String) session.getAttribute("userRole");
+    
+    if (currentUser == null || !"Admin".equals(userRole)) {
+%>
+        <div class="container mt-5">
+            <div class="alert alert-danger text-center" role="alert">
+                <h1 class="display-1"><i class="fas fa-ban"></i></h1>
+                <h2>401 - Unauthorized</h2>
+                <p class="lead">You do not have permission to access this page.</p>
+                <p>Only <strong>Admin</strong> users can manage employees.</p>
+                <hr>
+                <a href="${pageContext.request.contextPath}/dashboard" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+<%
+        return;
+    }
+%>
+
 <c:if test="${true}">
-    <!-- Hiển thị thông báo -->
     <%
         String message = (String) session.getAttribute("message");
         String messageType = (String) session.getAttribute("messageType");
@@ -84,7 +107,6 @@
                                         title="Edit"
                                         onclick="editUser(<%= user.getUserId() %>, '<%= user.getFullName() %>', '<%= user.getEmail() %>', <%= user.getRoleId() %>, <%= user.getBranchId() != null ? user.getBranchId() : "null" %>, '<%= user.getPhone() != null ? user.getPhone() : "" %>', '<%= user.getStatus() %>')">
                                     <i class="fas fa-edit"></i>
-                                </button>
                                 </button>
                                 <button class="btn btn-sm btn-danger" 
                                         title="Delete" 
