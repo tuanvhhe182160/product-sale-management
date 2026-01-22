@@ -207,6 +207,35 @@ public class BranchDAO extends DBContext {
             return false;
         }
     }
+
+    /**
+     * Check if branch id exists
+     */
+    public boolean isBranchIdExist(int branchId) {
+        String sql = "SELECT COUNT(*) FROM Branch WHERE branch_id = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, branchId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                rs.close();
+                ps.close();
+                return count > 0;
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.err.println("BranchDAO.isBranchIdExist() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
     
     /**
      * Check if branch code exists
