@@ -23,7 +23,7 @@
     <h2 class="text-primary">
         <i class="fas fa-building"></i> Branch Management
     </h2>
-    <a href="${pageContext.request.contextPath}/branch/add" class="btn btn-primary">
+    <a href="${pageContext.request.contextPath}/branch?action=add" class="btn btn-primary">
         <i class="fas fa-plus"></i> New Branch
     </a>
 </div>
@@ -32,7 +32,7 @@
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
-                <thead class="table-primary text-center">
+                <thead class="text-center">
                     <tr>
                         <th scope="col" class="text-primary text-start">ID</th>
                         <th scope="col" class="text-primary text-start">Code</th>
@@ -84,7 +84,7 @@
                         </td>
                         <td class="text-center">
                             <a class="btn btn-sm btn-primary"
-                               href="${pageContext.request.contextPath}/branch/edit?id=<%= branch.getBranchId() %>">
+                               href="${pageContext.request.contextPath}/branch?action=edit&id=<%= branch.getBranchId() %>">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </td>
