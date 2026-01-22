@@ -5,7 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.techshop.dao.UserDAOTest;
+import com.techshop.dao.UserDAO;
 import com.techshop.model.User;
 import java.io.IOException;
 import java.io.InputStream;
@@ -128,7 +128,7 @@ public class LoginServlet extends HttpServlet {
     private void processLogin(HttpServletRequest request, HttpServletResponse response, String email)
             throws ServletException, IOException {
         
-        UserDAOTest userDAO = new UserDAOTest();
+        UserDAO userDAO = new UserDAO();
         User user = userDAO.getByEmail(email.trim());
         
         if (user == null) {
