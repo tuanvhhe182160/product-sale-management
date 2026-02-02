@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package com.techshop.servlet;
 
 import com.techshop.dao.ProductModelDAO;
@@ -19,8 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Admin
  */
-
-
 @WebServlet(name = "ProductModelEditServlet", urlPatterns = "/ProductModel/edit")
 public class ProductModelEditServlet extends HttpServlet {
 
@@ -30,9 +27,10 @@ public class ProductModelEditServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int id;
+        int id, categoryId;
         try {
             id = Integer.parseInt(request.getParameter("id"));
+            categoryId = Integer.parseInt(request.getParameter("categoryId"));
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/ProductCategory");
             return;
@@ -40,13 +38,13 @@ public class ProductModelEditServlet extends HttpServlet {
 
         ProductModel model = dao.getModelById(id);
         if (model == null) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId=" + categoryId);
             return;
         }
 
         request.setAttribute("model", model);
         request.getRequestDispatcher("/views/Admin/adminEditModel.jsp")
-               .forward(request, response);
+                .forward(request, response);
     }
 
     @Override
@@ -56,15 +54,27 @@ public class ProductModelEditServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         int modelId = Integer.parseInt(request.getParameter("modelId"));
+        int categoryId = Integer.parseInt(request.getParameter("categoryId"));
 
-        String code = request.getParameter("modelCode").trim();
-        String name = request.getParameter("modelName").trim();
+        String code = request.getParameter("modelCode");
+        String name = request.getParameter("modelName");
         String brand = request.getParameter("brand");
         String desc = request.getParameter("description");
         String status = request.getParameter("status");
 
+        if (code != null) {
+            code = code.trim();
+        }
+        if (name != null) {
+            name = name.trim();
+        }
+        if (brand != null) {
+            brand = brand.trim();
+        }
+
         ProductModel m = new ProductModel();
         m.setModelId(modelId);
+        m.setCategoryId(categoryId);
         m.setModelCode(code);
         m.setModelName(name);
         m.setBrand(brand);
@@ -73,8 +83,6 @@ public class ProductModelEditServlet extends HttpServlet {
 
         dao.updateModel(m);
 
-        response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId="
-                + request.getParameter("categoryId"));
+        response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId=" + categoryId);
     }
 }
-

@@ -123,7 +123,7 @@ public class ProductCategoryDAO extends DBContext {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1); 
+                    return rs.getInt(1);
                 }
             }
         } catch (Exception e) {
@@ -225,6 +225,67 @@ public class ProductCategoryDAO extends DBContext {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<ProductCategory> searchCategories(String q, String status) {
+        List<ProductCategory> list = new ArrayList<>();
+
+        String sql = """
+        SELECT category_id,
+               category_code,
+               category_name,
+               description,
+               status,
+               created_at,
+               updated_at
+        FROM ProductCategory
+        WHERE ( ? = ''
+                OR category_code LIKE ?
+                OR category_name LIKE ?
+                OR ISNULL(description,'') LIKE ? )
+          AND ( ? = 'ALL' OR status = ? )
+        ORDER BY category_id DESC
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            String like = "%" + q + "%";
+
+            ps.setString(1, q);
+            ps.setString(2, like);
+            ps.setString(3, like);
+            ps.setString(4, like);
+
+            ps.setString(5, status);
+            ps.setString(6, status);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProductCategory c = new ProductCategory();
+
+                    c.setCategoryId(rs.getInt("category_id"));
+                    c.setCategoryCode(rs.getString("category_code"));
+                    c.setCategoryName(rs.getString("category_name"));
+                    c.setDescription(rs.getString("description"));
+                    c.setStatus(rs.getString("status"));
+
+                    Timestamp created = rs.getTimestamp("created_at");
+                    if (created != null) {
+                        c.setCreatedAt(created.toLocalDateTime());
+                    }
+
+                    Timestamp updated = rs.getTimestamp("updated_at");
+                    if (updated != null) {
+                        c.setUpdatedAt(updated.toLocalDateTime());
+                    }
+
+                    list.add(c);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     public static void main(String[] args) {

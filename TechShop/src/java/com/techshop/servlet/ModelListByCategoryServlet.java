@@ -44,27 +44,54 @@ public class ModelListByCategoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // lấy categoryId 
-        String raw = request.getParameter("categoryId");
+        String rawCategoryId = request.getParameter("categoryId");
         int categoryId;
 
         try {
-            categoryId = Integer.parseInt(raw);
+            categoryId = Integer.parseInt(rawCategoryId);
         } catch (Exception e) {
-            // nếu thiếu/ sai categoryId => quay về list category
             response.sendRedirect(request.getContextPath() + "/ProductCategory");
             return;
         }
 
-//lấy models
-        List<ProductModel> models = dao.getModelsByCategoryId(categoryId);
+        String q = request.getParameter("q");             
+        String status = request.getParameter("status");   
+
+        if (q != null) {
+            q = q.trim();
+        }
+        if (status == null || status.trim().isEmpty()) {
+            status = "ALL";
+        }
+        status = status.trim().toUpperCase();
+
+        List<ProductModel> models = dao.searchModels(categoryId, q, status);
+
+        int active = 0, inactive = 0;
+        java.util.Set<String> brands = new java.util.HashSet<>();
+
+        for (ProductModel m : models) {
+            if ("ACTIVE".equalsIgnoreCase(m.getStatus())) {
+                active++;
+            }
+            if ("INACTIVE".equalsIgnoreCase(m.getStatus())) {
+                inactive++;
+            }
+            if (m.getBrand() != null && !m.getBrand().trim().isEmpty()) {
+                brands.add(m.getBrand().trim());
+            }
+        }
 
         request.setAttribute("models", models);
         request.setAttribute("categoryId", categoryId);
 
-        System.out.println("Models size = " + models.size() + " | categoryId = " + categoryId);
+        request.setAttribute("activeCount", active);
+        request.setAttribute("inactiveCount", inactive);
+        request.setAttribute("brandCount", brands.size());
 
-        // chuyển sang trang list model
+        request.setAttribute("q", q);
+        request.setAttribute("status", status);
+
         request.getRequestDispatcher("/views/Admin/adminListModel.jsp")
                 .forward(request, response);
     }
