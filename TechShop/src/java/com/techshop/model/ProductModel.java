@@ -13,7 +13,6 @@ public class ProductModel {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
-    // Thông tin JOIN
     private String categoryName;
 
     public ProductModel() {

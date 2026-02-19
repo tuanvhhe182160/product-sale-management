@@ -54,8 +54,8 @@ public class ModelListByCategoryServlet extends HttpServlet {
             return;
         }
 
-        String q = request.getParameter("q");             
-        String status = request.getParameter("status");   
+        String q = request.getParameter("q");
+        String status = request.getParameter("status");
 
         if (q != null) {
             q = q.trim();
@@ -65,11 +65,29 @@ public class ModelListByCategoryServlet extends HttpServlet {
         }
         status = status.trim().toUpperCase();
 
-        List<ProductModel> models = dao.searchModels(categoryId, q, status);
+        int page = 1;
+        int pageSize = 10; 
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+            if (page < 1) {
+                page = 1;
+            }
+        } catch (Exception ignore) {
+            page = 1;
+        }
 
+        int totalItems = dao.countModels(categoryId, q, status);
+            int totalPages = (int) Math.ceil(totalItems / (double) pageSize);
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+        if (page > totalPages) {
+            page = totalPages;
+        }
+
+        List<ProductModel> models = dao.searchModelsPaged(categoryId, q, status, page, pageSize);
         int active = 0, inactive = 0;
         java.util.Set<String> brands = new java.util.HashSet<>();
-
         for (ProductModel m : models) {
             if ("ACTIVE".equalsIgnoreCase(m.getStatus())) {
                 active++;
@@ -91,6 +109,11 @@ public class ModelListByCategoryServlet extends HttpServlet {
 
         request.setAttribute("q", q);
         request.setAttribute("status", status);
+
+        request.setAttribute("page", page);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("totalItems", totalItems);
+        request.setAttribute("totalPages", totalPages);
 
         request.getRequestDispatcher("/views/Admin/adminListModel.jsp")
                 .forward(request, response);

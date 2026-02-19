@@ -142,10 +142,8 @@
             <i class="fas fa-list text-primary me-2"></i> Model List
         </h5>
 
-        <!-- Right actions: New + Search/Filter -->
         <div class="d-flex flex-wrap align-items-center gap-2">
 
-            <!-- New Model (giống New Category) -->
             <a class="btn btn-primary"
                href="${pageContext.request.contextPath}/ProductModel/form?categoryId=${categoryId}">
                 <i class="fas fa-plus me-2"></i> New Model
@@ -273,6 +271,56 @@
                         </c:forEach>
                     </tbody>
                 </table>
+                <c:set var="page" value="${page}" />
+                <c:set var="totalPages" value="${totalPages}" />
+
+                <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                    <div class="text-muted small">
+                        Page <strong>${page}</strong> / <strong>${totalPages}</strong>
+                        · Total <strong>${totalItems}</strong> item(s)
+                    </div>
+
+                    <nav aria-label="Model pagination">
+                        <ul class="pagination mb-0">
+
+                            <li class="page-item ${page <= 1 ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page-1}">
+                                    Prev
+                                </a>
+                            </li>
+
+                            <c:set var="start" value="${page - 2}" />
+                            <c:set var="end" value="${page + 2}" />
+
+                            <c:if test="${start < 1}">
+                                <c:set var="start" value="1" />
+                            </c:if>
+                            <c:if test="${end > totalPages}">
+                                <c:set var="end" value="${totalPages}" />
+                            </c:if>
+
+                            <c:forEach begin="${start}" end="${end}" var="p">
+                                <li class="page-item ${p == page ? 'active' : ''}">
+                                    <a class="page-link"
+                                       href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${p}">
+                                        ${p}
+                                    </a>
+                                </li>
+                            </c:forEach>
+
+                            <!-- Next -->
+                            <li class="page-item ${page >= totalPages ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page+1}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+
             </div>
         </c:if>
     </div>

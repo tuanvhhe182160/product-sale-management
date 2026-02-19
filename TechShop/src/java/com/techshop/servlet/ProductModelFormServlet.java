@@ -35,7 +35,6 @@ public class ProductModelFormServlet extends HttpServlet {
         ProductModel model;
 
         if (idRaw != null && !idRaw.trim().isEmpty()) {
-            // EDIT mode
             int id;
             try {
                 id = Integer.parseInt(idRaw);
@@ -53,11 +52,10 @@ public class ProductModelFormServlet extends HttpServlet {
             request.setAttribute("mode", "edit");
             request.setAttribute("pageTitle", "Edit Model - TechShop");
         } else {
-            // CREATE mode
             model = new ProductModel();
             model.setModelId(0);
             model.setCategoryId(categoryId);
-            model.setStatus("ACTIVE"); // default
+            model.setStatus("ACTIVE"); 
 
             request.setAttribute("mode", "create");
             request.setAttribute("pageTitle", "Create Model - TechShop");

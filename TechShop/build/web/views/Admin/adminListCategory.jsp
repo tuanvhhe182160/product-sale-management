@@ -209,7 +209,8 @@
                                 data-text="${c.categoryCode} ${c.categoryName} ${c.description}"
                                 style="cursor:pointer;">
 
-                                <td class="text-muted">${st.index + 1}</td>
+                                <td class="text-muted">${(page - 1) * pageSize + st.index + 1}</td>
+
 
                                 <td>
                                     <span class="badge bg-primary bg-opacity-10 text-primary">
@@ -260,6 +261,40 @@
 
                     </tbody>
                 </table>
+                <c:if test="${totalPages > 1}">
+                    <nav class="mt-3">
+                        <ul class="pagination justify-content-center mb-0">
+
+                            <!-- Prev -->
+                            <li class="page-item ${page == 1 ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/ProductCategory?page=${page-1}&q=${param.q}&status=${param.status}">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- Pages -->
+                            <c:forEach begin="1" end="${totalPages}" var="p">
+                                <li class="page-item ${p == page ? 'active' : ''}">
+                                    <a class="page-link"
+                                       href="${pageContext.request.contextPath}/ProductCategory?page=${p}&q=${param.q}&status=${param.status}">
+                                        ${p}
+                                    </a>
+                                </li>
+                            </c:forEach>
+
+                            <!-- Next -->
+                            <li class="page-item ${page == totalPages ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/ProductCategory?page=${page+1}&q=${param.q}&status=${param.status}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </c:if>
+
             </div>
         </c:if>
 

@@ -4,10 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductModelDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/ProductModelEditServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/ProductCategoryServlet.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/ProductModelFormServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductCategoryDAO.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/Admin/adminListModel.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/Admin/adminEditModel.jsp</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/Admin/adminModelForm.jsp</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/ModelListByCategoryServlet.java</file>
         </group>
     </open-files>

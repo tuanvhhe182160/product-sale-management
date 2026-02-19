@@ -66,19 +66,39 @@ public class ProductCategoryServlet extends HttpServlet {
 
         String q = request.getParameter("q");
         String status = request.getParameter("status");
+        String pageRaw = request.getParameter("page");
 
         q = (q == null) ? "" : q.trim();
         status = (status == null || status.trim().isEmpty()) ? "ALL" : status.trim().toUpperCase();
 
-        List<ProductCategory> list;
-
-        if (q.isEmpty() && "ALL".equals(status)) {
-            list = dao.getAllCategories();
-        } else {
-            list = dao.searchCategories(q, status);
+        int page = 1;
+        try {
+            page = Integer.parseInt(pageRaw);
+            if (page < 1) {
+                page = 1;
+            }
+        } catch (Exception ignored) {
         }
 
+        int pageSize = 10;
+
+        int totalItems = dao.countCategories(q, status);
+        int totalPages = (int) Math.ceil(totalItems * 1.0 / pageSize);
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+        if (page > totalPages) {
+            page = totalPages;
+        }
+
+        List<ProductCategory> list = dao.searchCategoriesPaged(q, status, page, pageSize);
+
         request.setAttribute("categories", list);
+        request.setAttribute("page", page);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("totalItems", totalItems);
+        request.setAttribute("totalPages", totalPages);
+
         request.getRequestDispatcher("/views/Admin/adminListCategory.jsp")
                 .forward(request, response);
     }
