@@ -135,7 +135,7 @@
                     </c:if>
                 </ul>
                 
-                <!-- User Profile Dropdown -->
+                <!-- User Profile -->
                 <ul class="navbar-nav">
                     <c:if test="${sessionScope.user != null}">
                         <li class="nav-item dropdown">
@@ -146,17 +146,25 @@
                                 <li><h6 class="dropdown-header">
                                     <i class="fas fa-id-badge"></i> ${sessionScope.userEmail}
                                 </h6></li>
+                
+                                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">
+                                    <i class="fas fa-user-edit"></i> Hồ sơ cá nhân
+                                </a></li>
+                
+                                <li><hr class="dropdown-divider"></li>
+                
                                 <li><span class="dropdown-item-text">
                                     <i class="fas fa-user-tag"></i> Role: <strong>${sessionScope.userRole}</strong>
                                 </span></li>
                                 <c:if test="${sessionScope.branchName != null}">
                                     <li><span class="dropdown-item-text">
                                         <i class="fas fa-building"></i> Branch: <strong>${sessionScope.branchName}</strong>
-                                    </span></li>
+                                     </span></li>
                                 </c:if>
+                
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/logout">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
                                 </a></li>
                             </ul>
                         </li>
