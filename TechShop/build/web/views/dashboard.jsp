@@ -22,10 +22,8 @@
     </div>
 </div>
 
-<!-- Admin Dashboard -->
 <c:if test="${dashboardType == 'admin'}">
     <div class="row g-3">
-        <!-- Statistics Cards -->
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
@@ -92,87 +90,60 @@
                             <i class="fas fa-warehouse fa-2x text-info"></i>
                         </div>
                     </div>
-                    <small class="text-muted">Coming in Iteration 2</small>
+                    <small class="text-muted">Stock Transfer Ready</small>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Product Breakdown -->
+
     <div class="row mt-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-chart-pie text-info"></i> Product Overview</h5>
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Top 5 Sản phẩm bán chạy nhất</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-4">
-                            <div class="p-3">
-                                <i class="fas fa-tags fa-3x text-primary mb-2"></i>
-                                <h4 class="fw-bold">${totalCategories}</h4>
-                                <p class="text-muted mb-0">Categories</p>
-                            </div>
+                    <canvas id="adminProductSalesChart" style="min-height: 300px; width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Thao tác nhanh</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush mb-3">
+                        <a href="${pageContext.request.contextPath}/user" class="list-group-item list-group-item-action border-0 px-0">
+                            <i class="fas fa-users text-primary me-2"></i> Quản lý nhân viên
+                        </a>
+                        <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=product" class="list-group-item list-group-item-action border-0 px-0">
+                            <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số Sản phẩm
+                        </a>
+                        <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch" class="list-group-item list-group-item-action border-0 px-0">
+                            <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
+                        </a>
+                    </div>
+                    <hr>
+                    <div class="product-stats small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-tags me-1"></i> Categories:</span>
+                            <strong>${totalCategories}</strong>
                         </div>
-                        <div class="col-md-4">
-                            <div class="p-3">
-                                <i class="fas fa-cubes fa-3x text-success mb-2"></i>
-                                <h4 class="fw-bold">${totalModels}</h4>
-                                <p class="text-muted mb-0">Models</p>
-                            </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-cubes me-1"></i> Models:</span>
+                            <strong>${totalModels}</strong>
                         </div>
-                        <div class="col-md-4">
-                            <div class="p-3">
-                                <i class="fas fa-cube fa-3x text-warning mb-2"></i>
-                                <h4 class="fw-bold">${totalVariants}</h4>
-                                <p class="text-muted mb-0">Variants</p>
-                                <small class="text-success">${activeVariants} active</small>
-                            </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fas fa-cube me-1"></i> Active Variants:</span>
+                            <span class="badge bg-success">${activeVariants}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Quick Actions -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-bolt text-warning"></i> Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/user" class="btn btn-outline-primary w-100 py-3">
-                                <i class="fas fa-users fa-2x mb-2 d-block"></i>
-                                Manage Users
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/branch" class="btn btn-outline-success w-100 py-3">
-                                <i class="fas fa-building fa-2x mb-2 d-block"></i>
-                                Manage Branches
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/category" class="btn btn-outline-info w-100 py-3">
-                                <i class="fas fa-box fa-2x mb-2 d-block"></i>
-                                Manage Products
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/system-log" class="btn btn-outline-secondary w-100 py-3">
-                                <i class="fas fa-history fa-2x mb-2 d-block"></i>
-                                View System Logs
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </div>  
 </c:if>
 
 <!-- Manager Dashboard -->
@@ -275,19 +246,42 @@
     </div>
 </c:if>
 
-<!-- System Info (For Demo) -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="alert alert-info border-0 shadow-sm">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-info-circle fa-2x me-3"></i>
-                <div>
-                    <h6 class="mb-1">Iteration 1 - Core Foundation</h6>
-                    <small>✅ Authentication | ✅ User Management | ✅ Branch Management | ✅ Product Management (Basic)</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Gọi đến SalesReportServlet của Admin với format json
+            fetch('${pageContext.request.contextPath}/admin/sales-report?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => item.label);
+                    const values = data.map(item => item.value);
 
+                    const ctx = document.getElementById('adminProductSalesChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar', // Sử dụng biểu đồ cột để so sánh sản phẩm
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Số lượng bán ra',
+                                data: values,
+                                backgroundColor: 'rgba(78, 115, 223, 0.6)',
+                                borderColor: '#4e73df',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y', // Biểu đồ ngang để dễ đọc tên sản phẩm
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                x: { beginAtZero: true }
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
 <%@ include file="common/footer.jsp" %>

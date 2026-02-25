@@ -2,7 +2,9 @@ package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
 import com.techshop.model.User;
+import com.techshop.util.AuthenticationUtil;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -313,7 +315,7 @@ public class UserDAO extends DBContext {
         }
         
         return false;
-    }
+    }   
     
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();

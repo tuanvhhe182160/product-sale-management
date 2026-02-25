@@ -5,6 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.techshop.dao.PasswordDAO;
 import com.techshop.dao.UserDAO;
 import com.techshop.model.User;
 import java.io.IOException;
@@ -64,33 +65,51 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        String credential = request.getParameter("credential");
-        
-        if (credential == null || credential.isEmpty()) {
-            // Demo mode: accept email directly
+        String loginType = request.getParameter("loginType");
+        if ("password".equals(loginType)) {
             String email = request.getParameter("email");
-            if (email != null && !email.isEmpty()) {
-                processLogin(request, response, email);
+            String password = request.getParameter("password");
+        
+            PasswordDAO dao = new PasswordDAO();
+            User user = dao.authenticateWithPassword(email, password);
+        
+            if (user != null) {
+                // Success
+                processLogin(request, response, user.getEmail());
+            } else {
+                // Failed
+                request.setAttribute("error", "Invalid email or password");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
+        } else if ("google".equals(loginType)) {
+            String credential = request.getParameter("credential");
+        
+            if (credential == null || credential.isEmpty()) {
+                // Demo mode: accept email directly
+                String email = request.getParameter("email");
+                if (email != null && !email.isEmpty()) {
+                    processLogin(request, response, email);
+                    return;
+                }
+            
+                request.setAttribute("error", "No credentials provided");
+                //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
                 return;
             }
-            
-            request.setAttribute("error", "No credentials provided");
-            //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
-            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
-            return;
+        
+            // Production mode: Verify Google token
+            String email = verifyGoogleToken(credential);
+        
+            if (email == null) {
+                request.setAttribute("error", "Invalid Google credentials");
+                //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+                return;
+            }
+        
+            processLogin(request, response, email);
         }
-        
-        // Production mode: Verify Google token
-        String email = verifyGoogleToken(credential);
-        
-        if (email == null) {
-            request.setAttribute("error", "Invalid Google credentials");
-            //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
-            request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
-            return;
-        }
-        
-        processLogin(request, response, email);
     }
     
     /**
