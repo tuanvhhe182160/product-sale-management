@@ -1,14 +1,23 @@
-<%@ page import="java.util.List" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.techshop.model.Branch" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<% List<String> errors = (List<String>) request.getAttribute("errorsList"); %>
+<%
+    List<String> errors = (List<String>) request.getAttribute("errorsList");
+    Branch branch = (Branch) request.getAttribute("branch");
+    boolean isEdit = (branch != null && branch.getBranchId() > 0);
+%>
 
 <jsp:include page="../common/header.jsp"/>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-primary">
+        <% if (isEdit) { %>
+        <i class="fas fa-edit"></i> Edit Branch
+        <% } else { %>
         <i class="fas fa-plus-circle"></i> Add New Branch
+        <% } %>
     </h2>
     <a href="${pageContext.request.contextPath}/branch"
        class="btn btn-primary">
@@ -24,8 +33,7 @@
     <%
         for (String err : errors) {
     %>
-    <div><i class="fas fa-exclamation-circle"></i> <%= err %>
-    </div>
+    <div><i class="fas fa-exclamation-circle"></i> <%= err %></div>
     <%
         }
     %>
@@ -38,8 +46,11 @@
 
 <div class="card border-primary">
     <div class="card-body">
-        <form id="addBranchForm" method="post" action="branch"<%--onsubmit="return validateForm()"--%>>
-            <input type="hidden" name="action" value="insert">
+        <form id="branchForm" method="post" action="branch">
+            <input type="hidden" name="action" value="<%= isEdit ? "update" : "insert" %>">
+            <% if (isEdit) { %>
+            <input type="hidden" name="id" value="<%= branch.getBranchId() %>">
+            <% } %>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -48,6 +59,7 @@
                            class="form-control"
                            id="name"
                            name="name"
+                           value="<%= isEdit ? branch.getBranchName() : "" %>"
                            required
                            maxlength="100"
                            placeholder="Enter branch name">
@@ -59,6 +71,7 @@
                            class="form-control"
                            id="code"
                            name="code"
+                           value="<%= isEdit ? branch.getBranchCode() : "" %>"
                            required
                            maxlength="20"
                            placeholder="ABC123">
@@ -71,6 +84,7 @@
                        class="form-control"
                        id="address"
                        name="address"
+                       value="<%= isEdit ? branch.getAddress() : "" %>"
                        required
                        maxlength="255"
                        placeholder="123 Main Street">
@@ -83,6 +97,7 @@
                            class="form-control"
                            id="phone"
                            name="phone"
+                           value="<%= isEdit ? branch.getPhone() : "" %>"
                            required
                            pattern="[0-9]{10,11}"
                            maxlength="11"
@@ -95,8 +110,8 @@
                             id="status"
                             name="status"
                             required>
-                        <option value="ACTIVE">ACTIVE</option>
-                        <option value="INACTIVE">INACTIVE</option>
+                        <option value="ACTIVE" <%= isEdit && "ACTIVE".equals(branch.getStatus()) ? "selected" : (!isEdit ? "selected" : "") %>>ACTIVE</option>
+                        <option value="INACTIVE" <%= isEdit && "INACTIVE".equals(branch.getStatus()) ? "selected" : "" %>>INACTIVE</option>
                     </select>
                 </div>
             </div>
@@ -107,37 +122,11 @@
                     <i class="fas fa-times"></i> Cancel
                 </a>
                 <button type="submit" class="btn btn-primary ms-2">
-                    <i class="fas fa-save"></i> Create Branch
+                    <i class="fas fa-save"></i> <%= isEdit ? "Update Branch" : "Create Branch" %>
                 </button>
             </div>
         </form>
     </div>
 </div>
-
-<script>
-    // function validateForm() {
-    //
-    //     let name = document.forms[0]["name"].value.trim();
-    //     let address = document.forms[0]["address"].value.trim();
-    //     let phone = document.forms[0]["phone"].value.trim();
-    //
-    //     if (name.length < 3) {
-    //         alert("Branch name must be at least 3 characters");
-    //         return false;
-    //     }
-    //
-    //     if (address.length < 5) {
-    //         alert("Address must be at least 5 characters");
-    //         return false;
-    //     }
-    //
-    //     if (!/^[0-9]{9,11}$/.test(phone)) {
-    //         alert("Phone number must contain 9 to 11 digits");
-    //         return false;
-    //     }
-    //
-    //     return true;
-    // }
-</script>
 
 <jsp:include page="../common/footer.jsp"/>

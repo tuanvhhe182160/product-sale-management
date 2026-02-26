@@ -92,6 +92,6 @@ public class Branch {
 
     @Override
     public String toString() {
-        return "Branch{" + "branchId=" + branchId + ", branchCode=" + branchCode + ", branchName=" + branchName + '}';
+        return "Branch{branchId=" + branchId + ", branchCode='" + branchCode + "', branchName='" + branchName + "'}";
     }
 }
