@@ -4,9 +4,9 @@ import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.dao.ProductModelDAO;
 import com.techshop.dao.ProductSearchDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.CashierSaleItem;
 import com.techshop.model.ProductCategory;
 import com.techshop.model.ProductModel;
-import com.techshop.model.ProductVariant;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +17,7 @@ import java.util.List;
 @WebServlet("/cashier")
 public class CashierServlet extends HttpServlet {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 20;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -25,14 +25,12 @@ public class CashierServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // Lấy branchId từ session (tạm hardcode = 1 khi chưa có login)
         HttpSession session = request.getSession(false);
         int branchId = 1;
         if (session != null && session.getAttribute("branchId") != null) {
             branchId = (int) session.getAttribute("branchId");
         }
 
-        // Đọc tham số tìm kiếm
         String keyword    = emptyIfNull(request.getParameter("keyword"));
         String categoryId = emptyIfNull(request.getParameter("categoryId"));
         String modelId    = emptyIfNull(request.getParameter("modelId"));
@@ -43,20 +41,20 @@ public class CashierServlet extends HttpServlet {
             String p = request.getParameter("page");
             if (p != null && !p.isEmpty()) page = Integer.parseInt(p);
             if (page < 1) page = 1;
-        } catch (NumberFormatException ignored) { }
+        } catch (NumberFormatException ignored) {}
 
-        // Dữ liệu dropdown categories
+        // Dropdown categories
         ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
         List<ProductCategory> categories = categoryDAO.getActiveCategories();
 
-        // Dropdown models: lọc theo category nếu có, không thì lấy hết
+        // Dropdown models
         ProductModelDAO modelDAO = new ProductModelDAO();
         List<ProductModel> models;
 
         if (!categoryId.isEmpty()) {
             models = modelDAO.getActiveModelsByCategoryId(Integer.parseInt(categoryId));
 
-            // Validate modelId có thuộc category này không, nếu không thì reset
+            // Validate modelId thuộc category
             if (!modelId.isEmpty()) {
                 boolean belongs = false;
                 for (ProductModel m : models) {
@@ -65,19 +63,16 @@ public class CashierServlet extends HttpServlet {
                         break;
                     }
                 }
-                if (!belongs) {
-                    modelId = "";
-                }
+                if (!belongs) modelId = "";
             }
         } else {
-            VariantDAO variantDAO = new VariantDAO();
-            models = variantDAO.getAllActiveModels();
+            models = new VariantDAO().getAllActiveModels();
         }
 
-        // Tìm kiếm & phân trang (dùng modelId đã được validate)
+        // Search — trả về List<CashierSaleItem> (1 item = 1 IMEI)
         ProductSearchDAO searchDAO = new ProductSearchDAO();
 
-        List<ProductVariant> list = searchDAO.searchForCashier(
+        List<CashierSaleItem> list = searchDAO.searchForCashier(
                 keyword, categoryId, modelId, sku, branchId, page, PAGE_SIZE);
 
         int totalItems = searchDAO.countForCashier(
@@ -87,7 +82,6 @@ public class CashierServlet extends HttpServlet {
         if (totalPages < 1) totalPages = 1;
         if (page > totalPages) page = totalPages;
 
-        // Pass sang JSP
         request.setAttribute("list",        list);
         request.setAttribute("totalPages",  totalPages);
         request.setAttribute("currentPage", page);

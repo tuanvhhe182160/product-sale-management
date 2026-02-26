@@ -122,6 +122,15 @@
             Total: <strong>${totalItems}</strong> product(s)
         </span>
     </div>
+    <a href="${pageContext.request.contextPath}/cart"
+       class="btn btn-primary position-relative">
+        <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng
+        <c:if test="${not empty sessionScope.saleCart && sessionScope.saleCart.size() > 0}">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                ${sessionScope.saleCart.size()}
+            </span>
+        </c:if>
+    </a>
 </div>
 
 <!-- ===== Search / Filter Form ===== -->
@@ -240,27 +249,21 @@
                             <div>
                                 <span class="badge-sku">${v.sku}</span>
                             </div>
+                            <!-- IMEI -->
+                            <div class="mt-1" style="font-family:monospace;font-size:.75rem;color:#1a56db;background:#e8f0fe;padding:2px 7px;border-radius:4px;display:inline-block;">
+                                ${v.imei}
+                            </div>
                             <div class="product-price">
-                                <fmt:formatNumber value="${v.basePrice}" type="number" groupingUsed="true"/>đ
+                                <fmt:formatNumber value="${v.unitPrice}" type="number" groupingUsed="true"/>đ
                             </div>
                         </div>
 
-                        <!-- Footer: stock + check button -->
+                        <!-- Footer: add to cart -->
                         <div class="product-footer">
-                            <c:choose>
-                                <c:when test="${v.stock == 0}">
-                                    <span class="stock-out"><i class="fas fa-times-circle me-1"></i>Hết hàng</span>
-                                </c:when>
-                                <c:when test="${v.stock <= 3}">
-                                    <span class="stock-low"><i class="fas fa-exclamation-circle me-1"></i>Còn ${v.stock}</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="stock-ok"><i class="fas fa-check-circle me-1"></i>Còn ${v.stock}</span>
-                                </c:otherwise>
-                            </c:choose>
-                            <a href="${pageContext.request.contextPath}/stock-check?variantId=${v.variantId}&keyword=${keyword}&categoryId=${categoryId}&modelId=${modelId}&sku=${sku}&page=${currentPage}"
-                               class="btn btn-outline-primary btn-sm" title="Kiểm tra tồn kho chi tiết">
-                                <i class="fas fa-search me-1"></i>Chi tiết
+                            <span class="stock-ok"><i class="fas fa-check-circle me-1"></i>Còn hàng</span>
+                            <a href="${pageContext.request.contextPath}/cart?action=add&physicalId=${v.physicalId}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
+                               class="btn btn-success btn-sm" title="Thêm vào giỏ hàng">
+                                <i class="fas fa-cart-plus"></i>
                             </a>
                         </div>
 
@@ -351,3 +354,4 @@
 </script>
 
 <%@ include file="../common/footer.jsp" %>
+

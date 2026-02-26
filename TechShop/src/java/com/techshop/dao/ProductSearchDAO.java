@@ -1,7 +1,7 @@
 package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
-import com.techshop.model.ProductVariant;
+import com.techshop.model.CashierSaleItem;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,222 +9,132 @@ import java.util.List;
 
 public class ProductSearchDAO extends DBContext {
 
-    public List<ProductVariant> searchForCashier(
-            String keyword,
-            String categoryId,
-            String modelId,
-            String sku,
-            int branchId,
-            int page,
-            int pageSize) {
-
-        List<ProductVariant> list = new ArrayList<>();
-
-        if (keyword    == null) keyword    = "";
-        if (categoryId == null) categoryId = "";
-        if (modelId    == null) modelId    = "";
-        if (sku        == null) sku        = "";
-
-        keyword = keyword.trim();
-        sku     = sku.trim();
-
-        StringBuilder sql = new StringBuilder(
-            "SELECT " +
-            "    v.variant_id, " +
-            "    v.variant_name, " +
-            "    v.sku, " +
-            "    v.base_price, " +
-            "    v.warranty_months, " +
-            "    m.model_name, " +
-            "    m.model_code, " +
-            "    m.brand, " +
-            "    c.category_name, " +
-            "    ISNULL(stock.cnt, 0) AS stock " +
-            "FROM ProductVariant v " +
-            "JOIN ProductModel    m ON v.model_id    = m.model_id " +
-            "JOIN ProductCategory c ON m.category_id = c.category_id " +
-            "LEFT JOIN ( " +
-            "    SELECT variant_id, COUNT(*) AS cnt " +
-            "    FROM PhysicalProduct " +
-            "    WHERE status = 'IN_STOCK' AND branch_id = ? " +
-            "    GROUP BY variant_id " +
-            ") stock ON v.variant_id = stock.variant_id " +
-            "WHERE v.status = 'ACTIVE' "
+    // ── Build WHERE clause dùng chung ────────────────────────────────────────
+    private String buildWhere(String keyword, String categoryId,
+                               String modelId,  String sku) {
+        StringBuilder w = new StringBuilder(
+            "WHERE p.status    = 'IN_STOCK' " +
+            "  AND v.status    = 'ACTIVE'   " +
+            "  AND p.branch_id = ?          "
         );
 
         if (!keyword.isEmpty()) {
-            sql.append(
-                "AND ( " +
-                "    m.model_name     LIKE ? " +
-                "    OR v.variant_name LIKE ? " +
-                "    OR v.sku          LIKE ? " +
-                "    OR c.category_name LIKE ? " +
-                "    OR m.model_code   LIKE ? " +
-                ") "
-            );
+            w.append("AND (v.variant_name LIKE ? OR v.sku LIKE ? " +
+                     "     OR m.model_name LIKE ? OR m.brand LIKE ? " +
+                     "     OR c.category_name LIKE ?) ");
         }
+        if (!categoryId.isEmpty()) w.append("AND c.category_id = ? ");
+        if (!modelId.isEmpty())    w.append("AND m.model_id    = ? ");
+        if (!sku.isEmpty())        w.append("AND v.sku LIKE ?       ");
 
-        if (!categoryId.isEmpty()) {
-            sql.append("AND c.category_id = ? ");
+        return w.toString();
+    }
+
+    // ── Bind parameters ──────────────────────────────────────────────────────
+    private int bindParams(PreparedStatement ps, int idx,
+                           int branchId,
+                           String keyword, String categoryId,
+                           String modelId, String sku) throws SQLException {
+        ps.setInt(idx++, branchId);
+
+        if (!keyword.isEmpty()) {
+            String like = "%" + keyword + "%";
+            ps.setString(idx++, like);
+            ps.setString(idx++, like);
+            ps.setString(idx++, like);
+            ps.setString(idx++, like);
+            ps.setString(idx++, like);
         }
+        if (!categoryId.isEmpty()) ps.setInt(idx++, Integer.parseInt(categoryId));
+        if (!modelId.isEmpty())    ps.setInt(idx++, Integer.parseInt(modelId));
+        if (!sku.isEmpty())        ps.setString(idx++, "%" + sku + "%");
 
-        if (!modelId.isEmpty()) {
-            sql.append("AND m.model_id = ? ");
-        }
+        return idx;
+    }
 
-        if (!sku.isEmpty()) {
-            sql.append("AND v.sku LIKE ? ");
-        }
+    // ── Search: trả về List<CashierSaleItem> (1 row = 1 IMEI) ────────────────
+    public List<CashierSaleItem> searchForCashier(
+            String keyword, String categoryId, String modelId, String sku,
+            int branchId, int page, int pageSize) {
 
-        sql.append(
-            "ORDER BY c.category_name, m.model_name, v.variant_name " +
-            "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
-        );
+        List<CashierSaleItem> list = new ArrayList<>();
 
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+        keyword    = keyword    == null ? "" : keyword.trim();
+        categoryId = categoryId == null ? "" : categoryId.trim();
+        modelId    = modelId    == null ? "" : modelId.trim();
+        sku        = sku        == null ? "" : sku.trim();
 
-            int idx = 1;
-            ps.setInt(idx++, branchId);
+        String sql =
+            "SELECT " +
+            "    p.physical_id, p.variant_id, p.branch_id, " +
+            "    p.imei, p.serial_number, " +
+            "    v.variant_name, v.sku, v.base_price, v.warranty_months, v.image_url, " +
+            "    m.model_name, m.brand, " +
+            "    c.category_name " +
+            "FROM PhysicalProduct p " +
+            "JOIN ProductVariant  v ON p.variant_id  = v.variant_id " +
+            "JOIN ProductModel    m ON v.model_id    = m.model_id " +
+            "JOIN ProductCategory c ON m.category_id = c.category_id " +
+            buildWhere(keyword, categoryId, modelId, sku) +
+            "ORDER BY c.category_name, m.model_name, v.variant_name, p.imei " +
+            "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-            if (!keyword.isEmpty()) {
-                String like = "%" + keyword + "%";
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-            }
-
-            if (!categoryId.isEmpty()) {
-                ps.setInt(idx++, Integer.parseInt(categoryId));
-            }
-
-            if (!modelId.isEmpty()) {
-                ps.setInt(idx++, Integer.parseInt(modelId));
-            }
-
-            if (!sku.isEmpty()) {
-                ps.setString(idx++, "%" + sku + "%");
-            }
-
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int idx = bindParams(ps, 1, branchId, keyword, categoryId, modelId, sku);
             ps.setInt(idx++, (page - 1) * pageSize);
-            ps.setInt(idx++, pageSize);
+            ps.setInt(idx,   pageSize);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    ProductVariant v = new ProductVariant();
-                    v.setVariantId(rs.getInt("variant_id"));
-                    v.setVariantName(rs.getString("variant_name"));
-                    v.setSku(rs.getString("sku"));
-                    v.setBasePrice(rs.getBigDecimal("base_price"));
-                    v.setWarrantyMonths(rs.getInt("warranty_months"));
-                    v.setModelName(rs.getString("model_name"));
-                    v.setBrand(rs.getString("brand"));
-                    v.setCategoryName(rs.getString("category_name"));
-                    v.setStock(rs.getInt("stock"));
-                    list.add(v);
+                    CashierSaleItem item = new CashierSaleItem();
+                    item.setPhysicalId(rs.getInt("physical_id"));
+                    item.setVariantId(rs.getInt("variant_id"));
+                    item.setBranchId(rs.getInt("branch_id"));
+                    item.setImei(rs.getString("imei"));
+                    item.setSerialNumber(rs.getString("serial_number"));
+                    item.setVariantName(rs.getString("variant_name"));
+                    item.setSku(rs.getString("sku"));
+                    item.setUnitPrice(rs.getBigDecimal("base_price"));
+                    item.setWarrantyMonths(rs.getInt("warranty_months"));
+                    item.setImageUrl(rs.getString("image_url"));
+                    item.setModelName(rs.getString("model_name"));
+                    item.setBrand(rs.getString("brand"));
+                    item.setCategoryName(rs.getString("category_name"));
+                    list.add(item);
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
 
-    // overload tương thích ngược
-    public List<ProductVariant> searchForCashier(
-            String keyword, String categoryId,
-            int branchId, int page, int pageSize) {
-        return searchForCashier(keyword, categoryId, "", "", branchId, page, pageSize);
-    }
-
+    // ── Count ─────────────────────────────────────────────────────────────────
     public int countForCashier(
-            String keyword,
-            String categoryId,
-            String modelId,
-            String sku,
+            String keyword, String categoryId, String modelId, String sku,
             int branchId) {
 
-        if (keyword    == null) keyword    = "";
-        if (categoryId == null) categoryId = "";
-        if (modelId    == null) modelId    = "";
-        if (sku        == null) sku        = "";
+        keyword    = keyword    == null ? "" : keyword.trim();
+        categoryId = categoryId == null ? "" : categoryId.trim();
+        modelId    = modelId    == null ? "" : modelId.trim();
+        sku        = sku        == null ? "" : sku.trim();
 
-        keyword = keyword.trim();
-        sku     = sku.trim();
-
-        StringBuilder sql = new StringBuilder(
+        String sql =
             "SELECT COUNT(*) " +
-            "FROM ProductVariant v " +
+            "FROM PhysicalProduct p " +
+            "JOIN ProductVariant  v ON p.variant_id  = v.variant_id " +
             "JOIN ProductModel    m ON v.model_id    = m.model_id " +
             "JOIN ProductCategory c ON m.category_id = c.category_id " +
-            "WHERE v.status = 'ACTIVE' "
-        );
+            buildWhere(keyword, categoryId, modelId, sku);
 
-        if (!keyword.isEmpty()) {
-            sql.append(
-                "AND ( " +
-                "    m.model_name     LIKE ? " +
-                "    OR v.variant_name LIKE ? " +
-                "    OR v.sku          LIKE ? " +
-                "    OR c.category_name LIKE ? " +
-                "    OR m.model_code   LIKE ? " +
-                ") "
-            );
-        }
-
-        if (!categoryId.isEmpty()) {
-            sql.append("AND c.category_id = ? ");
-        }
-
-        if (!modelId.isEmpty()) {
-            sql.append("AND m.model_id = ? ");
-        }
-
-        if (!sku.isEmpty()) {
-            sql.append("AND v.sku LIKE ? ");
-        }
-
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-
-            int idx = 1;
-
-            if (!keyword.isEmpty()) {
-                String like = "%" + keyword + "%";
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-                ps.setString(idx++, like);
-            }
-
-            if (!categoryId.isEmpty()) {
-                ps.setInt(idx++, Integer.parseInt(categoryId));
-            }
-
-            if (!modelId.isEmpty()) {
-                ps.setInt(idx++, Integer.parseInt(modelId));
-            }
-
-            if (!sku.isEmpty()) {
-                ps.setString(idx++, "%" + sku + "%");
-            }
-
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            bindParams(ps, 1, branchId, keyword, categoryId, modelId, sku);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt(1);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
-    }
-
-    // overload tương thích ngược
-    public int countForCashier(String keyword, String categoryId, int branchId) {
-        return countForCashier(keyword, categoryId, "", "", branchId);
     }
 }

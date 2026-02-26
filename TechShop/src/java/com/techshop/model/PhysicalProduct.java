@@ -13,6 +13,10 @@ public class PhysicalProduct {
     private LocalDateTime importDate;
     private LocalDateTime saleDate;
 
+    // Formatted strings dùng cho JSP (tránh dùng fmt:formatDate với LocalDateTime)
+    private String importDateStr;
+    private String saleDateStr;
+
     public PhysicalProduct() {}
 
     public int getPhysicalId() { return physicalId; }
@@ -41,4 +45,10 @@ public class PhysicalProduct {
 
     public LocalDateTime getSaleDate() { return saleDate; }
     public void setSaleDate(LocalDateTime saleDate) { this.saleDate = saleDate; }
+
+    public String getImportDateStr() { return importDateStr; }
+    public void setImportDateStr(String importDateStr) { this.importDateStr = importDateStr; }
+
+    public String getSaleDateStr() { return saleDateStr; }
+    public void setSaleDateStr(String saleDateStr) { this.saleDateStr = saleDateStr; }
 }
