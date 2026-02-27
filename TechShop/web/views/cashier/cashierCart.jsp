@@ -1,8 +1,4 @@
-<%-- 
-    Document   : cart
-    Created on : Feb 25, 2026, 7:11:53 PM
-    Author     : Admin
---%>
+
 
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -60,6 +56,24 @@
         display: flex; align-items: center; justify-content: center;
         color: #ced4da; font-size: 1.1rem;
     }
+
+    /* Cancel banner */
+    .cancel-banner {
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    .cancel-banner .cancel-text {
+        font-size: .88rem;
+        color: #7f1d1d;
+    }
 </style>
 
 <!-- ===== Header ===== -->
@@ -91,10 +105,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 </c:if>
+<c:if test="${not empty cancelSuccess}">
+    <div class="alert alert-warning alert-dismissible fade show py-2" role="alert">
+        <i class="fas fa-ban me-2"></i>${cancelSuccess}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</c:if>
 
 <c:choose>
     <c:when test="${empty cart}">
-        <!-- Giỏ trống -->
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5 text-muted">
                 <i class="fas fa-shopping-cart fa-2x mb-3 d-block"></i>
@@ -107,6 +126,19 @@
         </div>
     </c:when>
     <c:otherwise>
+
+        <!-- ===== Banner hủy đơn ===== -->
+        <div class="cancel-banner">
+            <div class="cancel-text">
+                <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                Cần hủy toàn bộ đơn hàng này? Tất cả sản phẩm sẽ được trả về danh sách chờ bán.
+            </div>
+            <button type="button" class="btn btn-danger btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#cancelModal">
+                <i class="fas fa-ban me-1"></i>Hủy đơn hàng
+            </button>
+        </div>
+
         <div class="row g-4">
 
             <!-- ===== Bảng sản phẩm ===== -->
@@ -143,7 +175,7 @@
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${not empty item.imageUrl}">
-                                                        <img src="${pageContext.request.contextPath}/${item.imageUrl}"
+                                                        <img src="${item.imageUrl}"
                                                              class="product-thumb"
                                                              alt="${item.variantName}"
                                                              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
@@ -217,11 +249,9 @@
                         </h6>
                     </div>
                     <div class="card-body">
-
                         <form method="get"
                               action="${pageContext.request.contextPath}/invoice/create">
 
-                            <!-- Thông tin khách hàng -->
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold">
                                     Số điện thoại khách hàng <span class="text-danger">*</span>
@@ -238,7 +268,6 @@
                                 <div class="form-text">Để tra cứu hoặc tạo khách hàng mới.</div>
                             </div>
 
-                            <!-- Phương thức thanh toán -->
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold">Phương thức thanh toán</label>
                                 <select class="form-select form-select-sm" name="paymentMethod">
@@ -249,14 +278,12 @@
                                 </select>
                             </div>
 
-                            <!-- Ghi chú -->
                             <div class="mb-4">
                                 <label class="form-label small fw-semibold">Ghi chú</label>
                                 <textarea class="form-control form-control-sm" name="note"
                                           rows="2" placeholder="Ghi chú cho đơn hàng..."></textarea>
                             </div>
 
-                            <!-- Tổng tiền hiển thị -->
                             <div class="d-flex justify-content-between align-items-center mb-3 px-1">
                                 <span class="text-muted">Tổng tiền hàng:</span>
                                 <span class="fw-bold text-primary fs-5">
@@ -283,4 +310,112 @@
     </c:otherwise>
 </c:choose>
 
+<!-- ===== Modal Hủy Đơn ===== -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-danger text-white py-3">
+                <h6 class="modal-title fw-bold mb-0" id="cancelModalLabel">
+                    <i class="fas fa-ban me-2"></i>Xác nhận hủy đơn hàng
+                </h6>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Tóm tắt đơn -->
+                <div class="bg-light rounded p-3 mb-3">
+                    <div class="small text-muted mb-1">Đơn hàng sẽ bị hủy</div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small"><strong>${cart.size()}</strong> sản phẩm</span>
+                        <span class="small fw-bold text-danger">
+                            <fmt:formatNumber value="${total}" type="number" groupingUsed="true"/>đ
+                        </span>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning py-2 small mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Sau khi hủy, tất cả sản phẩm sẽ được trả về danh sách tồn kho.
+                    Hành động này <strong>không thể hoàn tác</strong>.
+                </div>
+
+                <!-- Lý do hủy -->
+                <label class="form-label small fw-semibold">
+                    Lý do hủy <span class="text-danger">*</span>
+                </label>
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancelReason"
+                               id="r1" value="Khách đổi ý, không mua nữa" checked>
+                        <label class="form-check-label small" for="r1">Khách đổi ý, không mua nữa</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancelReason"
+                               id="r2" value="Chọn nhầm sản phẩm">
+                        <label class="form-check-label small" for="r2">Chọn nhầm sản phẩm</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancelReason"
+                               id="r3" value="Khách không đủ tiền thanh toán">
+                        <label class="form-check-label small" for="r3">Khách không đủ tiền thanh toán</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancelReason"
+                               id="r4" value="other">
+                        <label class="form-check-label small" for="r4">Lý do khác...</label>
+                    </div>
+                </div>
+
+                <!-- Ô nhập lý do khác -->
+                <div id="otherReasonBox" style="display:none;">
+                    <textarea class="form-control form-control-sm" id="otherReasonText"
+                              rows="2" placeholder="Nhập lý do hủy..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer py-2 gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                        data-bs-dismiss="modal">
+                    <i class="fas fa-arrow-left me-1"></i>Quay lại
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="confirmCancelBtn">
+                    <i class="fas fa-ban me-1"></i>Xác nhận hủy
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input[name="cancelReason"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.getElementById('otherReasonBox').style.display =
+                this.value === 'other' ? 'block' : 'none';
+        });
+    });
+
+    // Xác nhận hủy → redirect clear
+    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+        var selected = document.querySelector('input[name="cancelReason"]:checked');
+        var reason = selected ? selected.value : '';
+
+        if (reason === 'other') {
+            reason = document.getElementById('otherReasonText').value.trim();
+            if (!reason) {
+                document.getElementById('otherReasonText').focus();
+                document.getElementById('otherReasonText').classList.add('is-invalid');
+                return;
+            }
+        }
+
+        // Redirect sang cart?action=cancel với lý do
+        window.location.href = '${pageContext.request.contextPath}/cart?action=cancel&reason='
+            + encodeURIComponent(reason);
+    });
+</script>
+
 <%@ include file="../common/footer.jsp" %>
+

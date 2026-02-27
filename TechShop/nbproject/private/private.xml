@@ -9,16 +9,14 @@
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dal/DBContext.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductSearchDAO.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/cashierCart.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/StockCheckServlet.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/model/PhysicalProduct.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierCartServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/stockCheck.jsp</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/filter/AuthFilter.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductModelDAO.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/CashierCartDAO.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/WEB-INF/web.xml</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/StockCheckDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/productDetail.jsp</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/cashier.jsp</file>
         </group>
     </open-files>

@@ -36,6 +36,7 @@ public class CashierCartServlet extends HttpServlet {
             case "add":    handleAdd(request, response);    break;
             case "remove": handleRemove(request, response); break;
             case "clear":  handleClear(request, response);  break;
+            case "cancel": handleCancel(request, response); break;
             default:       showCart(request, response);     break;
         }
     }
@@ -114,6 +115,23 @@ public class CashierCartServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/cart");
     }
 
+    // ── Hủy toàn bộ đơn hàng (có lý do) ───────────────────────────
+    private void handleCancel(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute(CART_KEY);
+            String reason = request.getParameter("reason");
+            if (reason == null || reason.trim().isEmpty()) {
+                reason = "Không có lý do";
+            }
+            session.setAttribute("cancelSuccess",
+                "Đã hủy đơn hàng. Lý do: " + reason);
+        }
+        response.sendRedirect(request.getContextPath() + "/cart");
+    }
+
     // ── Xóa toàn bộ giỏ ────────────────────────────────────────────
     private void handleClear(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -141,15 +159,18 @@ public class CashierCartServlet extends HttpServlet {
         }
 
         // Flash messages
-        String cartSuccess = (String) session.getAttribute("cartSuccess");
-        String cartError   = (String) session.getAttribute("cartError");
+        String cartSuccess   = (String) session.getAttribute("cartSuccess");
+        String cartError     = (String) session.getAttribute("cartError");
+        String cancelSuccess = (String) session.getAttribute("cancelSuccess");
         session.removeAttribute("cartSuccess");
         session.removeAttribute("cartError");
+        session.removeAttribute("cancelSuccess");
 
-        request.setAttribute("cart",        cart);
-        request.setAttribute("total",       total);
-        request.setAttribute("cartSuccess", cartSuccess);
-        request.setAttribute("cartError",   cartError);
+        request.setAttribute("cart",          cart);
+        request.setAttribute("total",         total);
+        request.setAttribute("cartSuccess",   cartSuccess);
+        request.setAttribute("cartError",     cartError);
+        request.setAttribute("cancelSuccess", cancelSuccess);
 
         request.getRequestDispatcher("/views/cashier/cashierCart.jsp")
                 .forward(request, response);
@@ -170,4 +191,4 @@ public class CashierCartServlet extends HttpServlet {
         Object b = session.getAttribute("branchId");
         return (b instanceof Integer) ? (Integer) b : 1;
     }
-}
+}   

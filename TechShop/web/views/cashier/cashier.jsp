@@ -107,9 +107,27 @@
     }
 
     /* Stock badges */
-    .stock-ok  { color: #0f766e; background: #d1fae5; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-    .stock-low { color: #b45309; background: #fef3c7; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-    .stock-out { color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .stock-ok  {
+        color: #0f766e;
+        background: #d1fae5;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+    .stock-low {
+        color: #b45309;
+        background: #fef3c7;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+    .stock-out {
+        color: #dc2626;
+        background: #fee2e2;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
 </style>
 
 <!-- ===== Page Header ===== -->
@@ -156,7 +174,7 @@
                     <option value="">All Categories</option>
                     <c:forEach var="cat" items="${categories}">
                         <option value="${cat.categoryId}"
-                            ${categoryId == cat.categoryId ? 'selected' : ''}>
+                                ${categoryId == cat.categoryId ? 'selected' : ''}>
                             ${cat.categoryName}
                         </option>
                     </c:forEach>
@@ -169,9 +187,9 @@
                     <option value="">All Models</option>
                     <c:forEach var="m" items="${models}">
                         <option value="${m.modelId}"
-                            ${modelId == m.modelId ? 'selected' : ''}>
+                                ${modelId == m.modelId ? 'selected' : ''}>
                             ${m.modelName}<c:if test="${not empty m.brand}"> (${m.brand})</c:if>
-                        </option>
+                            </option>
                     </c:forEach>
                 </select>
             </div>
@@ -218,7 +236,7 @@
                         <div class="product-img-wrap">
                             <c:choose>
                                 <c:when test="${not empty v.imageUrl}">
-                                    <img src="${pageContext.request.contextPath}/${v.imageUrl}"
+                                    <img src="${v.imageUrl}"
                                          alt="${v.variantName}"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                                     <div class="no-img" style="display:none;">
@@ -258,12 +276,15 @@
                             </div>
                         </div>
 
-                        <!-- Footer: add to cart -->
+                        <!-- Footer: chi tiết + add to cart -->
                         <div class="product-footer">
-                            <span class="stock-ok"><i class="fas fa-check-circle me-1"></i>Còn hàng</span>
+                            <a href="${pageContext.request.contextPath}/product-detail?physicalId=${v.physicalId}&keyword=${keyword}&categoryId=${categoryId}&modelId=${modelId}&sku=${sku}&page=${currentPage}"
+                               class="btn btn-outline-secondary btn-sm" title="Xem chi tiết">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
                             <a href="${pageContext.request.contextPath}/cart?action=add&physicalId=${v.physicalId}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
                                class="btn btn-success btn-sm" title="Thêm vào giỏ hàng">
-                                <i class="fas fa-cart-plus"></i>
+                                <i class="fas fa-cart-plus me-1"></i>Thêm giỏ
                             </a>
                         </div>
 
@@ -303,7 +324,7 @@
                         <%-- ... trái nếu window không liền trang 1 --%>
                         <c:if test="${pgStart > 2}">
                             <li class="page-item disabled"><span class="page-link">…</span></li>
-                        </c:if>
+                            </c:if>
 
                         <%-- Các trang giữa --%>
                         <c:forEach begin="${pgStart}" end="${pgEnd}" var="p">
@@ -318,7 +339,7 @@
                         <%-- ... phải nếu window không liền trang cuối --%>
                         <c:if test="${pgEnd < totalPages - 1}">
                             <li class="page-item disabled"><span class="page-link">…</span></li>
-                        </c:if>
+                            </c:if>
 
                         <%-- Trang cuối luôn hiện (chỉ khi totalPages > 1) --%>
                         <c:if test="${totalPages > 1}">
@@ -348,10 +369,9 @@
 <script>
     document.getElementById('categorySelect').addEventListener('change', function () {
         document.getElementById('modelSelect').value = '';
-        document.getElementById('pageHidden').value  = '1';
+        document.getElementById('pageHidden').value = '1';
         this.closest('form').submit();
     });
 </script>
 
 <%@ include file="../common/footer.jsp" %>
-
