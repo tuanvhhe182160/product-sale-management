@@ -34,8 +34,9 @@ public class PasswordDAO extends DBContext {
      * @param email User email
      * @param password Plain text password
      * @return User object if authentication successful, null otherwise
+     * @throws java.lang.Exception
      */
-    public User authenticateWithPassword(String email, String password) {
+    public User authenticateWithPassword(String email, String password) throws Exception {
         String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
                      "       u.role_id, u.branch_id, u.status, " +
                      "       u.password_hash, u.failed_login_attempts, u.locked_until, " +
@@ -53,15 +54,19 @@ public class PasswordDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
+                User user = extractUserFromResultSet(rs);
+                int userId = user.getUserId();
+                int failedAttempts = rs.getInt("failed_login_attempts");
+                String passwordHash = rs.getString("password_hash");
+    
                 // Check if account is locked
                 Timestamp lockedUntilTs = rs.getTimestamp("locked_until");
                 if (lockedUntilTs != null) {
                     LocalDateTime lockedUntil = lockedUntilTs.toLocalDateTime();
                     if (LocalDateTime.now().isBefore(lockedUntil)) {
                         System.out.println("Account is locked until: " + lockedUntil);
-                        rs.close();
-                        ps.close();
-                        return null;
+                        throw new Exception("Tài khoản của bạn đang bị khóa đến" +
+                                lockedUntil.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm dd/MM")));                    
                     }
                 }
                 
@@ -69,35 +74,29 @@ public class PasswordDAO extends DBContext {
                 String status = rs.getString("status");
                 if (!"ACTIVE".equals(status)) {
                     System.out.println("Account is not active: " + status);
-                    rs.close();
-                    ps.close();
-                    return null;
+                    throw new Exception("Tài khoản này đã bị ngừng kích hoạt.");
                 }
                 
                 // Verify password
-                String passwordHash = rs.getString("password_hash");
                 if (passwordHash == null || passwordHash.trim().isEmpty()) {
                     System.out.println("No password set for this account (OAuth only)");
-                    rs.close();
-                    ps.close();
-                    return null;
+                    incrementFailedLoginAttempts(userId, failedAttempts);
+                    throw new Exception("Tài khoản chưa có mật khẩu để đăng nhập.");
                 }
                 
                 if (AuthenticationUtil.verifyPassword(password, passwordHash)) {
                     // Password correct - reset failed attempts and update last login
-                    int userId = rs.getInt("user_id");
                     resetFailedLoginAttempts(userId);
                     updateLastLogin(userId);
                     
-                    User user = extractUserFromResultSet(rs);
+                    
                     rs.close();
                     ps.close();
                     return user;
                 } else {
                     // Password incorrect - increment failed attempts
-                    int userId = rs.getInt("user_id");
-                    int failedAttempts = rs.getInt("failed_login_attempts");
                     incrementFailedLoginAttempts(userId, failedAttempts);
+                    System.out.println("Debug here");
                     
                     rs.close();
                     ps.close();
@@ -164,6 +163,26 @@ public class PasswordDAO extends DBContext {
             
         } catch (SQLException e) {
             System.err.println("UserDAO.updatePhone() Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean updateAvatar(int userId, String avatarUrl) {
+        String sql = "UPDATE [User] SET avatar_url = ?, updated_at = GETDATE() WHERE user_id = ?";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, avatarUrl);
+            ps.setInt(2, userId);
+            
+            int rowsAffected = ps.executeUpdate();
+            ps.close();
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("UserDAO.updateAvatar() Error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -370,7 +389,7 @@ public class PasswordDAO extends DBContext {
                 ps.executeUpdate();
                 ps.close();
                 
-                System.out.println("Account locked until: " + lockUntil);
+                System.out.println("Account locked until: " + lockUntil); //here
                 
             } catch (SQLException e) {
                 System.err.println("UserDAO.incrementFailedLoginAttempts() Error: " + e.getMessage());
@@ -385,6 +404,7 @@ public class PasswordDAO extends DBContext {
                 ps.setInt(2, userId);
                 
                 ps.executeUpdate();
+                System.out.println("Updated");
                 ps.close();
                 
             } catch (SQLException e) {
@@ -407,6 +427,7 @@ public class PasswordDAO extends DBContext {
             ps.setInt(1, userId);
             
             ps.executeUpdate();
+            System.out.println("Triggered reser login attempts");
             ps.close();
             
         } catch (SQLException e) {

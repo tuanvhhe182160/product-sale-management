@@ -4,7 +4,9 @@ import com.techshop.dao.UserDAO;
 import com.techshop.dao.BranchDAO;
 import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.dao.ProductModelDAO;
+import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.FinancialReportItem;
 import com.techshop.model.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -13,6 +15,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.util.List;
 
 @WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard"})
 public class DashboardServlet extends HttpServlet {
@@ -116,6 +120,34 @@ public class DashboardServlet extends HttpServlet {
     
     //accounting
     private void loadAccountingDashboard(HttpServletRequest request, User user) {
+        try {
+            // Sử dụng ReportDAO để lấy dữ liệu 30 ngày gần nhất
+            ReportDAO reportDAO = new com.techshop.dao.ReportDAO();
+            LocalDate today = java.time.LocalDate.now();
+            LocalDate thirtyDaysAgo = today.minusDays(30);
+        
+            List<FinancialReportItem> recentData = 
+                reportDAO.getFinancialReport(thirtyDaysAgo.toString(), today.toString());
+            
+            double totalRevenue30Days = 0;
+            double totalProfit30Days = 0;
+            int totalInvoices30Days = 0;
+        
+            for (com.techshop.model.FinancialReportItem item : recentData) {
+                totalRevenue30Days += item.getTotalRevenue();
+                totalProfit30Days += item.getTotalProfit();
+                totalInvoices30Days += item.getTotalOrders();
+            }
+
+            // Đẩy dữ liệu lên JSP
+            request.setAttribute("totalRevenue30Days", totalRevenue30Days);
+            request.setAttribute("totalProfit30Days", totalProfit30Days);
+            request.setAttribute("totalInvoices30Days", totalInvoices30Days);
+        
+        } catch (Exception e) {
+            System.err.println("Error loading Accounting Dashboard: " + e.getMessage());
+        }    
+        
         request.setAttribute("dashboardType", "accounting");
     }
 

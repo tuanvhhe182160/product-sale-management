@@ -18,6 +18,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
@@ -57,6 +59,12 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute("message", message);
         }
         
+        // Đọc lỗi từ URL (do sendRedirect gửi qua)
+        String error = request.getParameter("error");
+        if (error != null) {
+            request.setAttribute("error", error);
+        }
+        
         //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
         request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
@@ -66,41 +74,38 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String loginType = request.getParameter("loginType");
+        //PASSWORD
         if ("password".equals(loginType)) {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
         
             PasswordDAO dao = new PasswordDAO();
-            User user = dao.authenticateWithPassword(email, password);
+            User user = null;
+            try {
+                user = dao.authenticateWithPassword(email, password);
+            } catch (Exception ex) {
+                Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         
             if (user != null) {
                 // Success
-                processLogin(request, response, user.getEmail());
+                System.out.println("Found user");
+                authorizeToSystem(request, response, user.getEmail());
             } else {
                 // Failed
-                request.setAttribute("error", "Invalid email or password");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                System.out.println("Found 0 user");
+                response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
             }
-        } else if ("google".equals(loginType)) {
-            String credential = request.getParameter("credential");
+        } 
         
-            if (credential == null || credential.isEmpty()) {
-                // Demo mode: accept email directly
-                String email = request.getParameter("email");
-                if (email != null && !email.isEmpty()) {
-                    processLogin(request, response, email);
-                    return;
-                }
-            
-                request.setAttribute("error", "No credentials provided");
-                //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
-                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
-                return;
-            }
+        //GOOGLE
+        else if ("google".equals(loginType)) {
+            String credential = request.getParameter("credential"); //nhận credential từ client. Goolr login bắt đầu từ phía server
         
-            // Production mode: Verify Google token
+            // Verify Google token
             String email = verifyGoogleToken(credential);
         
+            //Thất bại
             if (email == null) {
                 request.setAttribute("error", "Invalid Google credentials");
                 //request.getRequestDispatcher("/views/auth/login-real.jsp").forward(request, response);
@@ -108,7 +113,8 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
         
-            processLogin(request, response, email);
+            //thành công thì đi đến kiểm tra email có quyền gì trong hệ thống. Google stops here.
+            authorizeToSystem(request, response, email);
         }
     }
     
@@ -127,11 +133,11 @@ public class LoginServlet extends HttpServlet {
             GoogleIdToken idToken = verifier.verify(idTokenString);
             if (idToken != null) {
                 Payload payload = idToken.getPayload();
-                String email = payload.getEmail();
-                boolean emailVerified = payload.getEmailVerified();
+                String email = payload.getEmail(); //lấy email trong payload
+                boolean emailVerified = payload.getEmailVerified(); //boolean kiểm tra email
                 
                 if (emailVerified) {
-                    return email;
+                    return email; //trả về email
                 }
             }
         } catch (Exception e) {
@@ -143,13 +149,15 @@ public class LoginServlet extends HttpServlet {
     
     /**
      * Process login after email verification
+     * System login
      */
-    private void processLogin(HttpServletRequest request, HttpServletResponse response, String email)
+    private void authorizeToSystem(HttpServletRequest request, HttpServletResponse response, String email)
             throws ServletException, IOException {
         
         UserDAO userDAO = new UserDAO();
-        User user = userDAO.getByEmail(email.trim());
+        User user = userDAO.getByEmail(email.trim()); //kiểm tra quyền của user (data trong db)
         
+        //không có quyền = cook
         if (user == null) {
             request.setAttribute("error", 
                 "Email not authorized. Only registered employees can access this system. " +
@@ -167,6 +175,8 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("userName", user.getFullName());
         session.setAttribute("userRole", user.getRoleName());
         session.setAttribute("roleId", user.getRoleId());
+        session.setAttribute("avatar", user.getAvatarUrl());
+        System.out.println("Avatar URL = " + user.getAvatarUrl());
         
         if (user.getBranchId() != null) {
             session.setAttribute("branchId", user.getBranchId());

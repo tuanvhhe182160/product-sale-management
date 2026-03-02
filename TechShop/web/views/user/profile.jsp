@@ -35,7 +35,25 @@
                 <div class="card profile-card">
                     <div class="profile-header text-center">
                         <div class="mb-3">
-                            <i class="fas fa-user-circle fa-4x"></i>
+                            <!--   <i class="fas fa-user-circle fa-4x"></i>-->
+                            <img
+    src="${pageContext.request.contextPath}${user.avatarUrl != null
+        ? '/uploads/'.concat(user.avatarUrl).concat('?t=').concat(pageContext.session.id)
+        : '/assets/images/default-user.png'}"
+    class="rounded-circle"
+    width="120"
+    height="120"
+    style="object-fit: cover;">
+                            
+<form action="${pageContext.request.contextPath}/profile"
+      method="post"
+      enctype="multipart/form-data"
+      class="mt-2">
+
+    <input type="hidden" name="action" value="changeAvatar">
+    <input type="file" name="avatar" accept="image/*" required>
+    <button class="btn btn-sm btn-primary mt-2">Upload</button>
+</form>
                         </div>
                         <h4>${user.fullName}</h4>
                         <p class="mb-0 opacity-75">${user.roleName} | ${user.branchName != null ? user.branchName : 'HQ'}</p>
@@ -73,20 +91,24 @@
 
                             <div class="tab-pane fade" id="pass-tab">
                                 <form action="profile" method="POST">
-                                    <input type="hidden" name="action" value="changePassword">
-                                    <div class="mb-3">
-                                        <label class="form-label">Mật khẩu hiện tại</label>
-                                        <input type="password" name="currentPassword" class="form-control" required>
-                                    </div>
+                                    <input type="hidden" name="action" value="changePassword">   
+                                        <div class="mb-3">
+                                            <label class="form-label">Mật khẩu hiện tại</label>
+                                            <input type="password" name="currentPassword" class="form-control">
+                                            <div class="form-text">Để trống nếu chưa tạo mật khẩu</div>
+                                        </div> 
+
                                     <div class="mb-3">
                                         <label class="form-label">Mật khẩu mới</label>
                                         <input type="password" name="newPassword" class="form-control" required>
-                                        <div class="form-text">Tối thiểu 8 ký tự.</div>
+                                        <div class="form-text">Tối thiểu 8 ký tự, chứa ít nhất 1 số, 1 chữ hoa, 1 ký tự đặc biệt.</div>
                                     </div>
+    
                                     <div class="mb-3">
                                         <label class="form-label">Xác nhận mật khẩu mới</label>
                                         <input type="password" name="confirmPassword" class="form-control" required>
-                                    </div>
+                                        </div>
+    
                                     <div class="text-end mt-4">
                                         <button type="submit" class="btn btn-danger px-4">Cập nhật mật khẩu</button>
                                     </div>

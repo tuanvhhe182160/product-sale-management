@@ -196,7 +196,7 @@ public class UserManageServlet extends HttpServlet {
             
             if (user != null) {
                 // Chỉ cập nhật status thành Inactive
-                user.setStatus("Inactive");
+                user.setStatus("INACTIVE");
                 boolean success = userDAO.update(user);
                 
                 HttpSession session = request.getSession();

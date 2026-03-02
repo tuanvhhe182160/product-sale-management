@@ -12,7 +12,8 @@ public class UserDAO extends DBContext {
     
     public List<User> getAll() {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
+        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +  
+                    "       u.avatar_url, " +
                      "       u.role_id, u.branch_id, u.status, " +
                      "       u.created_at, u.updated_at, " +
                      "       r.role_name, " +
@@ -44,6 +45,7 @@ public class UserDAO extends DBContext {
 
     public User getById(int id) {
         String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
+                     "       u.avatar_url, " +
                      "       u.role_id, u.branch_id, u.status, " +
                      "       u.created_at, u.updated_at, " +
                      "       r.role_name, " +
@@ -78,6 +80,7 @@ public class UserDAO extends DBContext {
     
     public User getByEmail(String email) {
         String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
+                    "       u.avatar_url, " +
                      "       u.role_id, u.branch_id, u.status, " +
                      "       u.created_at, u.updated_at, " +
                      "       r.role_name, " +
@@ -113,6 +116,7 @@ public class UserDAO extends DBContext {
     public List<User> getAllByRole(int roleId) {
         List<User> list = new ArrayList<>();
         String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
+                    "       u.avatar_url, " +
                      "       u.role_id, u.branch_id, u.status, " +
                      "       u.created_at, u.updated_at, " +
                      "       r.role_name, " +
@@ -147,6 +151,7 @@ public class UserDAO extends DBContext {
     public List<User> getAllByBranch(int branchId) {
         List<User> list = new ArrayList<>();
         String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
+                    "       u.avatar_url, " +
                      "       u.role_id, u.branch_id, u.status, " +
                      "       u.created_at, u.updated_at, " +
                      "       r.role_name, " +
@@ -323,7 +328,8 @@ public class UserDAO extends DBContext {
         user.setEmail(rs.getString("email"));
         user.setFullName(rs.getString("full_name"));
         user.setPhone(rs.getString("phone"));
-        user.setRoleId(rs.getInt("role_id"));
+        user.setAvatarUrl(rs.getString("avatar_url")); //Avatar
+        user.setRoleId(rs.getInt("role_id"));        
         
         // Handle nullable branch_id
         int branchId = rs.getInt("branch_id");
@@ -348,7 +354,7 @@ public class UserDAO extends DBContext {
         
         // JOIN data
         user.setRoleName(rs.getString("role_name"));
-        user.setBranchName(rs.getString("branch_name"));
+        user.setBranchName(rs.getString("branch_name"));       
         
         return user;
     }
