@@ -1,16 +1,23 @@
-
 import com.techshop.dao.PasswordDAO;
 import com.techshop.dao.UserDAO;
 import com.techshop.model.User;
 import com.techshop.util.AuthenticationUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 @WebServlet("/profile")
+@MultipartConfig(
+    maxFileSize = 1024 * 1024 * 5   // 5MB
+)
+
 public class ProfileServlet extends HttpServlet {
     private UserDAO userDAO = new UserDAO();
     private PasswordDAO passDAO = new PasswordDAO();
@@ -41,6 +48,8 @@ public class ProfileServlet extends HttpServlet {
             }
         } else if ("changePassword".equals(action)) {
             handlePasswordChange(request, currentUser.getUserId());
+        } else if("changeAvatar".equals(action)){
+            handleUploadAvatar(request, currentUser);
         }
         doGet(request, response);
     }
@@ -57,7 +66,7 @@ public class ProfileServlet extends HttpServlet {
         }
 
         // 2. Kiểm tra mật khẩu mới
-        if (AuthenticationUtil.isPasswordStrong(newPass)) { 
+        if (!AuthenticationUtil.isPasswordStrong(newPass)) { 
             String feedback = AuthenticationUtil.getPasswordStrengthFeedback(newPass);
             request.setAttribute("error", feedback);
             return;
@@ -79,8 +88,40 @@ public class ProfileServlet extends HttpServlet {
         // 5. Thực hiện cập nhật
         if (passDAO.setPassword(userId, newPass)) {
             request.setAttribute("message", "Đổi mật khẩu thành công!");
+            
         } else {
             request.setAttribute("error", "Có lỗi xảy ra khi cập nhật mật khẩu.");
         }
+    }
+    
+    private void handleUploadAvatar(HttpServletRequest request, User currentUser)
+        throws ServletException, IOException {
+
+        Part part = request.getPart("avatar"); 
+        if (part == null || part.getSize() == 0) {
+            request.setAttribute("error", "Vui lòng chọn ảnh.");
+            return;
+        }
+
+        String fileName = Paths.get(part.getSubmittedFileName())
+                           .getFileName()
+                           .toString();
+
+        String newFileName = System.currentTimeMillis() + "_" + fileName;
+
+        String uploadPath = getServletContext().getRealPath("/uploads");
+        File dir = new File(uploadPath);
+        if (!dir.exists()) dir.mkdirs();
+
+        part.write(uploadPath + File.separator + newFileName);
+
+        // update DB
+        passDAO.updateAvatar(currentUser.getUserId(), newFileName);
+
+        // update session
+        currentUser.setAvatarUrl(newFileName);
+        request.getSession().setAttribute("user", currentUser);
+
+        request.setAttribute("message", "Cập nhật ảnh đại diện thành công!");
     }
 }

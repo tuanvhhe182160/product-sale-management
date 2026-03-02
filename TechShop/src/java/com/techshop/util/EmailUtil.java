@@ -44,8 +44,8 @@ public class EmailUtil {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("[TechShop] Reset Password Request");
 
-            String htmlContent = "<h3>Yêu cầu đặt lại mật khẩu</h3>"
-                    + "<p>Click vào link sau để thực hiện: <a href='" + resetLink + "'>Reset Password</a></p>";
+            String htmlContent = "<h3>Request Reset Password</h3>"
+                    + "<p>Click vào link sau: <a href='" + resetLink + "'>Reset Password</a></p>";
             
             message.setContent(htmlContent, "text/html; charset=UTF-8");
             Transport.send(message);

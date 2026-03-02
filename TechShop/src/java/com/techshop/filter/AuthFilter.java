@@ -25,7 +25,9 @@ import jakarta.servlet.http.HttpSession;
     "/inventory/*", // Kho (Shop Manager, Admin)
     "/warranty/*",  // Bảo hành (CS, Technician)
     "/customer/*",  // Khách hàng (Cashier, CS)
-    "/report/*"     // Báo cáo (Admin, Manager, Accounting)
+    "/report/*",     // Báo cáo (Admin, Manager, Accounting)
+    "/admin/*",
+    "/accounting/**"
 })
 public class AuthFilter implements Filter {
 
@@ -113,7 +115,8 @@ public class AuthFilter implements Filter {
         if ("Accounting Staff".equalsIgnoreCase(role)) {
             // Được phép: Dashboard, Xem doanh thu, Xem hóa đơn
             if (path.equals("/dashboard") ||
-                path.startsWith("/report") ||    // Báo cáo doanh thu/lợi nhuận
+                path.startsWith("/report/financial") ||    // Báo cáo doanh thu/lợi nhuận
+                path.startsWith("/accounting/invoices") ||
                 path.startsWith("/invoice")) {   // Xem danh sách hóa đơn
                 return true;
             }

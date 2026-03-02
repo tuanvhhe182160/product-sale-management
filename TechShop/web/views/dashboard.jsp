@@ -1,5 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="pageTitle" value="Dashboard - TechShop" />
 <%@ include file="common/header.jsp" %>
 
@@ -7,7 +8,7 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body py-4">
-                <h2 class="mb-1">
+                <h2 class="mb-1">                  
                     <i class="fas fa-home text-primary"></i>
                     Welcome back, <strong>${sessionScope.userName}</strong>!
                 </h2>
@@ -225,6 +226,106 @@
                     <button class="btn btn-primary btn-lg" disabled>
                         <i class="fas fa-plus-circle"></i> New Sale (Coming Soon)
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</c:if>
+
+<!-- Accounting Dashboard -->
+<c:if test="${dashboardType == 'accounting'}">
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh Thu (30 Ngày)</p>
+                            <h3 class="mb-0 fw-bold text-success">
+                                <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ₫
+                            </h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi Nhuận (30 Ngày)</p>
+                            <h3 class="mb-0 fw-bold text-primary">
+                                <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ₫
+                            </h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-chart-line fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Hóa Đơn (30 Ngày)</p>
+                            <h3 class="mb-0 fw-bold text-warning">${totalInvoices30Days}</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-toolbox text-secondary me-2"></i>Công cụ Tài chính</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 text-center">
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/report/financial" class="text-decoration-none">
+                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
+                                    <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
+                                    <h6 class="text-dark fw-bold">Báo Cáo Tài Chính</h6>
+                                    <p class="small text-muted mb-0">Xem và xuất file (CSV/Excel) doanh thu, lợi nhuận.</p>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/accounting/invoices" class="text-decoration-none">
+                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
+                                    <i class="fas fa-receipt fa-3x text-info mb-3"></i>
+                                    <h6 class="text-dark fw-bold">Tra Cứu Hóa Đơn</h6>
+                                    <p class="small text-muted mb-0">Xem chi tiết và đối soát các giao dịch bán hàng.</p>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <a href="#" class="text-decoration-none" onclick="alert('Tính năng chốt kỳ kế toán đang được phát triển!')">
+                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
+                                    <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
+                                    <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>
+                                    <p class="small text-muted mb-0">Khóa sổ dữ liệu giao dịch theo tháng/quý.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

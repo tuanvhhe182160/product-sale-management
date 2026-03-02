@@ -109,6 +109,20 @@
                                 </a>
                             </li>
                         </c:if>
+                            
+                        <!-- Accounting Staff Menu -->
+                        <c:if test="${sessionScope.userRole == 'Accounting Staff'}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">
+                                    <i class="fas fa-cash-register"></i> Financial Report
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/accounting/invoices">
+                                    <i class="fas fa-user-friends"></i> Check Invoice
+                                </a>
+                            </li>
+                        </c:if>
                         
                         <!-- Customer Service Menu -->
                         <c:if test="${sessionScope.userRole == 'Customer Service'}">
@@ -140,7 +154,11 @@
                     <c:if test="${sessionScope.user != null}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i> ${sessionScope.userName}
+                                <img src="${pageContext.request.contextPath}/uploads/${user.avatarUrl}"
+                                    alt="Avatar"
+                                    class="rounded-circle me-2"
+                                    width="36"
+                                    height="36"> ${sessionScope.userName}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">

@@ -187,8 +187,8 @@
                         <div class="mb-3">
                             <label class="form-label">Status</label>
                             <select class="form-select" id="status" name="status" required>
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="INACTIVE">Inactive</option>
                             </select>
                         </div>
                     </form>
@@ -270,8 +270,8 @@
                         <div class="mb-3">
                             <label class="form-label">Status</label>
                             <select class="form-select" id="editStatus" name="status" required>
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="INACTIVE">Inactive</option>
                             </select>
                         </div>
                     </form>
