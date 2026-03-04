@@ -6,12 +6,10 @@ import com.techshop.model.CashierSaleItem;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+
+
 public class CashierCartDAO extends DBContext {
 
-    /**
-     * Lấy đầy đủ thông tin CashierSaleItem từ physicalId.
-     * Chỉ trả về nếu IMEI đang IN_STOCK tại branch.
-     */
     public CashierSaleItem getCashierSaleItemByPhysical(int physicalId, int branchId) {
         String sql =
             "SELECT " +
@@ -54,22 +52,5 @@ public class CashierCartDAO extends DBContext {
             e.printStackTrace();
         }
         return null;
-    }
-
-   
-    public boolean isStillInStock(int physicalId, int branchId) {
-        String sql =
-            "SELECT COUNT(*) FROM PhysicalProduct " +
-            "WHERE physical_id = ? AND branch_id = ? AND status = 'IN_STOCK'";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, physicalId);
-            ps.setInt(2, branchId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 }

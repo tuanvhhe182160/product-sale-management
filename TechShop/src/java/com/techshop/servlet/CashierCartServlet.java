@@ -30,27 +30,28 @@ public class CashierCartServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
-        if (action == null) action = "view";
+        if (action == null) action = "";
 
         switch (action) {
             case "add":    handleAdd(request, response);    break;
             case "remove": handleRemove(request, response); break;
-            case "clear":  handleClear(request, response);  break;
             case "cancel": handleCancel(request, response); break;
-            default:       showCart(request, response);     break;
+            default:
+                response.sendRedirect(request.getContextPath() + "/cashier");
+                break;
         }
     }
 
     // ── Thêm IMEI vào giỏ ──────────────────────────────────────────
     private void handleAdd(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws IOException {
 
         HttpSession session = request.getSession(true);
         int branchId = getBranchId(session);
 
         String physicalIdParam = request.getParameter("physicalId");
         if (physicalIdParam == null || physicalIdParam.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/cart");
+            response.sendRedirect(request.getContextPath() + "/cashier");
             return;
         }
 
@@ -58,7 +59,7 @@ public class CashierCartServlet extends HttpServlet {
         try {
             physicalId = Integer.parseInt(physicalIdParam.trim());
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/cart");
+            response.sendRedirect(request.getContextPath() + "/cashier");
             return;
         }
 
@@ -87,96 +88,48 @@ public class CashierCartServlet extends HttpServlet {
             session.setAttribute("cartError", "IMEI này đã có trong giỏ hàng.");
         }
 
-        // Quay lại trang trước (stock-check) hoặc cart
         String redirect = request.getParameter("redirect");
-        if (redirect != null && !redirect.isEmpty()) {
+        if (redirect != null && !redirect.trim().isEmpty()) {
             response.sendRedirect(redirect);
         } else {
-            response.sendRedirect(request.getContextPath() + "/cart");
+            response.sendRedirect(request.getContextPath() + "/cashier");
         }
     }
 
-    // ── Xóa IMEI khỏi giỏ ──────────────────────────────────────────
-    private void handleRemove(HttpServletRequest request, HttpServletResponse response)
+    private void handleRemove(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
-
-        HttpSession session = request.getSession(false);
+        HttpSession session = req.getSession(false);
         if (session != null) {
-            String physicalIdParam = request.getParameter("physicalId");
-            if (physicalIdParam != null) {
+            String p = req.getParameter("physicalId");
+            if (p != null) {
                 try {
-                    int physicalId = Integer.parseInt(physicalIdParam.trim());
+                    int pid = Integer.parseInt(p.trim());
                     List<CashierSaleItem> cart = getCart(session);
-                    cart.removeIf(item -> item.getPhysicalId() == physicalId);
+                    cart.removeIf(item -> item.getPhysicalId() == pid);
                     session.setAttribute(CART_KEY, cart);
                 } catch (NumberFormatException ignored) {}
             }
         }
-        response.sendRedirect(request.getContextPath() + "/cart");
+        String rd = req.getParameter("redirect");
+        if (rd != null && !rd.trim().isEmpty()) {
+            res.sendRedirect(rd);
+        } else {
+            res.sendRedirect(req.getContextPath() + "/cashier");
+        }
     }
 
-    // ── Hủy toàn bộ đơn hàng (có lý do) ───────────────────────────
-    private void handleCancel(HttpServletRequest request, HttpServletResponse response)
+    private void handleCancel(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
-
-        HttpSession session = request.getSession(false);
+        HttpSession session = req.getSession(false);
         if (session != null) {
             session.removeAttribute(CART_KEY);
-            String reason = request.getParameter("reason");
-            if (reason == null || reason.trim().isEmpty()) {
-                reason = "Không có lý do";
-            }
-            session.setAttribute("cancelSuccess",
-                "Đã hủy đơn hàng. Lý do: " + reason);
+            String reason = req.getParameter("reason");
+            if (reason == null || reason.trim().isEmpty()) reason = "Khong co ly do";
+            session.setAttribute("cancelSuccess", "Da huy don hang. Ly do: " + reason);
         }
-        response.sendRedirect(request.getContextPath() + "/cart");
+        res.sendRedirect(req.getContextPath() + "/cashier");
     }
 
-    // ── Xóa toàn bộ giỏ ────────────────────────────────────────────
-    private void handleClear(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.removeAttribute(CART_KEY);
-        }
-        response.sendRedirect(request.getContextPath() + "/cart");
-    }
-
-    // ── Hiển thị trang giỏ hàng ────────────────────────────────────
-    private void showCart(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        HttpSession session = request.getSession(true);
-        List<CashierSaleItem> cart = getCart(session);
-
-        // Tính tổng tiền
-        java.math.BigDecimal total = java.math.BigDecimal.ZERO;
-        for (CashierSaleItem item : cart) {
-            if (item.getUnitPrice() != null) {
-                total = total.add(item.getUnitPrice());
-            }
-        }
-
-        // Flash messages
-        String cartSuccess   = (String) session.getAttribute("cartSuccess");
-        String cartError     = (String) session.getAttribute("cartError");
-        String cancelSuccess = (String) session.getAttribute("cancelSuccess");
-        session.removeAttribute("cartSuccess");
-        session.removeAttribute("cartError");
-        session.removeAttribute("cancelSuccess");
-
-        request.setAttribute("cart",          cart);
-        request.setAttribute("total",         total);
-        request.setAttribute("cartSuccess",   cartSuccess);
-        request.setAttribute("cartError",     cartError);
-        request.setAttribute("cancelSuccess", cancelSuccess);
-
-        request.getRequestDispatcher("/views/cashier/cashierCart.jsp")
-                .forward(request, response);
-    }
-
-    // ── Helpers ─────────────────────────────────────────────────────
     @SuppressWarnings("unchecked")
     private List<CashierSaleItem> getCart(HttpSession session) {
         List<CashierSaleItem> cart = (List<CashierSaleItem>) session.getAttribute(CART_KEY);
@@ -191,4 +144,4 @@ public class CashierCartServlet extends HttpServlet {
         Object b = session.getAttribute("branchId");
         return (b instanceof Integer) ? (Integer) b : 1;
     }
-}   
+}

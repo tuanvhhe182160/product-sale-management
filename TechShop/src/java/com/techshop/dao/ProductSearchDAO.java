@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ProductSearchDAO extends DBContext {
 
-    // ── Build WHERE clause dùng chung ────────────────────────────────────────
+    //Build WHERE clause dùng chung
     private String buildWhere(String keyword, String categoryId,
                                String modelId,  String sku) {
         StringBuilder w = new StringBuilder(
@@ -30,7 +30,7 @@ public class ProductSearchDAO extends DBContext {
         return w.toString();
     }
 
-    // ── Bind parameters ──────────────────────────────────────────────────────
+    //Bind parameters
     private int bindParams(PreparedStatement ps, int idx,
                            int branchId,
                            String keyword, String categoryId,
@@ -52,7 +52,7 @@ public class ProductSearchDAO extends DBContext {
         return idx;
     }
 
-    // ── Search: trả về List<CashierSaleItem> (1 row = 1 IMEI) ────────────────
+    //Search: trả về List<CashierSaleItem> (1 row = 1 IMEI)
     public List<CashierSaleItem> searchForCashier(
             String keyword, String categoryId, String modelId, String sku,
             int branchId, int page, int pageSize) {
@@ -109,7 +109,7 @@ public class ProductSearchDAO extends DBContext {
         return list;
     }
 
-    // ── Count ─────────────────────────────────────────────────────────────────
+    // Count
     public int countForCashier(
             String keyword, String categoryId, String modelId, String sku,
             int branchId) {
