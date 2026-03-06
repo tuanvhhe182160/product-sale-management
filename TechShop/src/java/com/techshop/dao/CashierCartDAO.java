@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 
-
+ 
 public class CashierCartDAO extends DBContext {
 
     public CashierSaleItem getCashierSaleItemByPhysical(int physicalId, int branchId) {

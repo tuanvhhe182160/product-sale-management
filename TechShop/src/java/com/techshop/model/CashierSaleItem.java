@@ -2,10 +2,7 @@ package com.techshop.model;
 
 import java.math.BigDecimal;
 
-/**
- * Đại diện cho 1 sản phẩm vật lý (IMEI) của Cashier.
- * Dùng cho: trang tìm kiếm, giỏ hàng, và trang Product Detail.
- */
+
 public class CashierSaleItem {
 
     // ── PhysicalProduct ──

@@ -22,16 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * DAO cho trang Product Detail của Cashier.
- * Tất cả query đều READ-ONLY (SELECT thuần).
- */
+
 public class ProductDetailDAO extends DBContext {
 
     private static final DateTimeFormatter FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    // ── 1. Thông tin chính của 1 IMEI ────────────────────────────────────────
+    // 1. Thông tin chính của 1 IMEI
     public CashierSaleItem getPhysicalDetail(int physicalId) {
         String sql =
             "SELECT " +
@@ -85,7 +82,7 @@ public class ProductDetailDAO extends DBContext {
         return null;
     }
 
-    // ── 2. Thông số kỹ thuật (VariantAttribute) ──────────────────────────────
+    // 2. Thông số kỹ thuật (VariantAttribute)
     public Map<String, String> getVariantAttributes(int variantId) {
         Map<String, String> attrs = new LinkedHashMap<>();
         String sql =
@@ -108,7 +105,7 @@ public class ProductDetailDAO extends DBContext {
         return attrs;
     }
 
-    // ── 3. Lịch sử giao dịch kho (InventoryTransaction) ─────────────────────
+    //3. Lịch sử giao dịch kho (InventoryTransaction
     public List<Map<String, String>> getInventoryHistory(int physicalId) {
         List<Map<String, String>> list = new ArrayList<>();
         String sql =
@@ -147,7 +144,7 @@ public class ProductDetailDAO extends DBContext {
         return list;
     }
 
-    // ── 4. Lịch sử bảo hành (WarrantyRequest) ───────────────────────────────
+    // 4. Lịch sử bảo hành (WarrantyRequest)
     public List<Map<String, String>> getWarrantyHistory(int physicalId) {
         List<Map<String, String>> list = new ArrayList<>();
         String sql =

@@ -311,6 +311,32 @@
     font-size: .65rem;
     opacity: .6;
     margin-left: 2px;
+    cursor: pointer;
+    padding: 0 2px;
+    border-radius: 3px;
+    transition: opacity .15s, background .15s;
+}
+.invoice-tab-pill .close-tab:hover {
+    opacity: 1;
+    background: rgba(0,0,0,.12);
+}
+/* Số lượng sản phẩm trên tab hóa đơn */
+.inv-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.35);
+    color: inherit;
+    border-radius: 9px;
+    padding: 0 5px;
+    font-size: .63rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 15px;
+    margin-left: 3px;
+}
+.invoice-tab-pill.active .inv-badge {
+    background: rgba(255,255,255,.3);
 }
 .btn-new-invoice {
     background: none;
@@ -614,11 +640,7 @@
     <c:remove var="cancelSuccess" scope="session"/>
 </c:if>
 
-<%-- Gom physicalId của các sản phẩm trong giỏ thành chuỗi để kiểm tra "đã thêm" phía dưới --%>
-<c:set var="cartIds" value="," />
-<c:forEach var="ci" items="${sessionScope.saleCart}">
-    <c:set var="cartIds" value="${cartIds}${ci.physicalId}," />
-</c:forEach>
+<%-- cartIds và activeCart được tính sẵn trong CashierServlet và truyền qua request attribute --%>
 
 <!-- ===== POS Layout ===== -->
 <div class="pos-layout">
@@ -774,9 +796,6 @@
                                     <a href="${pageContext.request.contextPath}/cashier?keyword=${keyword}&categoryId=${categoryId}&modelId=${modelId}&sku=${sku}&page=${currentPage-1}">&laquo;</a>
                                 </c:if>
 
-                                <c:set var="pgStart" value="${currentPage - 2 < 1 ? 1 : currentPage - 2}" />
-                                <c:set var="pgEnd"   value="${currentPage + 2 > totalPages ? totalPages : currentPage + 2}" />
-
                                 <c:if test="${pgStart > 1}">
                                     <a href="${pageContext.request.contextPath}/cashier?keyword=${keyword}&categoryId=${categoryId}&modelId=${modelId}&sku=${sku}&page=1">1</a>
                                     <c:if test="${pgStart > 2}"><span class="dots">…</span></c:if>
@@ -841,27 +860,26 @@
             </div>
         </div>
 
-        <!-- Invoice tab bar -->
+        <!-- Thanh tab hóa đơn — render từ invoiceTabs đã tính sẵn trong CashierServlet -->
         <div class="invoice-tabs-bar">
-            <div class="invoice-tab-pill active">
-                <i class="fas fa-sync-alt" style="font-size:.65rem;opacity:.7;"></i>
-                Hóa đơn 1
-                <c:choose>
-                    <c:when test="${not empty sessionScope.saleCart}">
-                        <a href="${pageContext.request.contextPath}/cart?action=cancel&reason=Dong+hoa+don"
-                           class="close-tab"
-                           onclick="return confirm('Xóa toàn bộ giỏ hàng và đóng hóa đơn?')"
-                           title="Đóng hóa đơn / Xóa giỏ hàng"
-                           style="color:inherit;text-decoration:none;">✕</a>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="close-tab">✕</span>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-            <button class="btn-new-invoice" title="Tạo hóa đơn mới">
+            <c:forEach var="tab" items="${invoiceTabs}">
+                <div class="invoice-tab-pill ${tab.isActive ? 'active' : ''}"
+                     onclick="switchInvoice('${tab.id}')"
+                     title="${tab.label}">
+                    <i class="fas fa-receipt" style="font-size:.63rem;opacity:.75;"></i>
+                    ${tab.label}
+                    <c:if test="${tab.hasItems}">
+                        <span class="inv-badge">${tab.itemCount}</span>
+                    </c:if>
+                    <span class="close-tab"
+                          onclick="confirmCloseInvoice(event, '${tab.id}', '${tab.label}', ${tab.hasItems})"
+                          title="Đóng ${tab.label}">✕</span>
+                </div>
+            </c:forEach>
+            <a href="${pageContext.request.contextPath}/cart?action=newInvoice"
+               class="btn-new-invoice" title="Tạo hóa đơn mới">
                 <i class="fas fa-plus"></i>
-            </button>
+            </a>
         </div>
 
         <!-- Tabs: Giỏ hàng / Khách hàng -->
@@ -870,9 +888,9 @@
                 <div class="pos-tab active" id="tabCart" onclick="switchTab('cart')">
                     <i class="fas fa-shopping-cart me-1"></i>
                     Giỏ hàng
-                    <c:if test="${not empty sessionScope.saleCart && sessionScope.saleCart.size() > 0}">
+                    <c:if test="${not empty activeCart && activeCart.size() > 0}">
                         <span style="background:#0d6efd;color:#fff;border-radius:9px;padding:1px 6px;font-size:.65rem;margin-left:4px;">
-                            ${sessionScope.saleCart.size()}
+                            ${activeCart.size()}
                         </span>
                     </c:if>
                 </div>
@@ -882,11 +900,11 @@
             </div>
         </div>
 
-        <!-- ── Panel: Giỏ hàng ── -->
+        <!-- ── Panel: Giỏ hàng của hóa đơn đang active ── -->
         <div id="panelCart" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
             <div class="cart-items-wrap">
                 <c:choose>
-                    <c:when test="${empty sessionScope.saleCart}">
+                    <c:when test="${empty activeCart}">
                         <div class="cart-empty">
                             <i class="fas fa-shopping-cart"></i>
                             <p>Giỏ hàng trống</p>
@@ -894,7 +912,7 @@
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <c:forEach items="${sessionScope.saleCart}" var="item" varStatus="st">
+                        <c:forEach items="${activeCart}" var="item" varStatus="st">
                             <div class="cart-item-row">
                                 <c:choose>
                                     <c:when test="${not empty item.imageUrl}">
@@ -933,31 +951,32 @@
 
             <!-- Tổng tiền + Checkout -->
             <div class="pos-footer">
-                <c:set var="cartTotal" value="0" />
-                <c:forEach var="ci" items="${sessionScope.saleCart}">
-                    <c:set var="cartTotal" value="${cartTotal + ci.unitPrice}" />
-                </c:forEach>
-
                 <div class="total-line">
                     <span>Số lượng:</span>
                     <span>
                         <c:choose>
-                            <c:when test="${not empty sessionScope.saleCart}">${sessionScope.saleCart.size()} sản phẩm</c:when>
+                            <c:when test="${not empty activeCart}">${activeCart.size()} sản phẩm</c:when>
                             <c:otherwise>0 sản phẩm</c:otherwise>
                         </c:choose>
                     </span>
                 </div>
                 <div class="total-line">
-                    <span>Giảm giá:</span>
-                    <span>0đ</span>
+                    <span>Tổng tiền hàng:</span>
+                    <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
                 </div>
+                <c:if test="${discountAmount > 0}">
+                <div class="total-line">
+                    <span>Giảm giá:</span>
+                    <span>- <fmt:formatNumber value="${discountAmount}" type="number" groupingUsed="true"/>đ</span>
+                </div>
+                </c:if>
                 <div class="total-line grand">
                     <span>Khách cần trả:</span>
-                    <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
+                    <span><fmt:formatNumber value="${finalAmount}" type="number" groupingUsed="true"/>đ</span>
                 </div>
 
                 <c:choose>
-                    <c:when test="${not empty sessionScope.saleCart && sessionScope.saleCart.size() > 0}">
+                    <c:when test="${not empty activeCart && activeCart.size() > 0}">
                         <button class="btn-checkout" onclick="switchTab('customer')">
                             <i class="fas fa-check-circle"></i>
                             Tiến hành thanh toán
@@ -979,50 +998,56 @@
         <!-- ── Panel: Khách hàng + Thanh toán ── -->
         <div id="panelCustomer" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
             <div class="customer-panel">
-                <form method="get" action="${pageContext.request.contextPath}/invoice/create">
+                <form method="post" action="${pageContext.request.contextPath}/invoice/create">
 
-                    <!-- Số điện thoại -->
+                    <!-- Số điện thoại + tra cứu khách hàng tự động -->
+                    <input type="hidden" name="customerId"      id="customerId"      value="${activeCustomerForm.customerId}" />
+                    <input type="hidden" name="saveCustomer"    id="saveCustomer"    value="" />
+                    <input type="hidden" id="currentInvoiceId" value="${activeInvoiceId}" />
                     <div class="mb-3">
                         <label class="form-label small fw-semibold req" style="font-size:.78rem;">
                             Số điện thoại khách hàng
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-white"><i class="fas fa-phone text-muted"></i></span>
-                            <input type="text" class="form-control" name="phone"
+                            <input type="text" class="form-control" name="phone" id="phoneInput"
                                    placeholder="+84 _ _ _ _ _ _ _ _ _"
-                                   pattern="[0-9]{9,11}" required
-                                   title="Nhập số điện thoại 9-11 chữ số" />
+                                   pattern="[0-9]{9,11}" required autocomplete="off"
+                                   title="Nhập số điện thoại 9-11 chữ số"
+                                   value="${activeCustomerForm.phone}" />
+                            <span class="input-group-text bg-white" id="phoneSpinner" style="display:none;">
+                                <span class="spinner-border spinner-border-sm text-primary" style="width:.7rem;height:.7rem;"></span>
+                            </span>
                         </div>
-                        <div class="form-text" style="font-size:.7rem;">Nhập SĐT để tra cứu hoặc tạo khách hàng mới.</div>
+                        <!-- Trạng thái sau khi tra cứu -->
+                        <div id="customerStatus" style="display:none;margin-top:6px;padding:7px 10px;border-radius:7px;font-size:.75rem;"></div>
                     </div>
 
-                    <!-- Địa chỉ giao hàng -->
+                    <!-- Thông tin khách hàng -->
                     <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
                         <div style="font-size:.75rem;font-weight:600;color:#4a5568;margin-bottom:8px;">
-                            <i class="fas fa-map-marker-alt text-primary me-1"></i>Địa chỉ giao hàng
+                            <i class="fas fa-user text-primary me-1"></i>Thông tin khách hàng
                         </div>
                         <div class="mb-2">
-                            <input type="text" class="form-control form-control-sm" name="recipientName"
-                                   placeholder="Tên người nhận" />
+                            <input type="text" class="form-control form-control-sm" name="fullName" id="fullName"
+                                   placeholder="Họ và tên khách hàng"
+                                   value="${activeCustomerForm.fullName}" />
                         </div>
                         <div class="mb-2">
-                            <input type="text" class="form-control form-control-sm" name="recipientPhone"
-                                   placeholder="Số điện thoại người nhận" />
+                            <input type="text" class="form-control form-control-sm" name="email" id="email"
+                                   placeholder="Email (không bắt buộc)"
+                                   value="${activeCustomerForm.email}" />
                         </div>
-                        <div class="mb-2">
-                            <input type="text" class="form-control form-control-sm" name="addressDetail"
-                                   placeholder="Địa chỉ chi tiết (Số nhà, ngõ, đường)" />
+                    </div>
+
+                    <!-- Địa chỉ → Customer.address -->
+                    <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+                        <div style="font-size:.75rem;font-weight:600;color:#4a5568;margin-bottom:8px;">
+                            <i class="fas fa-map-marker-alt text-primary me-1"></i>Địa chỉ
                         </div>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <input type="text" class="form-control form-control-sm" name="district"
-                                       placeholder="Khu vực" />
-                            </div>
-                            <div class="col-6">
-                                <input type="text" class="form-control form-control-sm" name="ward"
-                                       placeholder="Phường/Xã" />
-                            </div>
-                        </div>
+                        <input type="text" class="form-control form-control-sm" name="address" id="address"
+                               placeholder="Địa chỉ khách hàng"
+                               value="${activeCustomerForm.address}" />
                     </div>
 
                     <!-- Phương thức thanh toán -->
@@ -1033,48 +1058,36 @@
                         <div class="row g-2">
                             <div class="col-6">
                                 <label style="display:flex;align-items:center;gap:7px;border:1.5px solid #e2e6ea;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.78rem;transition:border-color .12s;">
-                                    <input type="radio" name="paymentMethod" value="CASH" checked style="accent-color:#0d6efd;" />
+                                    <input type="radio" name="paymentMethod" value="CASH" style="accent-color:#0d6efd;" ${empty activeCustomerForm.paymentMethod || activeCustomerForm.paymentMethod == 'CASH' ? 'checked' : ''} />
                                     💵 Tiền mặt
                                 </label>
                             </div>
                             <div class="col-6">
                                 <label style="display:flex;align-items:center;gap:7px;border:1.5px solid #e2e6ea;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.78rem;transition:border-color .12s;">
-                                    <input type="radio" name="paymentMethod" value="TRANSFER" style="accent-color:#0d6efd;" />
+                                    <input type="radio" name="paymentMethod" value="TRANSFER" style="accent-color:#0d6efd;" ${activeCustomerForm.paymentMethod == 'TRANSFER' ? 'checked' : ''} />
                                     📱 Chuyển khoản
                                 </label>
                             </div>
                             <div class="col-6">
                                 <label style="display:flex;align-items:center;gap:7px;border:1.5px solid #e2e6ea;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.78rem;transition:border-color .12s;">
-                                    <input type="radio" name="paymentMethod" value="CARD" style="accent-color:#0d6efd;" />
+                                    <input type="radio" name="paymentMethod" value="CARD" style="accent-color:#0d6efd;" ${activeCustomerForm.paymentMethod == 'CARD' ? 'checked' : ''} />
                                     💳 Thẻ ngân hàng
                                 </label>
                             </div>
                             <div class="col-6">
                                 <label style="display:flex;align-items:center;gap:7px;border:1.5px solid #e2e6ea;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.78rem;transition:border-color .12s;">
-                                    <input type="radio" name="paymentMethod" value="MIXED" style="accent-color:#0d6efd;" />
+                                    <input type="radio" name="paymentMethod" value="MIXED" style="accent-color:#0d6efd;" ${activeCustomerForm.paymentMethod == 'MIXED' ? 'checked' : ''} />
                                     🔀 Kết hợp
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Thu hộ (COD) -->
-                    <div class="mb-3" style="display:flex;align-items:center;justify-content:space-between;background:#f8faff;border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;">
-                        <div>
-                            <div style="font-size:.78rem;font-weight:600;color:#1a202c;">Thu hộ tiền (COD)</div>
-                            <div style="font-size:.7rem;color:#6c757d;">Shipper thu tiền khi giao hàng</div>
-                        </div>
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" name="isCod" id="codSwitch" role="switch"
-                                   style="width:2.2rem;height:1.1rem;cursor:pointer;" />
-                        </div>
-                    </div>
-
-                    <!-- Ghi chú -->
+                    <!-- Ghi chú → Invoice.note -->
                     <div class="mb-3">
                         <label class="form-label small fw-semibold" style="font-size:.78rem;">Ghi chú đơn hàng</label>
                         <textarea class="form-control form-control-sm" name="note"
-                                  rows="2" placeholder="Ghi chú cho đơn hàng hoặc bưu tá…"></textarea>
+                                  id="orderNote" rows="2" placeholder="Ghi chú cho đơn hàng hoặc bưu tá…">${activeCustomerForm.note}</textarea>
                     </div>
 
                     <!-- Tóm tắt giỏ hàng bên dưới -->
@@ -1082,16 +1095,16 @@
                         <div style="font-size:.75rem;font-weight:600;color:#4a5568;margin-bottom:8px;">
                             <i class="fas fa-shopping-cart text-primary me-1"></i>
                             Sản phẩm trong đơn
-                            <c:if test="${not empty sessionScope.saleCart}">
-                                (${sessionScope.saleCart.size()})
+                            <c:if test="${not empty activeCart}">
+                                (${activeCart.size()})
                             </c:if>
                         </div>
                         <c:choose>
-                            <c:when test="${empty sessionScope.saleCart}">
+                            <c:when test="${empty activeCart}">
                                 <div style="font-size:.75rem;color:#adb5bd;text-align:center;padding:10px 0;">Chưa có sản phẩm</div>
                             </c:when>
                             <c:otherwise>
-                                <c:forEach items="${sessionScope.saleCart}" var="ci">
+                                <c:forEach items="${activeCart}" var="ci">
                                     <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:.75rem;">
                                         <div style="flex:1;min-width:0;">
                                             <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ci.variantName}</div>
@@ -1106,14 +1119,35 @@
                         </c:choose>
                     </div>
 
-                    <!-- Footer checkout từ panel khách -->
+                    <!-- Giảm giá — nằm trong form để gửi lên InvoiceCreateServlet -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                        <label style="font-size:.78rem;font-weight:600;color:#4a5568;">Giảm giá (đ):</label>
+                        <input type="number" name="discountAmount" id="discountAmount"
+                               min="0" step="1000"
+                               value="${discountAmount}"
+                               placeholder="0"
+                               style="width:120px;font-size:.82rem;text-align:right;border:1px solid #dee2e6;border-radius:6px;padding:4px 8px;"
+                               onchange="saveDiscount(this.value)" />
+                    </div>
+
+                    <!-- Footer checkout từ panel khách — tổng tính từ CashierServlet -->
+                    <c:if test="${discountAmount > 0}">
+                    <div class="total-line" style="display:flex;justify-content:space-between;font-size:.82rem;color:#555;margin-bottom:4px;">
+                        <span>Tổng hàng:</span>
+                        <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
+                    </div>
+                    <div class="total-line" style="display:flex;justify-content:space-between;font-size:.82rem;color:#e53e3e;margin-bottom:4px;">
+                        <span>Giảm giá:</span>
+                        <span>- <fmt:formatNumber value="${discountAmount}" type="number" groupingUsed="true"/>đ</span>
+                    </div>
+                    </c:if>
                     <div class="total-line grand" style="display:flex;justify-content:space-between;font-size:1rem;font-weight:700;color:#0d6efd;margin-bottom:12px;">
                         <span>Khách cần trả:</span>
-                        <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
+                        <span><fmt:formatNumber value="${finalAmount}" type="number" groupingUsed="true"/>đ</span>
                     </div>
 
                     <c:choose>
-                        <c:when test="${not empty sessionScope.saleCart && sessionScope.saleCart.size() > 0}">
+                        <c:when test="${not empty activeCart && activeCart.size() > 0}">
                             <button type="submit" class="btn-checkout">
                                 <i class="fas fa-check-circle"></i>
                                 Xác nhận thanh toán
@@ -1156,8 +1190,8 @@
                     <div class="d-flex justify-content-between">
                         <span class="small">
                             <c:choose>
-                                <c:when test="${not empty sessionScope.saleCart}">
-                                    <strong>${sessionScope.saleCart.size()}</strong> sản phẩm
+                                <c:when test="${not empty activeCart}">
+                                    <strong>${activeCart.size()}</strong> sản phẩm
                                 </c:when>
                                 <c:otherwise>0 sản phẩm</c:otherwise>
                             </c:choose>
@@ -1207,8 +1241,115 @@
     </div>
 </div>
 
+<!-- ===== Modal xác nhận thêm khách hàng mới ===== -->
+<div class="modal fade" id="newCustomerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header py-3" style="background:#eff6ff;border-bottom:1px solid #bfdbfe;">
+                <h6 class="modal-title fw-bold mb-0" style="color:#1e40af;">
+                    <i class="fas fa-user-plus me-2"></i>Thêm khách hàng mới vào hệ thống?
+                </h6>
+            </div>
+            <div class="modal-body">
+                <!-- Thông tin khách sẽ được điền bởi JS trước khi hiện modal -->
+                <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Họ tên:</span>
+                        <strong id="confirmNewCustName"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Số điện thoại:</span>
+                        <strong id="confirmNewCustPhone"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Email:</span>
+                        <span id="confirmNewCustEmail" class="text-muted"></span>
+                    </div>
+                </div>
+                <p style="font-size:.8rem;color:#4a5568;margin:0;">
+                    Nếu chọn <strong>Có</strong>, khách hàng này sẽ được lưu vào cơ sở dữ liệu
+                    và có thể tra cứu lại trong lần mua tiếp theo.
+                </p>
+            </div>
+            <div class="modal-footer py-2 gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnSkipSave">
+                    <i class="fas fa-times me-1"></i>Không, thanh toán luôn
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnSaveAndCheckout">
+                    <i class="fas fa-user-plus me-1"></i>Có, lưu và thanh toán
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%@ include file="../common/footer.jsp" %>
+
 <script>
 <%-- Ghi chú: fn:contains đã được khai báo qua taglib functions ở đầu file --%>
+
+// Chuyển sang hóa đơn khác — lưu form hiện tại trước, rồi mới chuyển
+function switchInvoice(invoiceId) {
+    // Thu thập tất cả giá trị form khách hàng hiện tại
+    var form = collectCustomerForm();
+
+    // Lưu lên server bằng fetch (không reload), xong mới redirect
+    fetch('${pageContext.request.contextPath}/cart?action=saveCustomerForm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(Object.assign(form, {
+            invoiceId: document.getElementById('currentInvoiceId').value
+        }))
+    }).then(function() {
+        window.location.href = '${pageContext.request.contextPath}/cart?action=switchInvoice&invoiceId=' + invoiceId;
+    }).catch(function() {
+        // Nếu fetch lỗi vẫn chuyển tab, chỉ mất data form
+        window.location.href = '${pageContext.request.contextPath}/cart?action=switchInvoice&invoiceId=' + invoiceId;
+    });
+}
+
+// Thu thập toàn bộ giá trị form khách hàng thành object — map theo DB
+function collectCustomerForm() {
+    function val(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+    var pm = document.querySelector('input[name="paymentMethod"]:checked');
+    return {
+        customerId:     val('customerId'),
+        phone:          val('phoneInput'),
+        fullName:       val('fullName'),
+        email:          val('email'),
+        address:        val('address'),
+        paymentMethod:  pm ? pm.value : 'CASH',
+        discountAmount: val('discountAmount') || '0',
+        note:           val('orderNote')
+    };
+}
+
+// Tổng tiền được tính trong CashierServlet, không tính ở JSP
+
+// Lưu discount vào session (qua saveCustomerForm) rồi reload để servlet tính lại finalAmount
+function saveDiscount(value) {
+    var form = collectCustomerForm();
+    form.discountAmount = value || '0';
+    form.invoiceId = document.getElementById('currentInvoiceId').value;
+    fetch('${pageContext.request.contextPath}/cart?action=saveCustomerForm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(form)
+    }).then(function() {
+        window.location.reload();
+    });
+}
+
+// Xác nhận đóng hóa đơn — hỏi khác nhau tùy có hàng hay không
+function confirmCloseInvoice(event, invoiceId, label, hasItems) {
+    event.stopPropagation(); // Không kích hoạt switchInvoice khi bấm ✕
+    var msg = hasItems
+        ? label + ' đang có sản phẩm. Đóng sẽ xóa toàn bộ giỏ hàng. Xác nhận?'
+        : 'Đóng ' + label + '?';
+    if (confirm(msg)) {
+        window.location.href = '${pageContext.request.contextPath}/cart?action=cancel&invoiceId=' + invoiceId + '&reason=Dong+hoa+don';
+    }
+}
 
 // Chuyển đổi giữa tab "Giỏ hàng" và "Khách hàng"
 function switchTab(tab) {
@@ -1256,6 +1397,196 @@ if (flashMsg) {
         setTimeout(function() { flashMsg.remove(); }, 400);
     }, 3500);
 }
+
+// ── Tra cứu khách hàng theo SĐT ────────────────────────────────────────────
+(function() {
+    var phoneInput     = document.getElementById('phoneInput');
+    var statusBox      = document.getElementById('customerStatus');
+    var spinner        = document.getElementById('phoneSpinner');
+    var customerIdFld  = document.getElementById('customerId');
+    var fullNameFld    = document.getElementById('fullName');
+    var emailFld       = document.getElementById('email');
+    var addressFld = document.getElementById('address');
+    var checkoutForm   = document.querySelector('#panelCustomer form');
+
+    if (!phoneInput) return;
+
+    // Xóa trạng thái khi nhân viên bắt đầu nhập lại SĐT
+    phoneInput.addEventListener('input', function() {
+        statusBox.style.display = 'none';
+        customerIdFld.value = '';
+    });
+
+    // Bấm Enter trong ô SĐT → tra cứu ngay
+    phoneInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Không submit form
+            var phone = phoneInput.value.trim();
+            if (!phone) return;
+            if (!/^[0-9]{9,11}$/.test(phone)) {
+                showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Số điện thoại phải từ 9–11 chữ số.');
+                return;
+            }
+            doLookup(phone);
+        }
+    });
+
+    // Tra cứu khách hàng — gọi API /customer/lookup
+    function doLookup(phone) {
+        spinner.style.display = '';
+        statusBox.style.display = 'none';
+
+        fetch('${pageContext.request.contextPath}/customer/lookup?phone=' + encodeURIComponent(phone))
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(function(data) {
+                spinner.style.display = 'none';
+
+                if (data.found) {
+                    // Khách hàng cũ — điền sẵn thông tin vào form
+                    customerIdFld.value  = data.customerId;
+                    fullNameFld.value    = data.fullName  || '';
+                    emailFld.value       = data.email     || '';
+                    addressFld.value = data.address || '';
+
+                    showStatus('success',
+                        '<i class="fas fa-user-check me-1"></i>' +
+                        'Khách hàng cũ: <strong>' + escapeHtml(data.fullName || phone) + '</strong>' +
+                        ' — thông tin đã được điền tự động.');
+                } else {
+                    // Chưa có trong hệ thống — nhân viên nhập thêm, sẽ tạo mới khi thanh toán
+                    customerIdFld.value = '';
+                    fullNameFld.value   = '';
+                    emailFld.value      = '';
+                    addressFld.value    = '';
+
+                    showStatus('new',
+                        '<i class="fas fa-user-plus me-1"></i>' +
+                        'Số điện thoại <strong>' + escapeHtml(phone) + '</strong> chưa có trong hệ thống. ' +
+                        'Vui lòng nhập thêm thông tin bên dưới — sẽ tạo khách hàng mới khi xác nhận thanh toán.');
+
+                    // Tự động focus vào ô tên để nhân viên nhập tiếp
+                    setTimeout(function() { fullNameFld.focus(); }, 100);
+                }
+            })
+            .catch(function(err) {
+                spinner.style.display = 'none';
+                showStatus('error',
+                    '<i class="fas fa-exclamation-circle me-1"></i>' +
+                    'Không thể tra cứu. Hãy thử lại hoặc kiểm tra kết nối máy chủ.');
+                console.error('Customer lookup error:', err);
+            });
+    }
+
+    // Khi submit form thanh toán
+    if (checkoutForm) {
+        // Flag: true khi submit được gọi từ nút trong modal (bỏ qua kiểm tra lại)
+        var modalConfirmed = false;
+
+        checkoutForm.addEventListener('submit', function(e) {
+            console.log('[Checkout] submit event fired, modalConfirmed=' + modalConfirmed);
+            // Nếu submit từ modal → bỏ qua toàn bộ kiểm tra, submit thật
+            if (modalConfirmed) {
+                modalConfirmed = false;
+                console.log('[Checkout] modalConfirmed=true, allowing submit');
+                return; // Cho phép submit bình thường
+            }
+
+            var phone    = phoneInput.value.trim();
+            var custId   = customerIdFld.value.trim();
+            var fullName = fullNameFld.value.trim();
+
+            // Chưa nhập SĐT → chặn
+            if (!phone) {
+                e.preventDefault();
+                showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập số điện thoại khách hàng.');
+                phoneInput.focus();
+                return;
+            }
+
+            // Khách mới chưa nhập tên → chặn
+            if (!custId && !fullName) {
+                e.preventDefault();
+                showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Khách hàng mới — vui lòng nhập họ tên trước khi thanh toán.');
+                fullNameFld.focus();
+                fullNameFld.classList.add('is-invalid');
+                return;
+            }
+
+            // Khách mới đã có tên → hỏi có muốn lưu vào hệ thống không
+            if (!custId && fullName) {
+                e.preventDefault();
+                document.getElementById('confirmNewCustName').textContent  = fullName;
+                document.getElementById('confirmNewCustPhone').textContent = phone;
+                document.getElementById('confirmNewCustEmail').textContent = emailFld.value.trim() || '—';
+                var modal = new bootstrap.Modal(document.getElementById('newCustomerModal'));
+                modal.show();
+                return;
+            }
+            // Khách cũ (custId có giá trị) → submit bình thường
+        });
+
+        // Nút "Có, lưu và thanh toán" → đặt flag, set saveCustomer=true rồi submit thật
+        document.getElementById('btnSaveAndCheckout').addEventListener('click', function() {
+            document.getElementById('saveCustomer').value = 'true';
+            modalConfirmed = true;
+            console.log('[Checkout] btnSaveAndCheckout clicked');
+
+            // Ẩn modal ngay lập tức (không đợi animation)
+            var modalEl = document.getElementById('newCustomerModal');
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
+
+            // Submit form
+            checkoutForm.submit();
+        });
+
+        // Nút "Không, thanh toán luôn" → đặt flag, set saveCustomer=false rồi submit thật
+        document.getElementById('btnSkipSave').addEventListener('click', function() {
+            document.getElementById('saveCustomer').value = 'false';
+            modalConfirmed = true;
+            console.log('[Checkout] btnSkipSave clicked');
+
+            // Ẩn modal ngay lập tức (không đợi animation)
+            var modalEl = document.getElementById('newCustomerModal');
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
+
+            // Submit form
+            checkoutForm.submit();
+        });
+
+        // Xóa lỗi khi nhân viên bắt đầu nhập tên
+        fullNameFld.addEventListener('input', function() {
+            fullNameFld.classList.remove('is-invalid');
+        });
+    }
+
+    function showStatus(type, html) {
+        var colors = {
+            success: { bg: '#f0fdf4', border: '#10b981', color: '#065f46' },
+            new:     { bg: '#eff6ff', border: '#3b82f6', color: '#1e40af' },
+            error:   { bg: '#fff5f5', border: '#ef4444', color: '#7f1d1d' }
+        };
+        var c = colors[type] || colors.error;
+        statusBox.style.cssText =
+            'display:block;margin-top:6px;padding:7px 10px;border-radius:7px;font-size:.75rem;' +
+            'background:' + c.bg + ';border:1px solid ' + c.border + ';color:' + c.color + ';';
+        statusBox.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+})();
 </script>
 
-<%@ include file="../common/footer.jsp" %>

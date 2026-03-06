@@ -3,14 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductModelDAO.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/VariantDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/InvoicePrintServlet.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductCategoryDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/model/CashierSaleItem.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/model/InvoiceCustomerForm.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductSearchDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductDetailDAO.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/productDetail.jsp</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/model/InvoiceItem.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/model/InvoicePrintData.java</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierCartServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/InvoiceDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/ProductModelDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/dao/InvoicePrintDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/src/java/com/techshop/servlet/InvoiceCreateServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/invoice_print.jsp</file>
             <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management/TechShop/web/views/cashier/cashier.jsp</file>
         </group>
     </open-files>
