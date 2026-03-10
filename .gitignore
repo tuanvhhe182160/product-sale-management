@@ -91,6 +91,7 @@ $RECYCLE.BIN/
 **/application.properties
 **/config.properties
 **/oauth.properties
+**/mail.properties
 
 # Các file cấu hình môi trường
 .env

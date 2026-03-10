@@ -1,13 +1,18 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.BranchDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.Branch;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
+import com.techshop.model.User;
 import com.techshop.util.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +21,12 @@ import java.util.List;
 @WebServlet("/branch")
 public class BranchServlet extends HttpServlet {
     private BranchDAO branchDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() {
         branchDAO = new BranchDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -60,9 +67,9 @@ public class BranchServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         if ("insert".equals(action)) {
-            insertBranch(req, resp);
+            insertBranch(req, resp);          
         } else if ("update".equals(action)) {
-            updateBranch(req, resp);
+            updateBranch(req, resp);            
         } else {
             resp.sendRedirect("branch");
         }
@@ -121,6 +128,20 @@ public class BranchServlet extends HttpServlet {
         branch.setStatus(status);
 
         branchDAO.insert(branch);
+        
+        //Ghi log action
+        HttpSession session = req.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = (user != null) ? user.getUserId() : null;
+
+        logDAO.logAction(
+            userId, 
+            LogAction.CREATE_BRANCH, 
+            EntityType.BRANCH, 
+            null, 
+            req.getRemoteAddr(), 
+            "Thêm mới chi nhánh: " + name + " (Mã: " + code + ")"
+            );
 
         resp.sendRedirect("branch");
     }
@@ -159,6 +180,20 @@ public class BranchServlet extends HttpServlet {
             branch.setStatus(status);
 
             branchDAO.update(branch);
+            
+            // --- GHI LOG ---
+            HttpSession session = req.getSession(false);
+            User user = (session != null) ? (User) session.getAttribute("user") : null;
+            Integer userId = (user != null) ? user.getUserId() : null;
+
+            logDAO.logAction(
+                userId, 
+                LogAction.UPDATE_BRANCH, 
+                EntityType.BRANCH, 
+                id, 
+                req.getRemoteAddr(), 
+                "Cập nhật thông tin chi nhánh: " + name
+            );
         }
 
         resp.sendRedirect("branch");

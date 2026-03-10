@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package com.techshop.servlet;
 
 import com.techshop.dao.ProductCategoryDAO;
@@ -21,37 +20,41 @@ import java.util.Locale;
  *
  * @author Admin
  */
-@WebServlet(name = "ProductCategoryServlet",urlPatterns = "/category")
+@WebServlet(name = "ProductCategoryServlet", urlPatterns = "/ProductCategory")
 public class ProductCategoryServlet extends HttpServlet {
+
     ProductCategoryDAO dao = new ProductCategoryDAO();
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductCategoryServlet</title>");  
+            out.println("<title>Servlet ProductCategoryServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductCategoryServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ProductCategoryServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -59,16 +62,50 @@ public class ProductCategoryServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        List<ProductCategory> list = dao.getAllCategories();
-        request.setAttribute("categories", list);
-        System.out.println("dsadada"+list.size());
-       request.getRequestDispatcher("/views/Admin/adminListCategory.jsp")
-       .forward(request, response);
-    } 
+            throws ServletException, IOException {
 
-    /** 
+        String q = request.getParameter("q");
+        String status = request.getParameter("status");
+        String pageRaw = request.getParameter("page");
+
+        q = (q == null) ? "" : q.trim();
+        status = (status == null || status.trim().isEmpty()) ? "ALL" : status.trim().toUpperCase();
+
+        int page = 1;
+        try {
+            page = Integer.parseInt(pageRaw);
+            if (page < 1) {
+                page = 1;
+            }
+        } catch (Exception ignored) {
+        }
+
+        int pageSize = 10;
+
+        int totalItems = dao.countCategories(q, status);
+        int totalPages = (int) Math.ceil(totalItems * 1.0 / pageSize);
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+        if (page > totalPages) {
+            page = totalPages;
+        }
+
+        List<ProductCategory> list = dao.searchCategoriesPaged(q, status, page, pageSize);
+
+        request.setAttribute("categories", list);
+        request.setAttribute("page", page);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("totalItems", totalItems);
+        request.setAttribute("totalPages", totalPages);
+
+        request.getRequestDispatcher("/views/Admin/adminListCategory.jsp")
+                .forward(request, response);
+    }
+
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -76,12 +113,13 @@ public class ProductCategoryServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

@@ -176,6 +176,39 @@ public class UserDAOTest extends DBContext {
         return list;
     }
     
+    public List<User> getAllCashier() {
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
+                     "       u.role_id, u.branch_id, u.status, " +
+                     "       u.created_at, u.updated_at, " +
+                     "       r.role_name, " +
+                     "       b.branch_name " +
+                     "FROM [User] u " +
+                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
+                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
+                     "WHERE u.role_id = 3 " +
+                     "ORDER BY u.user_id";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                User user = extractUserFromResultSet(rs);
+                list.add(user);
+            }
+            
+            rs.close();
+            ps.close();
+            
+        } catch (SQLException e) {
+            System.err.println("UserDAO.getAllByRole() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
+    
     public boolean insert(User user) {
         String sql = "INSERT INTO [User] (email, full_name, phone, role_id, branch_id, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";

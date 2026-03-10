@@ -4,15 +4,26 @@ import com.techshop.dao.UserDAO;
 import com.techshop.dao.BranchDAO;
 import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.dao.ProductModelDAO;
+import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.FinancialReportItem;
+import com.techshop.dao.UserDAOTest;
+import com.techshop.dao.BranchDAOTest;
+import com.techshop.dao.ProductCategoryDAOTest;
+import com.techshop.dao.ProductModelDAOTest;
+import com.techshop.dao.ProductVariantDAOTest;
+import com.techshop.dao.SalesHistoryDAO;
 import com.techshop.model.User;
 import java.io.IOException;
+import java.math.BigDecimal;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.util.List;
 
 @WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard"})
 public class DashboardServlet extends HttpServlet {
@@ -110,12 +121,61 @@ public class DashboardServlet extends HttpServlet {
     }
     
     //cashier
-    private void loadCashierDashboard(HttpServletRequest request, User user) {       
+    private void loadCashierDashboard(HttpServletRequest request, User user) {
+        SalesHistoryDAO dao = new SalesHistoryDAO();
+        int cashierId = user.getUserId();
+
+        // Thống kê bán hàng: [todayCount, todayRevenue, monthRevenue]
+        BigDecimal[] stats = dao.getStats(cashierId);
+        request.setAttribute("todayCount", stats[0].intValue());
+        request.setAttribute("todayRevenue", stats[1]);
+        request.setAttribute("monthRevenue", stats[2]);
+
+        // Tổng hóa đơn đã hoàn thành
+        int totalCompleted = dao.countTotalCompleted(cashierId);
+        request.setAttribute("totalCompleted", totalCompleted);
+
+        // Số sản phẩm vật lý (PhysicalProduct) IN_STOCK tại chi nhánh
+        int branchId = user.getBranchId() != null ? user.getBranchId() : 0;
+        int inStockCount = branchId > 0 ? dao.countInStockByBranch(branchId) : 0;
+        request.setAttribute("inStockCount", inStockCount);
+
         request.setAttribute("dashboardType", "cashier");
     }
     
     //accounting
     private void loadAccountingDashboard(HttpServletRequest request, User user) {
+        try {
+            // Sử dụng ReportDAO để lấy dữ liệu 30 ngày gần nhất
+            ReportDAO reportDAO = new com.techshop.dao.ReportDAO();
+            LocalDate today = java.time.LocalDate.now();
+            LocalDate thirtyDaysAgo = today.minusDays(30);
+        
+            HttpSession session = request.getSession(false);
+            User currentUser = (User) session.getAttribute("user");
+            int branchId = currentUser.getBranchId();
+            List<FinancialReportItem> recentData = 
+                reportDAO.getFinancialReport(thirtyDaysAgo.toString(), today.toString(), branchId);
+            
+            double totalRevenue30Days = 0;
+            double totalProfit30Days = 0;
+            int totalInvoices30Days = 0;
+        
+            for (FinancialReportItem item : recentData) {
+                totalRevenue30Days += item.getTotalRevenue();
+                totalProfit30Days += item.getTotalProfit();
+                totalInvoices30Days += item.getTotalOrders();
+            }
+
+            // Đẩy dữ liệu lên JSP
+            request.setAttribute("totalRevenue30Days", totalRevenue30Days);
+            request.setAttribute("totalProfit30Days", totalProfit30Days);
+            request.setAttribute("totalInvoices30Days", totalInvoices30Days);
+        
+        } catch (Exception e) {
+            System.err.println("Error loading Accounting Dashboard: " + e.getMessage());
+        }    
+        
         request.setAttribute("dashboardType", "accounting");
     }
 

@@ -80,6 +80,24 @@
                                     </a></li>
                                 </ul>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="reportDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-box"></i> Reports
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch">
+                                        <i class="fas fa-tags"></i> By Branch
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=product">
+                                        <i class="fas fa-cubes"></i> By Product
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
+                                    <i class="fas fa-building"></i> Audit Logs
+                                </a>
+                            </li>
                         </c:if>
                         
                         <!-- Shop Manager Menu -->
@@ -109,6 +127,20 @@
                                 </a>
                             </li>
                         </c:if>
+                            
+                        <!-- Accounting Staff Menu -->
+                        <c:if test="${sessionScope.userRole == 'Accounting Staff'}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">
+                                    <i class="fas fa-cash-register"></i> Financial Report
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/accounting/invoices">
+                                    <i class="fas fa-user-friends"></i> Check Invoice
+                                </a>
+                            </li>
+                        </c:if>
                         
                         <!-- Customer Service Menu -->
                         <c:if test="${sessionScope.userRole == 'Customer Service'}">
@@ -135,28 +167,40 @@
                     </c:if>
                 </ul>
                 
-                <!-- User Profile Dropdown -->
+                <!-- User Profile -->
                 <ul class="navbar-nav">
                     <c:if test="${sessionScope.user != null}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i> ${sessionScope.userName}
+                                <img src="${pageContext.request.contextPath}/uploads/${user.avatarUrl}"
+                                    alt="Avatar"
+                                    class="rounded-circle me-2"
+                                    width="36"
+                                    height="36"> ${sessionScope.userName}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">
                                     <i class="fas fa-id-badge"></i> ${sessionScope.userEmail}
                                 </h6></li>
+                
+                                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">
+                                    <i class="fas fa-user-edit"></i> Hồ sơ cá nhân
+                                </a></li>
+                
+                                <li><hr class="dropdown-divider"></li>
+                
                                 <li><span class="dropdown-item-text">
                                     <i class="fas fa-user-tag"></i> Role: <strong>${sessionScope.userRole}</strong>
                                 </span></li>
                                 <c:if test="${sessionScope.branchName != null}">
                                     <li><span class="dropdown-item-text">
                                         <i class="fas fa-building"></i> Branch: <strong>${sessionScope.branchName}</strong>
-                                    </span></li>
+                                     </span></li>
                                 </c:if>
+                
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/logout">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
                                 </a></li>
                             </ul>
                         </li>

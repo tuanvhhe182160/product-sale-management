@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class ProductVariant {
+
     private int variantId;
     private int modelId;
     private String sku;
@@ -15,7 +16,7 @@ public class ProductVariant {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
+
     // Thông tin JOIN
     private String modelName;
     private String categoryName;
@@ -148,6 +149,16 @@ public class ProductVariant {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    private int stock;
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
     @Override

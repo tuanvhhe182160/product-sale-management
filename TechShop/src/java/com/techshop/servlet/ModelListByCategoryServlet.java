@@ -44,30 +44,77 @@ public class ModelListByCategoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // lấy categoryId 
-        String raw = request.getParameter("categoryId");
-        List<ProductModel> models;
-        
-        if(raw == null || raw.isEmpty()){
-            models = dao.getAll();
-            request.setAttribute("showCategory", true);
+        String rawCategoryId = request.getParameter("categoryId");
+        int categoryId;
+
+        try {
+            categoryId = Integer.parseInt(rawCategoryId);
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            return;
         }
-        else{
-            try{
-                int categoryId = Integer.parseInt(raw);
-                models = dao.getModelsByCategoryId(categoryId);
-                request.setAttribute("categoryId", categoryId);
-                request.setAttribute("showCategory", false);
+
+        String q = request.getParameter("q");
+        String status = request.getParameter("status");
+
+        if (q != null) {
+            q = q.trim();
+        }
+        if (status == null || status.trim().isEmpty()) {
+            status = "ALL";
+        }
+        status = status.trim().toUpperCase();
+
+        int page = 1;
+        int pageSize = 10; 
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+            if (page < 1) {
+                page = 1;
             }
-            catch (NumberFormatException e){
-                response.sendRedirect(request.getContextPath() + "/category");
-                return;
+        } catch (Exception ignore) {
+            page = 1;
+        }
+
+        int totalItems = dao.countModels(categoryId, q, status);
+            int totalPages = (int) Math.ceil(totalItems / (double) pageSize);
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+        if (page > totalPages) {
+            page = totalPages;
+        }
+
+        List<ProductModel> models = dao.searchModelsPaged(categoryId, q, status, page, pageSize);
+        int active = 0, inactive = 0;
+        java.util.Set<String> brands = new java.util.HashSet<>();
+        for (ProductModel m : models) {
+            if ("ACTIVE".equalsIgnoreCase(m.getStatus())) {
+                active++;
+            }
+            if ("INACTIVE".equalsIgnoreCase(m.getStatus())) {
+                inactive++;
+            }
+            if (m.getBrand() != null && !m.getBrand().trim().isEmpty()) {
+                brands.add(m.getBrand().trim());
             }
         }
 
         request.setAttribute("models", models);
+        request.setAttribute("categoryId", categoryId);
 
-        // chuyển sang trang list model
+        request.setAttribute("activeCount", active);
+        request.setAttribute("inactiveCount", inactive);
+        request.setAttribute("brandCount", brands.size());
+
+        request.setAttribute("q", q);
+        request.setAttribute("status", status);
+
+        request.setAttribute("page", page);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("totalItems", totalItems);
+        request.setAttribute("totalPages", totalPages);
+
         request.getRequestDispatcher("/views/Admin/adminListModel.jsp")
                 .forward(request, response);
     }

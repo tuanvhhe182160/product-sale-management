@@ -6,25 +6,25 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.ProductModelDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.ProductModel;
+import com.techshop.model.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-/**
- *
- * @author Admin
- */
+import jakarta.servlet.http.HttpSession;
 
 
 @WebServlet(name = "ProductModelEditServlet", urlPatterns = "/model/edit")
 public class ProductModelEditServlet extends HttpServlet {
 
     ProductModelDAO dao = new ProductModelDAO();
+    SystemLogDAO logDAO = new SystemLogDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -72,6 +72,21 @@ public class ProductModelEditServlet extends HttpServlet {
         m.setStatus(status);
 
         dao.updateModel(m);
+        // --- GHI LOG ---
+        
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = (user != null) ? user.getUserId() : null;
+
+        logDAO.logAction(
+            userId, 
+            LogAction.UPDATE_PRODUCT_MODEL, 
+            EntityType.PRODUCT_MODEL,       
+            modelId, 
+            request.getRemoteAddr(), 
+            "Cập nhật thông tin dòng sản phẩm: " + name + " (Mã: " + code + ")"
+        );
+        // -----------------------
 
         response.sendRedirect(request.getContextPath() + "/category?categoryId="
                 + request.getParameter("categoryId"));

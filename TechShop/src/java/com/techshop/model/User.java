@@ -12,6 +12,7 @@ public class User {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String avatarUrl;
     
     // Thông tin JOIN (không có trong DB)
     private String roleName;
@@ -20,7 +21,7 @@ public class User {
     public User() {
     }
 
-    public User(int userId, String email, String fullName, String phone, int roleId, Integer branchId, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(int userId, String email, String fullName, String phone, int roleId, Integer branchId, String status, LocalDateTime createdAt, LocalDateTime updatedAt, String roleName, String branchName, String avatarUrl) {
         this.userId = userId;
         this.email = email;
         this.fullName = fullName;
@@ -30,6 +31,9 @@ public class User {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.roleName = roleName;
+        this.branchName = branchName;
+        this.avatarUrl = avatarUrl;
     }
 
     public int getUserId() {
@@ -120,8 +124,18 @@ public class User {
         this.branchName = branchName;
     }
 
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "userId=" + userId + ", email=" + email + ", fullName=" + fullName + ", roleName=" + roleName + '}';
+        return "User{" + "userId=" + userId + ", email=" + email + ", fullName=" + fullName + ", phone=" + phone + ", roleId=" + roleId + ", branchId=" + branchId + ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", avatarUrl=" + avatarUrl + ", roleName=" + roleName + ", branchName=" + branchName + '}';
     }
+    
+    
 }
