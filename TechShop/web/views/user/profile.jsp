@@ -95,7 +95,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Mật khẩu hiện tại</label>
                                             <input type="password" name="currentPassword" class="form-control">
-                                            <div class="form-text">Để trống nếu chưa tạo mật khẩu</div>
+                                            <div class="form-text" style="color: #dc3545">Để trống nếu chưa tạo mật khẩu</div>
                                         </div> 
 
                                     <div class="mb-3">

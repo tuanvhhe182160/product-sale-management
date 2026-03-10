@@ -80,6 +80,24 @@
                                     </a></li>
                                 </ul>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="reportDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-box"></i> Reports
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch">
+                                        <i class="fas fa-tags"></i> By Branch
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=product">
+                                        <i class="fas fa-cubes"></i> By Product
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
+                                    <i class="fas fa-building"></i> Audit Logs
+                                </a>
+                            </li>
                         </c:if>
                         
                         <!-- Shop Manager Menu -->

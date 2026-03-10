@@ -126,14 +126,17 @@ public class DashboardServlet extends HttpServlet {
             LocalDate today = java.time.LocalDate.now();
             LocalDate thirtyDaysAgo = today.minusDays(30);
         
+            HttpSession session = request.getSession(false);
+            User currentUser = (User) session.getAttribute("user");
+            int branchId = currentUser.getBranchId();
             List<FinancialReportItem> recentData = 
-                reportDAO.getFinancialReport(thirtyDaysAgo.toString(), today.toString());
+                reportDAO.getFinancialReport(thirtyDaysAgo.toString(), today.toString(), branchId);
             
             double totalRevenue30Days = 0;
             double totalProfit30Days = 0;
             int totalInvoices30Days = 0;
         
-            for (com.techshop.model.FinancialReportItem item : recentData) {
+            for (FinancialReportItem item : recentData) {
                 totalRevenue30Days += item.getTotalRevenue();
                 totalProfit30Days += item.getTotalProfit();
                 totalInvoices30Days += item.getTotalOrders();

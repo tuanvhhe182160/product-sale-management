@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ReportDAO extends DBContext {
 
-    public List<FinancialReportItem> getFinancialReport(String startDate, String endDate) {
+    public List<FinancialReportItem> getFinancialReport(String startDate, String endDate, Integer currentBranchId) {
         List<FinancialReportItem> list = new ArrayList<>();
         
         // Nhóm theo ngày (CAST AS DATE), tính doanh thu từ subtotal, chi phí từ cost_price
@@ -21,7 +21,7 @@ public class ReportDAO extends DBContext {
                      "FROM Invoice i " +
                      "JOIN InvoiceItem ii ON i.invoice_id = ii.invoice_id " +
                      "JOIN ProductVariant pv ON ii.variant_id = pv.variant_id " +
-                     "WHERE i.status = 'COMPLETED' ";
+                     "WHERE i.status = 'COMPLETED' AND i.branch_id = ? ";
         
         // Thêm điều kiện lọc theo ngày nếu có
         boolean hasStart = (startDate != null && !startDate.isEmpty());
@@ -36,6 +36,7 @@ public class ReportDAO extends DBContext {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             int paramIndex = 1;
+            ps.setInt(paramIndex++, currentBranchId);
             
             if (hasStart) ps.setString(paramIndex++, startDate);
             if (hasEnd) ps.setString(paramIndex, endDate);

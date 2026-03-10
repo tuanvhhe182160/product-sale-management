@@ -23,6 +23,7 @@
     </div>
 </div>
 
+                    <!-- Admin Dashboard -->
 <c:if test="${dashboardType == 'admin'}">
     <div class="row g-3">
         <div class="col-md-6 col-lg-3">
@@ -101,7 +102,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Top 5 Sản phẩm bán chạy nhất</h5>
+                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Top 5 Sản phẩm bán chạy nhất trong 30 ngày qua</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="adminProductSalesChart" style="min-height: 300px; width: 100%;"></canvas>
@@ -317,7 +318,7 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <a href="#" class="text-decoration-none" onclick="alert('Tính năng chốt kỳ kế toán đang được phát triển!')">
+                            <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
                                     <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>

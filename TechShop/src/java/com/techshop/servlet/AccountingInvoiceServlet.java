@@ -1,7 +1,11 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.InvoiceDAOTest;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
 import com.techshop.model.Invoice;
+import com.techshop.model.LogAction;
+import com.techshop.model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -12,11 +16,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "AccountingInvoiceServlet", urlPatterns = {"/accounting/invoices"})
 public class AccountingInvoiceServlet extends HttpServlet {
 
     private InvoiceDAOTest invoiceDAO = new InvoiceDAOTest();
+    private SystemLogDAO systemLogDAO = new SystemLogDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,12 +40,25 @@ public class AccountingInvoiceServlet extends HttpServlet {
         }
 
         // 2. Lấy dữ liệu
-        List<Invoice> invoices = invoiceDAO.getInvoicesForAccounting(startDate, endDate);
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+        int branchId = user.getBranchId();
+        List<Invoice> invoices = invoiceDAO.getInvoicesForAccounting(startDate, endDate, branchId);
 
         // 3. Xử lý Export CSV
         String action = request.getParameter("action");
         if ("export".equals(action)) {
             exportInvoiceCSV(response, invoices, startDate, endDate);
+            //Ghi Log
+            String details = "Xuất danh sách hóa đơn kế toán từ " + startDate + " đến " + endDate + " (CN: " + branchId + ")";
+            systemLogDAO.logAction(
+                user.getUserId(), 
+                LogAction.EXPORT_INVOICE, 
+                EntityType.INVOICE, 
+                null, 
+                request.getRemoteAddr(), 
+                details
+            );
             return; // Ngừng thực thi để tải file
         }
 

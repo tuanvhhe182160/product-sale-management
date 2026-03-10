@@ -1,13 +1,18 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.ProductCategoryDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.ProductCategory;
+import com.techshop.model.User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -78,6 +83,21 @@ public class CategoryCreateServlet extends HttpServlet {
         c.setDescription(desc);
 
         dao.createCategory(c);
+        // --- GHI LOG TẠI ĐÂY ---
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = (user != null) ? user.getUserId() : null;
+
+        SystemLogDAO logDAO = new SystemLogDAO();
+        logDAO.logAction(
+            userId, 
+            LogAction.CREATE_CATEGORY,
+            EntityType.CATEGORY,  
+            null, 
+            request.getRemoteAddr(), 
+            "Thêm mới danh mục: " + name + " (Mã: " + code + ")"
+        );
+        // -----------------------
 
         response.sendRedirect(request.getContextPath() + "/ProductCategory");
     }

@@ -1,7 +1,11 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.ReportDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
 import com.techshop.model.FinancialReportItem;
+import com.techshop.model.LogAction;
+import com.techshop.model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -11,11 +15,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "FinancialReportServlet", urlPatterns = {"/report/financial"})
 public class FinancialReportServlet extends HttpServlet {
 
     private ReportDAO reportDAO = new ReportDAO();
+    private SystemLogDAO logDAO = new SystemLogDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -33,11 +39,25 @@ public class FinancialReportServlet extends HttpServlet {
         }
 
         // Lấy dữ liệu từ DAO
-        List<FinancialReportItem> reportData = reportDAO.getFinancialReport(startDate, endDate);
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+        int branchId = user.getBranchId();
+        List<FinancialReportItem> reportData = reportDAO.getFinancialReport(startDate, endDate, branchId);
 
         // 2. KIỂM TRA NẾU NGƯỜI DÙNG BẤM NÚT "EXPORT CSV"
         String action = request.getParameter("action");
         if ("export".equals(action)) {
+            // --- GHI LOG TẠI ĐÂY ---
+            String details = "Xuất báo cáo tài chính từ " + startDate + " đến " + endDate + " (Chi nhánh ID: " + branchId + ")";
+            logDAO.logAction(
+                user.getUserId(), 
+                LogAction.EXPORT_FINANCIAL_REPORT, 
+                EntityType.REPORT, 
+                null, 
+                request.getRemoteAddr(), 
+                details
+            );
+            // -----------------------
             exportToCSV(response, reportData, startDate, endDate);
             return; // Trả file xong thì dừng, không chuyển sang JSP nữa
         }
