@@ -21,10 +21,7 @@
                     Báo cáo doanh số
                 </h3>
 
-                <a href="${pageContext.request.contextPath}/admin/sales-report?action=export
-                   &startDate=${startDate}
-                   &endDate=${endDate}
-                   &reportType=${reportType}" 
+                <a href="${pageContext.request.contextPath}/admin/sales-report?${pageContext.request.queryString}&action=export" 
                    class="btn btn-success">
                     <i class="fas fa-file-export me-1"></i> Xuất CSV (Excel)
                 </a>

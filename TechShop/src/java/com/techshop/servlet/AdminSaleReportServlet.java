@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -91,7 +92,7 @@ public class AdminSaleReportServlet extends HttpServlet {
             // Ghi log
             systemLogDAO.logAction(
                 userId, 
-                LogAction.EXPORT_FINANCIAL_REPORT, // Hoặc bạn có thể thêm EXPORT_SALES_REPORT vào Enum
+                LogAction.EXPORT_FINANCIAL_REPORT,
                 EntityType.REPORT, 
                 null, 
                 request.getRemoteAddr(), 
@@ -144,7 +145,7 @@ public class AdminSaleReportServlet extends HttpServlet {
 
     private void exportToCSV(HttpServletResponse response, List<Map<String, Object>> data, String type) throws IOException {
         response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=SalesReport_" + type + ".csv");
+        response.setHeader("Content-Disposition", "attachment; filename=SalesReport_" + type + "_" + System.currentTimeMillis() + ".csv");
         response.setCharacterEncoding("UTF-8");
         
         // Viết BOM cho Excel nhận diện UTF-8

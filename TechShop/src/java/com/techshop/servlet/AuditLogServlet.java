@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class AuditLogServlet extends HttpServlet {
 
     private void exportToCSV(HttpServletResponse response, List<SystemLog> logs) throws IOException {
         response.setContentType("text/csv; charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=\"Audit_Logs_" + java.time.LocalDate.now() + ".csv\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"Audit_Logs_" + LocalDate.now() + ".csv\"");
         response.getOutputStream().write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF}); // BOM for Excel
 
         try (PrintWriter out = new PrintWriter(new java.io.OutputStreamWriter(response.getOutputStream(), "UTF-8"))) {
