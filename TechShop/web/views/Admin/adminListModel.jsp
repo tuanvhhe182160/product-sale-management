@@ -11,15 +11,37 @@
 <%@ include file="../common/header.jsp" %>
 
 <style>
-    .page-title { font-weight: 800; }
-    .sub-title { color: #6c757d; }
+    .page-title {
+        font-weight: 800;
+    }
+    .sub-title {
+        color: #6c757d;
+    }
 
-    .stat-card .label { color: #6c757d; font-size: .85rem; margin-bottom: 4px; }
-    .stat-card .value { font-size: 1.6rem; font-weight: 800; margin: 0; }
+    .stat-card .label {
+        color: #6c757d;
+        font-size: .85rem;
+        margin-bottom: 4px;
+    }
+    .stat-card .value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin: 0;
+    }
 
-    .search-box { position: relative; }
-    .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #6c757d; }
-    .search-box input { padding-left: 38px; }
+    .search-box {
+        position: relative;
+    }
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    .search-box input {
+        padding-left: 38px;
+    }
 
     table thead th {
         font-size: .8rem;
@@ -27,7 +49,9 @@
         color: #6c757d;
         border-bottom: 1px solid rgba(0,0,0,.06) !important;
     }
-    tbody tr:hover { background: rgba(13,110,253,.04); }
+    tbody tr:hover {
+        background: rgba(13,110,253,.04);
+    }
 </style>
 
 <!-- ===== Header ===== -->
@@ -86,7 +110,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Active</div>
-                    <p class="value" id="activeCount">0</p>
+                    <p class="value"><c:out value="${activeCount}" /></p>
                 </div>
                 <div class="bg-info bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-check-circle fa-2x text-info"></i>
@@ -100,7 +124,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Inactive</div>
-                    <p class="value" id="inactiveCount">0</p>
+                    <p class="value"><c:out value="${inactiveCount}" /></p>
                 </div>
                 <div class="bg-secondary bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-ban fa-2x text-secondary"></i>
@@ -114,7 +138,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Brands</div>
-                    <p class="value" id="brandCount">-</p>
+                    <p class="value"><c:out value="${brandCount}" /></p>
                 </div>
                 <div class="bg-info bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-tag fa-2x text-info"></i>
@@ -124,29 +148,56 @@
     </div>
 </div>
 
-<!-- ===== Table ===== -->
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3 d-flex justify-content-between flex-wrap gap-3">
         <h5 class="mb-0">
             <i class="fas fa-list text-primary me-2"></i> Model List
         </h5>
 
-        <div class="d-flex gap-2 flex-wrap align-items-center">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input id="searchInput" type="text" class="form-control"
-                       placeholder="Search by code / name / brand..." />
-            </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
 
-            <select id="statusFilter" class="form-select">
-                <option value="ALL">All Status</option>
-                <option value="ACTIVE">ACTIVE</option>
-                <option value="INACTIVE">INACTIVE</option>
-            </select>
+            <a class="btn btn-primary"
+               href="${pageContext.request.contextPath}/ProductModel/form?categoryId=${categoryId}">
+                <i class="fas fa-plus me-2"></i> New Model
+            </a>
+
+            <!-- Filter form -->
+            <form class="d-flex gap-2 flex-wrap align-items-center mb-0"
+                  method="get"
+                  action="${pageContext.request.contextPath}/ProductModel">
+
+                <input type="hidden" name="categoryId" value="${categoryId}" />
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input id="searchInput" type="text" class="form-control"
+                           name="q"
+                           value="${param.q}"
+                           placeholder="Search by code / name / brand..." />
+                </div>
+
+                <select id="statusFilter" class="form-select" name="status" style="min-width: 160px;">
+                    <option value="ALL" ${empty param.status || param.status == 'ALL' ? 'selected' : ''}>All Status</option>
+                    <option value="ACTIVE" ${param.status == 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+                    <option value="INACTIVE" ${param.status == 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
+                </select>
+
+                <button class="btn btn-outline-primary" type="submit">
+                    Apply
+                </button>
+
+                <a class="btn btn-outline-secondary"
+                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}">
+                    Reset
+                </a>
+            </form>
         </div>
     </div>
 
+
     <div class="card-body">
+
+
         <c:if test="${empty models}">
             <div class="text-center py-5">
                 <div class="bg-primary bg-opacity-10 d-inline-flex p-4 rounded-circle mb-3">
@@ -178,8 +229,7 @@
 
                     <tbody>
                         <c:forEach items="${models}" var="m" varStatus="st">
-                            <tr data-status="${m.status}"
-                                data-text="${m.modelCode} ${m.modelName} ${m.brand}">
+                            <tr>
                                 <td class="text-muted">${st.index + 1}</td>
 
                                 <td>
@@ -231,22 +281,70 @@
                                 </td>
 
                                 <td class="text-end">
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary btn-edit-model"
-                                            data-id="${m.modelId}">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="${pageContext.request.contextPath}/ProductModel/form?id=${m.modelId}&categoryId=${categoryId}">
                                         <i class="fas fa-pen me-1"></i> Edit
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
+                <c:set var="page" value="${page}" />
+                <c:set var="totalPages" value="${totalPages}" />
+
+                <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                    <div class="text-muted small">
+                        Page <strong>${page}</strong> / <strong>${totalPages}</strong>
+                        · Total <strong>${totalItems}</strong> item(s)
+                    </div>
+
+                    <nav aria-label="Model pagination">
+                        <ul class="pagination mb-0">
+
+                            <li class="page-item ${page <= 1 ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page-1}">
+                                    Prev
+                                </a>
+                            </li>
+
+                            <c:set var="start" value="${page - 2}" />
+                            <c:set var="end" value="${page + 2}" />
+
+                            <c:if test="${start < 1}">
+                                <c:set var="start" value="1" />
+                            </c:if>
+                            <c:if test="${end > totalPages}">
+                                <c:set var="end" value="${totalPages}" />
+                            </c:if>
+
+                            <c:forEach begin="${start}" end="${end}" var="p">
+                                <li class="page-item ${p == page ? 'active' : ''}">
+                                    <a class="page-link"
+                                       href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${p}">
+                                        ${p}
+                                    </a>
+                                </li>
+                            </c:forEach>
+
+                            <!-- Next -->
+                            <li class="page-item ${page >= totalPages ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page+1}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+
             </div>
         </c:if>
     </div>
 </div>
 
-<!-- ===== Edit Model Modal ===== -->
 <div class="modal fade" id="editModelModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow">

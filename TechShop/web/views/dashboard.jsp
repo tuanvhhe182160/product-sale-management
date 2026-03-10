@@ -217,16 +217,119 @@
 
 <!-- Cashier Dashboard -->
 <c:if test="${dashboardType == 'cashier'}">
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Hóa đơn hôm nay</p>
+                            <h3 class="mb-0 fw-bold">${todayCount}</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-receipt fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Doanh thu hôm nay</p>
+                            <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
+                                <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
+                            </h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-coins fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Doanh thu tháng này</p>
+                            <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
+                                <fmt:formatNumber value="${monthRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
+                            </h3>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-chart-line fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Tổng HĐ hoàn thành</p>
+                            <h3 class="mb-0 fw-bold">${totalCompleted}</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-check-circle fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Sản phẩm tồn kho (chi nhánh)</p>
+                            <h3 class="mb-0 fw-bold">${inStockCount}</h3>
+                            <small class="text-muted">PhysicalProduct IN_STOCK</small>
+                        </div>
+                        <div class="bg-secondary bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-boxes fa-2x text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-body text-center py-5">
-                    <i class="fas fa-shopping-cart fa-4x text-primary mb-3"></i>
-                    <h4>Ready to Make Sales!</h4>
-                    <p class="text-muted mb-4">Sales module will be available in Iteration 2</p>
-                    <button class="btn btn-primary btn-lg" disabled>
-                        <i class="fas fa-plus-circle"></i> New Sale (Coming Soon)
-                    </button>
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning"></i> Thao tác nhanh</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/cashier" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-cash-register fa-2x mb-2 d-block"></i>
+                                Bán hàng
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/invoice" class="btn btn-outline-info w-100 py-3">
+                                <i class="fas fa-history fa-2x mb-2 d-block"></i>
+                                Lịch sử bán hàng
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/customer" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
+                                Khách hàng
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
