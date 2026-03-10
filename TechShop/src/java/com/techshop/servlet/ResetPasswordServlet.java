@@ -1,11 +1,12 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.PasswordDAO;
-import com.techshop.dao.UserDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.User;
 import com.techshop.util.AuthenticationUtil;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ResetPasswordServlet extends HttpServlet {
    //private UserDAO userDAO = new UserDAO();
    private PasswordDAO passDAO = new PasswordDAO();
+   private SystemLogDAO logDAO = new SystemLogDAO();
    
    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -59,8 +61,22 @@ public class ResetPasswordServlet extends HttpServlet {
             return;
         }
         
+        //3. Lấy thông tin user từ token để ghi log
+        User targetUser = passDAO.verifyResetToken(token);
+        Integer userId = (targetUser != null) ? targetUser.getUserId() : null;
+        
         boolean success = passDAO.resetPassword(token, newPassword);
         if (success) {
+            // --- GHI LOG ---
+            logDAO.logAction(
+                userId, // Lấy được ID của người dùng sở hữu token
+                LogAction.RESET_PASSWORD, 
+                EntityType.USER, 
+                userId, 
+                request.getRemoteAddr(), 
+                "Đặt lại mật khẩu thành công thông qua link xác nhận email"
+            );
+            // -----------------------
             // Redirect về login với thông báo thành công
             response.sendRedirect(request.getContextPath() + "/login?message=Reset success! Please login again.");
             return;

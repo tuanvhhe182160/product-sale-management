@@ -65,7 +65,12 @@
                             <c:otherwise>
                                 <c:forEach items="${invoices}" var="inv">
                                     <tr>
-                                        <td class="fw-bold text-primary">${inv.invoiceCode}</td>
+                                        <td class="fw-bold">
+                                            <a href="${pageContext.request.contextPath}/accounting/invoice-detail?id=${inv.invoiceId}"
+                                                class="text-primary text-decoration-none">
+                                                ${inv.invoiceCode}
+                                            </a>
+                                        </td>
                                         <td>
                                             ${inv.invoiceDate.toString().replace('T', ' ').substring(0, 16)}
                                         </td>

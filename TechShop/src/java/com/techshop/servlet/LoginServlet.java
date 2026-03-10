@@ -6,7 +6,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.techshop.dao.PasswordDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.UserDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.User;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +28,11 @@ import java.util.logging.Logger;
 public class LoginServlet extends HttpServlet {
     
     private String clientId;
+    private SystemLogDAO logDAO;
     
     @Override
     public void init() throws ServletException {
+        logDAO = new SystemLogDAO();
         // Load Client ID from properties file
         try (InputStream input = getClass().getClassLoader()
                 .getResourceAsStream("com/techshop/conf/oauth.properties")) {
@@ -94,6 +99,16 @@ public class LoginServlet extends HttpServlet {
             } else {
                 // Failed
                 System.out.println("Found 0 user");
+                // --- GHI LOG ĐĂNG NHẬP THẤT BẠI ---
+                logDAO.logAction(
+                    null, 
+                    LogAction.FAILED_LOGIN, 
+                    EntityType.SYSTEM, 
+                    null, 
+                    request.getRemoteAddr(), 
+                    "Đăng nhập thất bại (Sai mật khẩu) cho email: " + email
+                );
+                // ----------------------------------
                 response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
             }
         } 
@@ -102,6 +117,12 @@ public class LoginServlet extends HttpServlet {
         else if ("google".equals(loginType)) {
             String credential = request.getParameter("credential"); //nhận credential từ client. Goolr login bắt đầu từ phía server
         
+            if (credential == null || credential.isBlank()) {
+                request.setAttribute("error", "Missing Google credential");
+                request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
+                return;
+            }
+            
             // Verify Google token
             String email = verifyGoogleToken(credential);
         
@@ -156,9 +177,20 @@ public class LoginServlet extends HttpServlet {
         
         UserDAO userDAO = new UserDAO();
         User user = userDAO.getByEmail(email.trim()); //kiểm tra quyền của user (data trong db)
+        String loginType = request.getParameter("loginType");
         
         //không có quyền = cook
         if (user == null) {
+            // --- GHI LOG CẢNH BÁO TRUY CẬP ---
+            logDAO.logAction(
+                null, 
+                LogAction.FAILED_LOGIN, 
+                EntityType.SYSTEM, 
+                null, 
+                request.getRemoteAddr(), 
+                "Từ chối truy cập: Email " + email + " đăng nhập qua " + loginType + " nhưng chưa được cấp quyền."
+            );
+            // ---------------------------------
             request.setAttribute("error", 
                 "Email not authorized. Only registered employees can access this system. " +
                 "Please contact your administrator.");
@@ -186,6 +218,16 @@ public class LoginServlet extends HttpServlet {
         session.setMaxInactiveInterval(30 * 60); // 30 minutes
         
         System.out.println("✅ User logged in: " + user.getEmail() + " (" + user.getRoleName() + ")");
+        // --- GHI LOG ĐĂNG NHẬP THÀNH CÔNG ---
+        logDAO.logAction(
+            user.getUserId(), 
+            LogAction.LOGIN, 
+            EntityType.SYSTEM, 
+            user.getUserId(), 
+            request.getRemoteAddr(), 
+            "Đăng nhập thành công qua " + ("google".equals(loginType) ? "Google" : "Mật khẩu")
+        );
+        // ------------------------------------
         
         // Redirect to dashboard or saved URL
         String redirectUrl = (String) session.getAttribute("redirectAfterLogin");

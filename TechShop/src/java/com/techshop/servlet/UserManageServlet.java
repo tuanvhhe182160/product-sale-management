@@ -2,10 +2,12 @@
 package com.techshop.servlet;
 import com.techshop.dao.BranchDAO;
 import com.techshop.dao.RoleDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.util.ValidationUtil;
 import com.techshop.dao.UserDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import com.techshop.model.User;
 
@@ -19,12 +21,14 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "UserManageServlet", urlPatterns = "/user")
 public class UserManageServlet extends HttpServlet {
 
+    private SystemLogDAO logDAO = new SystemLogDAO();
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         UserDAO userDAO = new UserDAO();
         BranchDAO branchDAO = new BranchDAO();
-        RoleDAO roleDAO = new RoleDAO();
+        RoleDAO roleDAO = new RoleDAO();       
 
         request.setAttribute("userList", userDAO.getAll());
         request.setAttribute("branchList", branchDAO.getAll());
@@ -95,6 +99,19 @@ public class UserManageServlet extends HttpServlet {
             UserDAO userDAO = new UserDAO();
             boolean success = userDAO.insert(newUser);
             if (success) {
+                // --- GHI LOG ---
+                User adminUser = (User) session.getAttribute("user");
+                Integer adminId = (adminUser != null) ? adminUser.getUserId() : null;
+                
+                logDAO.logAction(
+                    adminId, 
+                    LogAction.CREATE_USER, 
+                    EntityType.USER, 
+                    null, 
+                    request.getRemoteAddr(), 
+                    "Thêm mới tài khoản nhân sự: " + fullName + " (" + email + ")"
+                );
+                // -----------------------
                 session.setAttribute("message", "User added successfully!");
                 session.setAttribute("messageType", "success");
             } else {
@@ -167,6 +184,19 @@ public class UserManageServlet extends HttpServlet {
             
             // Set message
             if (success) {
+                // --- GHI LOG ---
+                User adminUser = (User) session.getAttribute("user");
+                Integer adminId = (adminUser != null) ? adminUser.getUserId() : null;
+                
+                logDAO.logAction(
+                    adminId, 
+                    LogAction.UPDATE_USER, 
+                    EntityType.USER, 
+                    userId, 
+                    request.getRemoteAddr(), 
+                    "Cập nhật thông tin tài khoản nhân sự: " + email
+                );
+                // -----------------------
                 session.setAttribute("message", "User updated successfully!");
                 session.setAttribute("messageType", "success");
             } else {
@@ -201,6 +231,19 @@ public class UserManageServlet extends HttpServlet {
                 
                 HttpSession session = request.getSession();
                 if (success) {
+                    // --- GHI LOG ---
+                    User adminUser = (User) session.getAttribute("user");
+                    Integer adminId = (adminUser != null) ? adminUser.getUserId() : null;
+                    
+                    logDAO.logAction(
+                        adminId, 
+                        LogAction.LOCK_USER, 
+                        EntityType.USER, 
+                        userId, 
+                        request.getRemoteAddr(), 
+                        "Vô hiệu hóa tài khoản nhân sự: " + user.getEmail()
+                    );
+                    // -----------------------
                     session.setAttribute("message", "User deactivated successfully!");
                     session.setAttribute("messageType", "success");
                 } else {

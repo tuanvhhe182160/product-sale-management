@@ -1,8 +1,12 @@
 package com.techshop.servlet;
 
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.ProductModel;
 import com.techshop.model.ProductVariant;
+import com.techshop.model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,15 +15,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "CreateVariantServlet", urlPatterns = {"/variant/create"})
 public class CreateVariantServlet extends HttpServlet {
 
     private VariantDAO variantDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         variantDAO = new VariantDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -87,6 +94,20 @@ public class CreateVariantServlet extends HttpServlet {
             int variantId = variantDAO.createVariant(variant);
 
             if (variantId > 0) {
+                // --- GHI LOG TẠI ĐÂY ---
+                HttpSession session = request.getSession(false);
+                User user = (session != null) ? (User) session.getAttribute("user") : null;
+                Integer userId = (user != null) ? user.getUserId() : null;
+
+                logDAO.logAction(
+                    userId, 
+                    LogAction.CREATE_PRODUCT_VARIANT, 
+                    EntityType.PRODUCT_VARIANT, 
+                    variantId, 
+                    request.getRemoteAddr(), 
+                    "Thêm mới phiên bản sản phẩm: " + variantName + " (SKU: " + sku + ")"
+                );
+                // -----------------------
                 response.sendRedirect(request.getContextPath() + "/variant?success=create");
             } else {
                 request.setAttribute("error", "Không thể tạo variant mới!");
