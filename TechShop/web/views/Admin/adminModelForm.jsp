@@ -32,7 +32,7 @@
             </div>
 
             <a class="btn btn-outline-secondary btn-sm"
-               href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}">
+               href="${pageContext.request.contextPath}/model?categoryId=${categoryId}">
                 Back
             </a>
         </div>
@@ -40,7 +40,7 @@
         <div class="card-body p-4">
 
             <!-- CHỈ 1 form dùng cho cả create + edit -->
-            <form method="post" action="${pageContext.request.contextPath}/ProductModel/form">
+            <form method="post" action="${pageContext.request.contextPath}/model/form">
 
                 <input type="hidden" name="modelId" value="${model.modelId}" />
                 <input type="hidden" name="categoryId" value="${categoryId}" />
@@ -83,7 +83,7 @@
 
                 <div class="d-flex justify-content-end gap-2">
                     <a class="btn btn-secondary"
-                       href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}">
+                       href="${pageContext.request.contextPath}/model?categoryId=${categoryId}">
                         Cancel
                     </a>
 

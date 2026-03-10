@@ -12,7 +12,7 @@
             <h2 class="text-primary">
                 <i class="fas fa-box"></i> Quản lý Product Variants
             </h2>
-            <a href="${pageContext.request.contextPath}/variant/create"
+            <a href="${pageContext.request.contextPath}/variant/form"
                class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tạo Variant mới
             </a>
@@ -35,53 +35,86 @@
 
         <!-- SEARCH + FILTER -->
         <div class="card mb-3 border-primary">
-            <div class="card-body">
-                <form method="GET"
-                      action="${pageContext.request.contextPath}/variant"
-                      class="row g-3">
+    <div class="card-body">
+        <form method="GET"
+              action="${pageContext.request.contextPath}/variant"
+              class="row g-3">
 
-                    <div class="col-md-5">
-                        <label class="form-label fw-semibold text-primary">
-                            Tìm kiếm
-                        </label>
-                        <input type="text"
-                               class="form-control"
-                               name="search"
-                               value="${searchValue}">
-                    </div>
-
-                    <div class="col-md-5">
-                        <label class="form-label fw-semibold text-primary">
-                            Lọc theo Model
-                        </label>
-                        <select class="form-select" name="modelId">
-                            <option value="">-- Tất cả Models --</option>
-                            <c:forEach var="m" items="${models}">
-                                <option value="${m.modelId}"
-                                        ${m.modelId == selectedModelId ? 'selected' : ''}>
-                                    ${m.categoryName} - ${m.brand} - ${m.modelName}
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-search"></i> Tìm
-                        </button>
-                    </div>
-
-                    <c:if test="${searchValue != null || selectedModelId != null}">
-                        <div class="col-12">
-                            <a href="${pageContext.request.contextPath}/variant"
-                               class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-times"></i> Xóa bộ lọc
-                            </a>
-                        </div>
-                    </c:if>
-                </form>
+            <!-- SEARCH -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold text-primary">
+                    Tìm kiếm
+                </label>
+                <input type="text"
+                       class="form-control"
+                       name="search"
+                       value="${searchValue}">
             </div>
-        </div>
+
+            <!-- CATEGORY -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold text-primary">
+                    Category
+                </label>
+
+                <select class="form-select"
+                        name="categoryId"
+                        id="categoryFilter">
+
+                    <option value="">-- Tất cả Category --</option>
+
+                    <c:forEach var="c" items="${categories}">
+                        <option value="${c.categoryId}"
+                                ${c.categoryId == selectedCategoryId ? 'selected' : ''}>
+                            ${c.categoryName}
+                        </option>
+                    </c:forEach>
+
+                </select>
+            </div>
+
+            <!-- MODEL -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold text-primary">
+                    Model
+                </label>
+
+                <select class="form-select"
+                        name="modelId"
+                        id="modelFilter">
+
+                    <option value="">-- Tất cả Models --</option>
+
+                    <c:forEach var="m" items="${models}">
+                        <option value="${m.modelId}"
+                                data-category="${m.categoryId}"
+                                ${m.modelId == selectedModelId ? 'selected' : ''}>
+                            ${m.brand} - ${m.modelName}
+                        </option>
+                    </c:forEach>
+
+                </select>
+            </div>
+
+            <!-- BUTTON -->
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Tìm
+                </button>
+            </div>
+
+            <c:if test="${searchValue != null || selectedModelId != null || selectedCategoryId != null}">
+                <div class="col-12">
+                    <a href="${pageContext.request.contextPath}/variant"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-times"></i> Xóa bộ lọc
+                    </a>
+                </div>
+            </c:if>
+
+        </form>
+    </div>
+</div>
 
         <!-- TABLE -->
         <div class="card border-primary">
@@ -148,7 +181,7 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-sm btn-outline-primary"
-                                           href="${pageContext.request.contextPath}/variant/edit?id=${v.variantId}">
+                                           href="${pageContext.request.contextPath}/variant/form?id=${v.variantId}">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a class="btn btn-sm btn-outline-danger"
@@ -226,5 +259,39 @@
     color: #fff;
 }
 </style>
+<script>
 
+document.addEventListener("DOMContentLoaded", function(){
+
+    const category = document.getElementById("categoryFilter");
+    const model = document.getElementById("modelFilter");
+
+    function filterModels(){
+
+        const selectedCategory = category.value;
+
+        Array.from(model.options).forEach(function(option){
+
+            const optionCategory = option.dataset.category;
+
+            if(!optionCategory){
+                return;
+            }
+
+            if(selectedCategory === "" || optionCategory === selectedCategory){
+                option.style.display = "block";
+            }else{
+                option.style.display = "none";
+            }
+
+        });
+    }
+
+    category.addEventListener("change", filterModels);
+
+    filterModels();
+
+});
+
+</script>
 <jsp:include page="../common/footer.jsp" />

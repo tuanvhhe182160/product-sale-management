@@ -43,6 +43,7 @@ public enum LogAction {
     CREATE_INVOICE,
     CANCEL_INVOICE,
     EXPORT_INVOICE,
+    PRINT_INVOICE,
     
     // Nhóm Báo cáo / Kế toán
     VIEW_FINANCIAL_REPORT,

@@ -212,6 +212,29 @@ public class ProductModelDAO extends DBContext {
         }
     }
     
+    public int countBrands(int categoryId) {
+        String sql = """
+            SELECT COUNT(DISTINCT brand)
+            FROM ProductModel
+            WHERE category_id = ?
+            AND brand IS NOT NULL
+            AND brand <> ''
+        """;
+
+        try 
+        {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            ps.setInt(1, categoryId);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
     /**
      * Helper method to extract ProductModel from ResultSet
      */

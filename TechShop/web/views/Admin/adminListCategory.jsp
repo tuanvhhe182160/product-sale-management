@@ -134,7 +134,7 @@
 
             <form class="d-flex gap-2 flex-wrap align-items-center"
                   method="get"
-                  action="${pageContext.request.contextPath}/ProductCategory">
+                  action="${pageContext.request.contextPath}/category">
 
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -156,7 +156,7 @@
                 <button class="btn btn-outline-primary" type="submit">Apply</button>
 
                 <a class="btn btn-outline-secondary"
-                   href="${pageContext.request.contextPath}/ProductCategory">
+                   href="${pageContext.request.contextPath}/category">
                     Reset
                 </a>
             </form>
@@ -204,7 +204,7 @@
                     <tbody>
                         <c:forEach items="${categories}" var="c" varStatus="st">
                             <tr class="category-row"
-                                data-url="${pageContext.request.contextPath}/ProductModel?categoryId=${c.categoryId}"
+                                data-url="${pageContext.request.contextPath}/model?categoryId=${c.categoryId}"
                                 data-status="${c.status}"
                                 data-text="${c.categoryCode} ${c.categoryName} ${c.description}"
                                 style="cursor:pointer;">
@@ -268,7 +268,7 @@
                             <!-- Prev -->
                             <li class="page-item ${page == 1 ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   href="${pageContext.request.contextPath}/ProductCategory?page=${page-1}&q=${param.q}&status=${param.status}">
+                                   href="${pageContext.request.contextPath}/category?page=${page-1}&q=${param.q}&status=${param.status}">
                                     Previous
                                 </a>
                             </li>
@@ -277,7 +277,7 @@
                             <c:forEach begin="1" end="${totalPages}" var="p">
                                 <li class="page-item ${p == page ? 'active' : ''}">
                                     <a class="page-link"
-                                       href="${pageContext.request.contextPath}/ProductCategory?page=${p}&q=${param.q}&status=${param.status}">
+                                       href="${pageContext.request.contextPath}/category?page=${p}&q=${param.q}&status=${param.status}">
                                         ${p}
                                     </a>
                                 </li>
@@ -286,7 +286,7 @@
                             <!-- Next -->
                             <li class="page-item ${page == totalPages ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   href="${pageContext.request.contextPath}/ProductCategory?page=${page+1}&q=${param.q}&status=${param.status}">
+                                   href="${pageContext.request.contextPath}/category?page=${page+1}&q=${param.q}&status=${param.status}">
                                     Next
                                 </a>
                             </li>

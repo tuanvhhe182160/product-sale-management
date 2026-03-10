@@ -70,12 +70,12 @@ public class CategoryFormServlet extends HttpServlet {
                 int id = Integer.parseInt(idRaw);
                 ProductCategory category = dao.getById(id);
                 if (category == null) {
-                    response.sendRedirect(request.getContextPath() + "/ProductCategory");
+                    response.sendRedirect(request.getContextPath() + "/category");
                     return;
                 }
                 request.setAttribute("category", category);
             } catch (Exception e) {
-                response.sendRedirect(request.getContextPath() + "/ProductCategory");
+                response.sendRedirect(request.getContextPath() + "/category");
                 return;
             }
         }

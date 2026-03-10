@@ -21,7 +21,7 @@
             </h5>
 
             <a class="btn btn-outline-secondary"
-               href="${pageContext.request.contextPath}/ProductCategory">
+               href="${pageContext.request.contextPath}/category">
                 Back
             </a>
         </div>
@@ -72,7 +72,7 @@
                 </c:choose>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <a href="${pageContext.request.contextPath}/ProductCategory"
+                    <a href="${pageContext.request.contextPath}/category"
                        class="btn btn-secondary">
                         Cancel
                     </a>

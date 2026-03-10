@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "ProductModelFormServlet", urlPatterns = {"/ProductModel/form"})
+@WebServlet(name = "ProductModelFormServlet", urlPatterns = {"/model/form"})
 public class ProductModelFormServlet extends HttpServlet {
 
     private final ProductModelDAO dao = new ProductModelDAO();
@@ -27,7 +27,7 @@ public class ProductModelFormServlet extends HttpServlet {
         try {
             categoryId = Integer.parseInt(request.getParameter("categoryId"));
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
@@ -39,13 +39,13 @@ public class ProductModelFormServlet extends HttpServlet {
             try {
                 id = Integer.parseInt(idRaw);
             } catch (Exception e) {
-                response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId=" + categoryId);
+                response.sendRedirect(request.getContextPath() + "/model?categoryId=" + categoryId);
                 return;
             }
 
             model = dao.getModelById(id);
-            if (model == null) {
-                response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId=" + categoryId);
+            if (model == null || model.getCategoryId() != categoryId) {
+                response.sendRedirect(request.getContextPath() + "/model?categoryId=" + categoryId);
                 return;
             }
 
@@ -80,7 +80,7 @@ public class ProductModelFormServlet extends HttpServlet {
         try {
             categoryId = Integer.parseInt(request.getParameter("categoryId"));
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
@@ -115,6 +115,6 @@ public class ProductModelFormServlet extends HttpServlet {
             dao.insertModel(m);
         }
 
-        response.sendRedirect(request.getContextPath() + "/ProductModel?categoryId=" + categoryId);
+        response.sendRedirect(request.getContextPath() + "/model?categoryId=" + categoryId);
     }
 }

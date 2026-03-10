@@ -50,7 +50,7 @@ public class ModelListByCategoryServlet extends HttpServlet {
         try {
             categoryId = Integer.parseInt(rawCategoryId);
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/ProductCategory");
+            response.sendRedirect(request.getContextPath() + "/category");
             return;
         }
 
@@ -86,27 +86,13 @@ public class ModelListByCategoryServlet extends HttpServlet {
         }
 
         List<ProductModel> models = dao.searchModelsPaged(categoryId, q, status, page, pageSize);
-        int active = 0, inactive = 0;
-        java.util.Set<String> brands = new java.util.HashSet<>();
-        for (ProductModel m : models) {
-            if ("ACTIVE".equalsIgnoreCase(m.getStatus())) {
-                active++;
-            }
-            if ("INACTIVE".equalsIgnoreCase(m.getStatus())) {
-                inactive++;
-            }
-            if (m.getBrand() != null && !m.getBrand().trim().isEmpty()) {
-                brands.add(m.getBrand().trim());
-            }
-        }
 
+        int activeCount = dao.countModels(categoryId, q, "ACTIVE");
+        int inactiveCount = dao.countModels(categoryId, q, "INACTIVE");
+        int brandCount = dao.countBrands(categoryId);
         request.setAttribute("models", models);
         request.setAttribute("categoryId", categoryId);
-
-        request.setAttribute("activeCount", active);
-        request.setAttribute("inactiveCount", inactive);
-        request.setAttribute("brandCount", brands.size());
-
+        
         request.setAttribute("q", q);
         request.setAttribute("status", status);
 

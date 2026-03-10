@@ -1,8 +1,11 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.InvoiceDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.CashierSaleItem;
+import com.techshop.model.EntityType;
 import com.techshop.model.InvoiceCustomerForm;
+import com.techshop.model.LogAction;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,6 +30,7 @@ public class InvoiceCreateServlet extends HttpServlet {
     private static final String ACTIVE_KEY       = "activeInvoiceId";
     private static final String CUSTOMER_MAP_KEY = "customerFormMap";
     private static final String COUNTER_KEY      = "invoiceCounter";
+    private final SystemLogDAO logDAO = new SystemLogDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -91,6 +95,17 @@ public class InvoiceCreateServlet extends HttpServlet {
             }
 
             System.out.println("[InvoiceCreate] SUCCESS invKey=" + invKey + " => invoiceId=" + invoiceId);
+            // --- GHI LOG ---
+            String customerName = (form.getFullName() != null && !form.getFullName().isEmpty()) ? form.getFullName() : "Khách lẻ";
+            logDAO.logAction(
+                cashierId, 
+                LogAction.CREATE_INVOICE, 
+                EntityType.INVOICE, 
+                invoiceId, 
+                request.getRemoteAddr(), 
+                "Thu ngân thanh toán thành công hóa đơn mua hàng (Khách: " + customerName + " - SĐT: " + form.getPhone() + ")"
+            );
+            // -----------------------
             createdInvoiceIds.add(invoiceId);
             processedKeys.add(invKey);
         }

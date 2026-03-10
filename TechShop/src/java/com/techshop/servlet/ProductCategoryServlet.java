@@ -14,13 +14,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Locale;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ProductCategoryServlet", urlPatterns = "/ProductCategory")
+@WebServlet(name = "ProductCategoryServlet", urlPatterns = "/category")
 public class ProductCategoryServlet extends HttpServlet {
 
     ProductCategoryDAO dao = new ProductCategoryDAO();
