@@ -90,10 +90,12 @@ public class CashierServlet extends HttpServlet {
         LinkedHashMap<String, List<CashierSaleItem>> invoiceMap = getInvoiceMap(session);
         List<CashierSaleItem> activeCart = invoiceMap.getOrDefault(activeInvoiceId, new ArrayList<>());
 
-        // Tính tổng tiền hóa đơn active
+        // Tính tổng tiền hóa đơn active (unitPrice × quantity)
         java.math.BigDecimal cartTotal = java.math.BigDecimal.ZERO;
+        int cartItemCount = 0;
         for (CashierSaleItem ci : activeCart) {
-            if (ci.getUnitPrice() != null) cartTotal = cartTotal.add(ci.getUnitPrice());
+            cartTotal = cartTotal.add(ci.getSubtotal());
+            cartItemCount += ci.getQuantity();
         }
 
         // Lấy discountAmount từ customerForm đang lưu trong session (nếu có)
@@ -102,10 +104,12 @@ public class CashierServlet extends HttpServlet {
                 ? tempForm.getDiscountAmount() : java.math.BigDecimal.ZERO;
         java.math.BigDecimal finalAmount = cartTotal.subtract(discountAmount).max(java.math.BigDecimal.ZERO);
 
-        // Gom physicalId của giỏ hàng active thành chuỗi để check "đã thêm" trong JSP
+        // Gom variantId từ TẤT CẢ hóa đơn để check "đã thêm" trong JSP
         StringBuilder cartIds = new StringBuilder(",");
-        for (CashierSaleItem ci : activeCart) {
-            cartIds.append(ci.getPhysicalId()).append(",");
+        for (List<CashierSaleItem> cartItems : invoiceMap.values()) {
+            for (CashierSaleItem ci : cartItems) {
+                cartIds.append(ci.getVariantId()).append(",");
+            }
         }
 
         // Tính range trang hiển thị trong pagination (tối đa 5 trang xung quanh trang hiện tại)
@@ -122,7 +126,9 @@ public class CashierServlet extends HttpServlet {
             tab.put("id",        entry.getKey());
             tab.put("label",     "Hoa don " + tabIdx);
             tab.put("labelVi",   "H\u00f3a \u0111\u01a1n " + tabIdx);
-            tab.put("itemCount", entry.getValue().size());
+            int totalQty = 0;
+            for (CashierSaleItem ci : entry.getValue()) totalQty += ci.getQuantity();
+            tab.put("itemCount", totalQty);
             tab.put("isActive",  entry.getKey().equals(activeInvoiceId));
             tab.put("hasItems",  !entry.getValue().isEmpty());
             invoiceTabs.add(tab);
@@ -146,6 +152,7 @@ public class CashierServlet extends HttpServlet {
         request.setAttribute("activeInvoiceId", activeInvoiceId);
         request.setAttribute("activeCart",      activeCart);
         request.setAttribute("cartTotal",       cartTotal);
+        request.setAttribute("cartItemCount",   cartItemCount);
         request.setAttribute("discountAmount",  discountAmount);
         request.setAttribute("finalAmount",     finalAmount);
         request.setAttribute("cartIds",         cartIds.toString());

@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package com.techshop.servlet;
 
+import com.techshop.dao.CashierCartDAO;
 import com.techshop.dao.ProductDetailDAO;
 import com.techshop.model.CashierSaleItem;
+import com.techshop.model.PhysicalProduct;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * @author Admin
+ * Trang chi tiết sản phẩm (Variant).
+ * Hiển thị: thông tin variant, model, category, attributes,
+ *           danh sách PhysicalProduct (IMEI) thuộc variant tại chi nhánh.
+ * URL: /product-detail?variantId=5
  */
 @WebServlet("/product-detail")
 public class ProductDetailServlet extends HttpServlet {
@@ -28,38 +27,41 @@ public class ProductDetailServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // Đọc physicalId
-        String param = request.getParameter("physicalId");
+        String param = request.getParameter("variantId");
         if (param == null || param.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/cashier");
             return;
         }
 
-        int physicalId;
+        int variantId;
         try {
-            physicalId = Integer.parseInt(param.trim());
+            variantId = Integer.parseInt(param.trim());
         } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/cashier");
+            return;
+        }
+
+        // Lấy branchId từ session
+        HttpSession session = request.getSession(false);
+        int branchId = 1;
+        if (session != null && session.getAttribute("branchId") != null) {
+            branchId = (int) session.getAttribute("branchId");
+        }
+
+        // 1. Thông tin variant (kèm model, category, brand) — dùng chung CashierCartDAO
+        CashierSaleItem variant = new CashierCartDAO().getVariantForCart(variantId, branchId);
+        if (variant == null) {
             response.sendRedirect(request.getContextPath() + "/cashier");
             return;
         }
 
         ProductDetailDAO dao = new ProductDetailDAO();
 
-        // 1. Thông tin chính
-        CashierSaleItem item = dao.getPhysicalDetail(physicalId);
-        if (item == null) {
-            response.sendRedirect(request.getContextPath() + "/cashier");
-            return;
-        }
+        // 2. Thông số kỹ thuật (VariantAttribute)
+        Map<String, String> attributes = dao.getVariantAttributes(variantId);
 
-        // 2. Thông số kỹ thuật
-        Map<String, String> attributes = dao.getVariantAttributes(item.getVariantId());
-
-        // 3. Lịch sử giao dịch kho
-        List<Map<String, String>> inventoryHistory = dao.getInventoryHistory(physicalId);
-
-        // 4. Lịch sử bảo hành
-        List<Map<String, String>> warrantyHistory = dao.getWarrantyHistory(physicalId);
+        // 3. Danh sách PhysicalProduct thuộc variant tại chi nhánh
+        List<PhysicalProduct> physicalProducts = dao.getPhysicalProductsByVariant(variantId, branchId);
 
         // Tham số quay lại
         String backKeyword    = request.getParameter("keyword")    != null ? request.getParameter("keyword")    : "";
@@ -68,10 +70,9 @@ public class ProductDetailServlet extends HttpServlet {
         String backSku        = request.getParameter("sku")        != null ? request.getParameter("sku")        : "";
         String backPage       = request.getParameter("page")       != null ? request.getParameter("page")       : "1";
 
-        request.setAttribute("item",             item);
+        request.setAttribute("variant",          variant);
         request.setAttribute("attributes",       attributes);
-        request.setAttribute("inventoryHistory", inventoryHistory);
-        request.setAttribute("warrantyHistory",  warrantyHistory);
+        request.setAttribute("physicalProducts", physicalProducts);
         request.setAttribute("backKeyword",      backKeyword);
         request.setAttribute("backCategoryId",   backCategoryId);
         request.setAttribute("backModelId",      backModelId);

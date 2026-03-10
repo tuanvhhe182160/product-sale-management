@@ -5,8 +5,10 @@ import com.techshop.dao.BranchDAOTest;
 import com.techshop.dao.ProductCategoryDAOTest;
 import com.techshop.dao.ProductModelDAOTest;
 import com.techshop.dao.ProductVariantDAOTest;
+import com.techshop.dao.SalesHistoryDAO;
 import com.techshop.model.User;
 import java.io.IOException;
+import java.math.BigDecimal;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -110,7 +112,25 @@ public class DashboardServlet extends HttpServlet {
     }
     
     //cashier
-    private void loadCashierDashboard(HttpServletRequest request, User user) {       
+    private void loadCashierDashboard(HttpServletRequest request, User user) {
+        SalesHistoryDAO dao = new SalesHistoryDAO();
+        int cashierId = user.getUserId();
+
+        // Thống kê bán hàng: [todayCount, todayRevenue, monthRevenue]
+        BigDecimal[] stats = dao.getStats(cashierId);
+        request.setAttribute("todayCount", stats[0].intValue());
+        request.setAttribute("todayRevenue", stats[1]);
+        request.setAttribute("monthRevenue", stats[2]);
+
+        // Tổng hóa đơn đã hoàn thành
+        int totalCompleted = dao.countTotalCompleted(cashierId);
+        request.setAttribute("totalCompleted", totalCompleted);
+
+        // Số sản phẩm vật lý (PhysicalProduct) IN_STOCK tại chi nhánh
+        int branchId = user.getBranchId() != null ? user.getBranchId() : 0;
+        int inStockCount = branchId > 0 ? dao.countInStockByBranch(branchId) : 0;
+        request.setAttribute("inStockCount", inStockCount);
+
         request.setAttribute("dashboardType", "cashier");
     }
     

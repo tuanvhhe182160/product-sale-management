@@ -653,7 +653,7 @@
             <div class="title-row">
                 <h5><i class="fas fa-barcode text-primary me-2"></i>Tìm sản phẩm</h5>
                 <span class="text-muted" style="font-size:.78rem;">
-                    <strong>${totalItems}</strong> IMEI khả dụng
+                    <strong>${totalItems}</strong> sản phẩm khả dụng
                 </span>
             </div>
 
@@ -726,7 +726,7 @@
                 <c:otherwise>
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-2 mb-3">
                         <c:forEach items="${list}" var="v">
-                            <c:set var="isInCart" value="${fn:contains(cartIds, ','.concat(v.physicalId).concat(','))}" />
+                            <c:set var="isInCart" value="${fn:contains(cartIds, ','.concat(v.variantId).concat(','))}" />
                             <div class="col">
                                 <div class="product-card ${isInCart ? 'in-cart' : ''}">
 
@@ -751,32 +751,28 @@
                                         <div class="product-name" title="${v.variantName}">${v.variantName}</div>
                                         <div class="product-model">${v.brand}<c:if test="${not empty v.brand && not empty v.modelName}"> · </c:if>${v.modelName}</div>
                                         <div><span class="badge-sku">${v.sku}</span></div>
-                                        <div class="mt-1"><span class="badge-imei-sm">${v.imei}</span></div>
+                                        <div class="mt-1">
+                                            <span style="font-size:.72rem;color:#10b981;font-weight:600;">
+                                                <i class="fas fa-boxes" style="font-size:.65rem;"></i> Tồn kho: ${v.stockCount}
+                                            </span>
+                                        </div>
                                         <div class="product-price">
                                             <fmt:formatNumber value="${v.unitPrice}" type="number" groupingUsed="true"/>đ
                                         </div>
                                     </div>
 
                                     <div class="product-footer">
-                                        <a href="${pageContext.request.contextPath}/product-detail?physicalId=${v.physicalId}&keyword=${keyword}&categoryId=${categoryId}&modelId=${modelId}&sku=${sku}&page=${currentPage}"
+                                        <a href="${pageContext.request.contextPath}/product-detail?variantId=${v.variantId}&keyword=${keyword}&categoryId=${categoryId}&modelId=${modelId}&sku=${sku}&page=${currentPage}"
                                            class="btn btn-outline-secondary btn-sm" title="Xem chi tiết"
                                            style="font-size:.75rem;padding:4px 8px;">
                                             <i class="fas fa-info-circle"></i>
                                         </a>
 
-                                        <c:choose>
-                                            <c:when test="${isInCart}">
-                                                <span class="btn-add-cart added">
-                                                    <i class="fas fa-check"></i> Đã thêm
-                                                </span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a href="${pageContext.request.contextPath}/cart?action=add&physicalId=${v.physicalId}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
-                                                   class="btn-add-cart">
-                                                    <i class="fas fa-plus"></i> Thêm
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <a href="javascript:void(0)"
+                                           onclick="addToCart('${v.variantId}', '${keyword}', '${categoryId}', '${modelId}', '${sku}', '${currentPage}')"
+                                           class="btn-add-cart ${isInCart ? '' : ''}">
+                                            <i class="fas fa-plus"></i> Thêm
+                                        </a>
                                     </div>
 
                                 </div>
@@ -789,7 +785,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                             <span class="text-muted" style="font-size:.75rem;">
                                 Trang <strong>${currentPage}</strong>/${totalPages}
-                                &nbsp;·&nbsp; <strong>${totalItems}</strong> IMEI
+                                &nbsp;·&nbsp; <strong>${totalItems}</strong> sản phẩm
                             </span>
                             <div class="pagination-compact">
                                 <c:if test="${currentPage > 1}">
@@ -928,18 +924,34 @@
                                 <div class="cart-item-info">
                                     <div class="cart-item-name" title="${item.variantName}">${item.variantName}</div>
                                     <div style="display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap;">
-                                        <span class="cart-item-imei">${item.imei}</span>
                                         <span style="font-size:.67rem;color:#6c757d;">${item.sku}</span>
+                                        <span style="font-size:.67rem;color:#0d6efd;">
+                                            <fmt:formatNumber value="${item.unitPrice}" type="number" groupingUsed="true"/>đ/sp
+                                        </span>
+                                    </div>
+                                    <!-- Quantity controls -->
+                                    <div style="display:flex;align-items:center;gap:4px;margin-top:5px;">
+                                        <a href="${pageContext.request.contextPath}/cart?action=updateQty&variantId=${item.variantId}&qty=${item.quantity - 1}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
+                                           style="width:24px;height:24px;border:1px solid #dee2e6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#495057;text-decoration:none;background:#fff;"
+                                           title="Giảm">
+                                            <i class="fas fa-minus" style="font-size:.55rem;"></i>
+                                        </a>
+                                        <span style="min-width:24px;text-align:center;font-size:.8rem;font-weight:700;">${item.quantity}</span>
+                                        <a href="${pageContext.request.contextPath}/cart?action=updateQty&variantId=${item.variantId}&qty=${item.quantity + 1}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
+                                           style="width:24px;height:24px;border:1px solid #dee2e6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#495057;text-decoration:none;background:#fff;"
+                                           title="Tăng">
+                                            <i class="fas fa-plus" style="font-size:.55rem;"></i>
+                                        </a>
                                     </div>
                                 </div>
 
                                 <div class="cart-item-price">
-                                    <fmt:formatNumber value="${item.unitPrice}" type="number" groupingUsed="true"/>đ
+                                    <fmt:formatNumber value="${item.subtotal}" type="number" groupingUsed="true"/>đ
                                 </div>
 
-                                <a href="${pageContext.request.contextPath}/cart?action=remove&physicalId=${item.physicalId}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
+                                <a href="${pageContext.request.contextPath}/cart?action=remove&variantId=${item.variantId}&redirect=${pageContext.request.contextPath}/cashier?keyword=${keyword}%26categoryId=${categoryId}%26modelId=${modelId}%26sku=${sku}%26page=${currentPage}"
                                    class="btn-remove-cart-item"
-                                   onclick="return confirm('Xóa IMEI ${item.imei} khỏi giỏ?')"
+                                   onclick="return confirm('Xóa ${item.variantName} khỏi giỏ?')"
                                    title="Xóa">
                                     <i class="fas fa-times"></i>
                                 </a>
@@ -953,12 +965,7 @@
             <div class="pos-footer">
                 <div class="total-line">
                     <span>Số lượng:</span>
-                    <span>
-                        <c:choose>
-                            <c:when test="${not empty activeCart}">${activeCart.size()} sản phẩm</c:when>
-                            <c:otherwise>0 sản phẩm</c:otherwise>
-                        </c:choose>
-                    </span>
+                    <span>${cartItemCount} sản phẩm</span>
                 </div>
                 <div class="total-line">
                     <span>Tổng tiền hàng:</span>
@@ -1290,21 +1297,36 @@
 
 // Chuyển sang hóa đơn khác — lưu form hiện tại trước, rồi mới chuyển
 function switchInvoice(invoiceId) {
-    // Thu thập tất cả giá trị form khách hàng hiện tại
-    var form = collectCustomerForm();
+    saveCurrentForm(function() {
+        window.location.href = '${pageContext.request.contextPath}/cart?action=switchInvoice&invoiceId=' + invoiceId;
+    });
+}
 
-    // Lưu lên server bằng fetch (không reload), xong mới redirect
+// Thêm sản phẩm vào giỏ — lưu form hiện tại trước, rồi mới thêm
+function addToCart(variantId, keyword, categoryId, modelId, sku, page) {
+    var url = '${pageContext.request.contextPath}/cart?action=add&variantId=' + variantId
+        + '&redirect=${pageContext.request.contextPath}/cashier?keyword=' + encodeURIComponent(keyword)
+        + '%26categoryId=' + encodeURIComponent(categoryId)
+        + '%26modelId=' + encodeURIComponent(modelId)
+        + '%26sku=' + encodeURIComponent(sku)
+        + '%26page=' + encodeURIComponent(page);
+    saveCurrentForm(function() {
+        window.location.href = url;
+    });
+}
+
+// Lưu form khách hàng hiện tại lên server, xong gọi callback
+function saveCurrentForm(callback) {
+    var form = collectCustomerForm();
+    form.invoiceId = document.getElementById('currentInvoiceId').value;
     fetch('${pageContext.request.contextPath}/cart?action=saveCustomerForm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(Object.assign(form, {
-            invoiceId: document.getElementById('currentInvoiceId').value
-        }))
+        body: new URLSearchParams(form)
     }).then(function() {
-        window.location.href = '${pageContext.request.contextPath}/cart?action=switchInvoice&invoiceId=' + invoiceId;
+        callback();
     }).catch(function() {
-        // Nếu fetch lỗi vẫn chuyển tab, chỉ mất data form
-        window.location.href = '${pageContext.request.contextPath}/cart?action=switchInvoice&invoiceId=' + invoiceId;
+        callback(); // Nếu lỗi vẫn tiếp tục
     });
 }
 
@@ -1326,7 +1348,7 @@ function collectCustomerForm() {
 
 // Tổng tiền được tính trong CashierServlet, không tính ở JSP
 
-// Lưu discount vào session (qua saveCustomerForm) rồi reload để servlet tính lại finalAmount
+// Lưu discount vào session rồi reload để servlet tính lại finalAmount
 function saveDiscount(value) {
     var form = collectCustomerForm();
     form.discountAmount = value || '0';

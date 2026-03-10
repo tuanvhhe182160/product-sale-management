@@ -6,12 +6,12 @@ import java.math.BigDecimal;
 public class CashierSaleItem {
 
     // ── PhysicalProduct ──
-    private int    physicalId;
+    private int    physicalId;   // Chỉ dùng khi checkout (pick từ DB)
     private int    variantId;
     private int    branchId;
     private String branchName;
-    private String imei;
-    private String serialNumber;
+    private String imei;         // Chỉ dùng khi checkout
+    private String serialNumber; // Chỉ dùng khi checkout
     private String status;
     private String importDateStr;
     private String saleDateStr;
@@ -26,10 +26,16 @@ public class CashierSaleItem {
     // ── ProductModel ──
     private String modelName;
     private String brand;
-    private String modelDesc;   // description từ ProductModel
+    private String modelDesc;
 
     // ── ProductCategory ──
     private String categoryName;
+
+    // ── Giỏ hàng: số lượng muốn mua ──
+    private int quantity = 1;
+
+    // ── Tồn kho: số PhysicalProduct IN_STOCK tại chi nhánh (dùng cho hiển thị) ──
+    private int stockCount;
 
     public CashierSaleItem() {}
 
@@ -88,4 +94,16 @@ public class CashierSaleItem {
 
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public int getStockCount() { return stockCount; }
+    public void setStockCount(int stockCount) { this.stockCount = stockCount; }
+
+    /** Tổng tiền = unitPrice × quantity */
+    public BigDecimal getSubtotal() {
+        if (unitPrice == null) return BigDecimal.ZERO;
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
 }

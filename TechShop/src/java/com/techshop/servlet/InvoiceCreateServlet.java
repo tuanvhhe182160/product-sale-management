@@ -15,14 +15,10 @@ import java.util.*;
  * Servlet xử lý xác nhận thanh toán từ màn hình Cashier.
  *
  * Luồng:
- *   1. Nhận form từ cashier.jsp (POST /invoice/create)
- *   2. Lấy giỏ hàng của hóa đơn active từ session
- *   3. Gọi InvoiceDAO.createInvoice() — toàn bộ trong 1 DB transaction
- *   4. Nếu thành công:
- *      - Xóa hóa đơn đó khỏi invoiceMap trong session
- *      - Xóa customerForm của hóa đơn đó
- *      - Redirect sang /invoice/print?id=xxx
- *   5. Nếu thất bại: set flash error, redirect về /cashier
+ *   1. Duyệt TẤT CẢ hóa đơn đang mở có sản phẩm
+ *   2. Mỗi hóa đơn → tạo 1 Invoice riêng trong DB (dùng customerForm riêng)
+ *   3. Nếu tất cả thành công → dọn session, redirect sang trang in
+ *   4. Nếu có lỗi → flash error, redirect về /cashier
  */
 @WebServlet("/invoice/create")
 public class InvoiceCreateServlet extends HttpServlet {
@@ -44,30 +40,9 @@ public class InvoiceCreateServlet extends HttpServlet {
             return;
         }
 
-        // ── Lấy invoiceId active và giỏ hàng tương ứng ──────────────────
-        String activeInvoiceId = (String) session.getAttribute(ACTIVE_KEY);
-        LinkedHashMap<String, List<CashierSaleItem>> invoiceMap = getInvoiceMap(session);
-        List<CashierSaleItem> items = invoiceMap.get(activeInvoiceId);
-
-        if (items == null || items.isEmpty()) {
-            session.setAttribute("cartError", "Giỏ hàng trống, không thể tạo hóa đơn.");
-            response.sendRedirect(request.getContextPath() + "/cashier");
-            return;
-        }
-
-        // ── Đọc thông tin từ form ────────────────────────────────────────
-        InvoiceCustomerForm form = buildFormFromRequest(request);
-
-        // Kiểm tra bắt buộc: phải có SĐT
-        if (form.getPhone() == null || form.getPhone().trim().isEmpty()) {
-            session.setAttribute("cartError", "Vui lòng nhập số điện thoại khách hàng.");
-            response.sendRedirect(request.getContextPath() + "/cashier");
-            return;
-        }
-
-        // ── Lấy thông tin session ────────────────────────────────────────
-        int branchId  = getIntAttr(session, "branchId",  1);
-        int cashierId = getIntAttr(session, "userId",    0);
+        // ── Lấy thông tin chung ──────────────────────────────────────────
+        int branchId  = getIntAttr(session, "branchId", 1);
+        int cashierId = getIntAttr(session, "userId",   0);
 
         if (cashierId <= 0) {
             session.setAttribute("cartError", "Phiên đăng nhập không hợp lệ.");
@@ -75,39 +50,64 @@ public class InvoiceCreateServlet extends HttpServlet {
             return;
         }
 
+        // ── Lưu form hóa đơn active hiện tại vào customerFormMap ─────────
+        String activeInvoiceId = (String) session.getAttribute(ACTIVE_KEY);
+        InvoiceCustomerForm activeForm = buildFormFromRequest(request);
         boolean saveCustomer = "true".equals(request.getParameter("saveCustomer"));
+        Map<String, InvoiceCustomerForm> customerFormMap = getCustomerFormMap(session);
+        customerFormMap.put(activeInvoiceId, activeForm);
 
-        System.out.println("[InvoiceCreate] phone=" + form.getPhone()
-            + " customerId=" + form.getCustomerId()
-            + " fullName=" + form.getFullName()
-            + " saveCustomer=" + saveCustomer
-            + " branchId=" + branchId
-            + " cashierId=" + cashierId
-            + " cartSize=" + items.size());
+        // ── Duyệt tất cả hóa đơn có sản phẩm ───────────────────────────
+        LinkedHashMap<String, List<CashierSaleItem>> invoiceMap = getInvoiceMap(session);
+        List<Integer> createdInvoiceIds = new ArrayList<>();
+        List<String> processedKeys = new ArrayList<>();
 
-        // ── Gọi DAO tạo hóa đơn (1 DB transaction) ──────────────────────
-        InvoiceDAO dao = new InvoiceDAO();
-        int invoiceId = dao.createInvoice(form, items, branchId, cashierId, saveCustomer);
+        for (Map.Entry<String, List<CashierSaleItem>> entry : invoiceMap.entrySet()) {
+            String invKey = entry.getKey();
+            List<CashierSaleItem> items = entry.getValue();
 
-        if (invoiceId <= 0) {
-            System.err.println("[InvoiceCreate] FAILED — invoiceId=" + invoiceId);
-            session.setAttribute("cartError",
-                "Tạo hóa đơn thất bại. Có thể sản phẩm vừa được bán bởi ca khác. Vui lòng kiểm tra lại giỏ hàng.");
+            if (items == null || items.isEmpty()) continue;
+
+            // Lấy customerForm riêng của hóa đơn này
+            InvoiceCustomerForm form = customerFormMap.get(invKey);
+            if (form == null || form.getPhone() == null || form.getPhone().trim().isEmpty()) {
+                // Hóa đơn có sản phẩm nhưng chưa nhập SĐT → báo lỗi
+                session.setAttribute("cartError",
+                    "Hóa đơn chưa có thông tin khách hàng. Vui lòng nhập SĐT cho tất cả hóa đơn trước khi thanh toán.");
+                response.sendRedirect(request.getContextPath() + "/cashier");
+                return;
+            }
+
+            // Tạo hóa đơn riêng cho tab này
+            InvoiceDAO dao = new InvoiceDAO();
+            int invoiceId = dao.createInvoice(form, items, branchId, cashierId, saveCustomer);
+
+            if (invoiceId <= 0) {
+                System.err.println("[InvoiceCreate] FAILED for invKey=" + invKey);
+                session.setAttribute("cartError",
+                    "Tạo hóa đơn thất bại. Có thể sản phẩm vừa được bán bởi ca khác. Vui lòng kiểm tra lại giỏ hàng.");
+                response.sendRedirect(request.getContextPath() + "/cashier");
+                return;
+            }
+
+            System.out.println("[InvoiceCreate] SUCCESS invKey=" + invKey + " => invoiceId=" + invoiceId);
+            createdInvoiceIds.add(invoiceId);
+            processedKeys.add(invKey);
+        }
+
+        if (createdInvoiceIds.isEmpty()) {
+            session.setAttribute("cartError", "Không có hóa đơn nào có sản phẩm để thanh toán.");
             response.sendRedirect(request.getContextPath() + "/cashier");
             return;
         }
 
-        System.out.println("[InvoiceCreate] SUCCESS — invoiceId=" + invoiceId);
+        // ── Dọn dẹp session ─────────────────────────────────────────────
+        for (String key : processedKeys) {
+            invoiceMap.remove(key);
+            customerFormMap.remove(key);
+        }
 
-        // ── Thành công: dọn dẹp session ─────────────────────────────────
-        // Xóa hóa đơn vừa thanh toán khỏi invoiceMap
-        invoiceMap.remove(activeInvoiceId);
-
-        // Xóa customerForm của hóa đơn vừa thanh toán
-        getCustomerFormMap(session).remove(activeInvoiceId);
-
-        // Nếu còn hóa đơn khác → chuyển active sang hóa đơn đầu tiên còn lại
-        // Nếu không còn hóa đơn nào → tạo hóa đơn mới rỗng
+        // Tạo hóa đơn mới rỗng nếu không còn tab nào
         if (invoiceMap.isEmpty()) {
             int counter = getIntAttr(session, COUNTER_KEY, 0) + 1;
             session.setAttribute(COUNTER_KEY, counter);
@@ -115,17 +115,20 @@ public class InvoiceCreateServlet extends HttpServlet {
             invoiceMap.put(newId, new ArrayList<>());
             session.setAttribute(ACTIVE_KEY, newId);
         } else {
-            String nextId = invoiceMap.keySet().iterator().next();
-            session.setAttribute(ACTIVE_KEY, nextId);
+            session.setAttribute(ACTIVE_KEY, invoiceMap.keySet().iterator().next());
         }
-
         session.setAttribute(MAP_KEY, invoiceMap);
 
-        // ── Redirect sang trang in hóa đơn ──────────────────────────────
-        response.sendRedirect(request.getContextPath() + "/invoice/print?id=" + invoiceId);
+        // ── Redirect sang trang in ──────────────────────────────────────
+        // Truyền tất cả invoiceId qua query string
+        StringBuilder qs = new StringBuilder();
+        for (int id : createdInvoiceIds) {
+            if (qs.length() > 0) qs.append("&");
+            qs.append("id=").append(id);
+        }
+        response.sendRedirect(request.getContextPath() + "/invoice/print?" + qs.toString());
     }
 
-    // cashier.jsp dùng method="get" → hỗ trợ cả GET (chuyển sang POST)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -140,19 +143,15 @@ public class InvoiceCreateServlet extends HttpServlet {
         form.setFullName(emptyToNull(request.getParameter("fullName")));
         form.setEmail(emptyToNull(request.getParameter("email")));
         form.setAddress(emptyToNull(request.getParameter("address")));
-
         String pm = request.getParameter("paymentMethod");
         form.setPaymentMethod(pm != null && !pm.isEmpty() ? pm : "CASH");
-
         form.setNote(emptyToNull(request.getParameter("note")));
-
         try {
             String disc = request.getParameter("discountAmount");
             if (disc != null && !disc.trim().isEmpty()) {
                 form.setDiscountAmount(new BigDecimal(disc.trim()));
             }
         } catch (NumberFormatException ignored) {}
-
         return form;
     }
 

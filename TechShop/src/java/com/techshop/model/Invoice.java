@@ -2,6 +2,7 @@ package com.techshop.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Invoice {
     private int invoiceId;
@@ -23,6 +24,7 @@ public class Invoice {
     private String customerPhone;
     private String branchName;
     private String cashierName;
+    private int itemCount;
 
     public Invoice() {
     }
@@ -181,6 +183,24 @@ public class Invoice {
 
     public void setCashierName(String cashierName) {
         this.cashierName = cashierName;
+    }
+
+    public int getItemCount() {
+        return itemCount;
+    }
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
+    }
+
+    public String getInvoiceDateFormatted() {
+        if (invoiceDate == null) return "";
+        return invoiceDate.format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy"));
+    }
+
+    public String getInvoiceDateShort() {
+        if (invoiceDate == null) return "";
+        return invoiceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     @Override
