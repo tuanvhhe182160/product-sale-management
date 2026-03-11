@@ -8,9 +8,14 @@
     <h2 class="text-primary mb-0">
         <i class="fas fa-mobile-alt"></i> Physical Product List
     </h2>
-    <span class="badge bg-primary fs-6">
-        <i class="fas fa-building"></i> ${sessionScope.branchName}
-    </span>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary fs-6">
+            <i class="fas fa-building"></i> ${sessionScope.branchName}
+        </span>
+        <a href="${pageContext.request.contextPath}/inventory/import" class="btn btn-success btn-sm">
+            <i class="fas fa-file-import"></i> Import Products
+        </a>
+    </div>
 </div>
 
 <c:if test="${not empty param.imported}">

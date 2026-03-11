@@ -308,11 +308,15 @@ public class PhysicalProductDAO extends DBContext {
 
     public List<BranchInventoryItem> getInventoryLevelsByBranch(int branchId) {
         List<BranchInventoryItem> list = new ArrayList<>();
-        String sql = "SELECT p.variant_id, v.sku, v.variant_name, COUNT(*) AS inventory_level "
-                + "FROM PhysicalProduct p "
-                + "INNER JOIN ProductVariant v ON p.variant_id = v.variant_id "
-                + "WHERE p.branch_id = ? "
-                + "GROUP BY p.variant_id, v.sku, v.variant_name "
+        String sql = "SELECT v.variant_id, v.sku, v.variant_name, c.category_name, "
+                + "v.base_price, v.cost_price, v.warranty_months, "
+                + "ISNULL(SUM(CASE WHEN p.status = 'IN_STOCK' THEN 1 ELSE 0 END), 0) AS inventory_level "
+                + "FROM ProductVariant v "
+                + "INNER JOIN ProductModel m ON v.model_id = m.model_id "
+                + "INNER JOIN ProductCategory c ON m.category_id = c.category_id "
+                + "LEFT JOIN PhysicalProduct p ON v.variant_id = p.variant_id AND p.branch_id = ? "
+                + "WHERE v.status = 'ACTIVE' "
+                + "GROUP BY v.variant_id, v.sku, v.variant_name, c.category_name, v.base_price, v.cost_price, v.warranty_months "
                 + "ORDER BY v.variant_name";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -324,6 +328,10 @@ public class PhysicalProductDAO extends DBContext {
                     item.setVariantId(rs.getInt("variant_id"));
                     item.setSku(rs.getString("sku"));
                     item.setVariantName(rs.getString("variant_name"));
+                    item.setCategoryName(rs.getString("category_name"));
+                    item.setBasePrice(rs.getBigDecimal("base_price"));
+                    item.setCostPrice(rs.getBigDecimal("cost_price"));
+                    item.setWarrantyMonths(rs.getInt("warranty_months"));
                     item.setInventoryLevel(rs.getInt("inventory_level"));
                     list.add(item);
                 }

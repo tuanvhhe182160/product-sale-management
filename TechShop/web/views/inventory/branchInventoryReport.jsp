@@ -1,14 +1,20 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <jsp:include page="../common/header.jsp" />
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-primary mb-0">
         <i class="fas fa-chart-bar"></i> Branch Inventory Report
     </h2>
-    <span class="badge bg-primary fs-6">
-        <i class="fas fa-building"></i> ${sessionScope.branchName}
-    </span>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary fs-6">
+            <i class="fas fa-building"></i> ${sessionScope.branchName}
+        </span>
+        <a href="${pageContext.request.contextPath}/inventory/import" class="btn btn-success btn-sm">
+            <i class="fas fa-file-import"></i> Import Products
+        </a>
+    </div>
 </div>
 
 <c:if test="${error != null}">
@@ -21,8 +27,8 @@
 <div class="card border-primary mb-3">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-            <span class="text-muted">Total physical products in branch</span>
-            <span class="fs-4 fw-bold text-primary">${totalInventoryLevel}</span>
+            <span class="text-muted">Total units in stock</span>
+            <span class="fs-4 fw-bold text-primary">${totalInventoryLevel} units</span>
         </div>
     </div>
 </div>
@@ -41,19 +47,36 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-primary">
                         <tr>
-                            <th>No</th>
-                            <th>SKU</th>
                             <th>Variant</th>
-                            <th class="text-end">Inventory Level</th>
+                            <th>SKU</th>
+                            <th>Category</th>
+                            <th class="text-end">Base Price</th>
+                            <th class="text-end">Cost Price</th>
+                            <th class="text-end">Warranty</th>
+                            <th class="text-end">Current Stock</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="item" items="${inventoryItems}" varStatus="loop">
-                            <tr>
-                                <td>${loop.count}</td>
-                                <td><strong>${item.sku}</strong></td>
+                        <c:forEach var="item" items="${inventoryItems}">
+                            <tr class="${item.inventoryLevel == 0 ? 'table-danger' : ''}">
                                 <td>${item.variantName}</td>
-                                <td class="text-end fw-semibold text-primary">${item.inventoryLevel}</td>
+                                <td><strong>${item.sku}</strong></td>
+                                <td>${item.categoryName}</td>
+                                <td class="text-end">
+                                    <fmt:formatNumber value="${item.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫
+                                </td>
+                                <td class="text-end">
+                                    <fmt:formatNumber value="${item.costPrice}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫
+                                </td>
+                                <td class="text-end">${item.warrantyMonths} months</td>
+                                <td class="text-end fw-semibold ${item.inventoryLevel == 0 ? 'text-danger' : 'text-primary'}">${item.inventoryLevel} units</td>
+                                <td class="text-end">
+                                    <a href="${pageContext.request.contextPath}/inventory/list?variantId=${item.variantId}&status=IN_STOCK"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-list"></i> View Units
+                                    </a>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
