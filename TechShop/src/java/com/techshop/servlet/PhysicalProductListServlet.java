@@ -41,12 +41,20 @@ public class PhysicalProductListServlet extends HttpServlet {
         } else {
             String imei = trimToNull(request.getParameter("imei"));
             String status = trimToNull(request.getParameter("status"));
-            String sku = trimToNull(request.getParameter("sku"));
             Integer variantId = parseIntOrNull(request.getParameter("variantId"));
             LocalDate importDate = parseDateOrNull(request.getParameter("importDate"));
+            final int PAGE_SIZE = 20;
+            int page = parseIntOrDefault(request.getParameter("page"), 1);
+            if (page < 1) page = 1;
+
+            int totalCount = physicalProductDAO.countByBranchWithFilters(branchId, imei, status, variantId, importDate);
+            int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
+            if (page > totalPages && totalPages > 0) page = totalPages;
+
+            int offset = (page - 1) * PAGE_SIZE;
 
             List<PhysicalProduct> physicalProducts = physicalProductDAO.getByBranchWithFilters(
-                    branchId, imei, status, variantId, sku, importDate
+                    branchId, imei, status, variantId, importDate, offset, PAGE_SIZE
             );
             List<String> statusOptions = physicalProductDAO.getDistinctStatusesByBranch(branchId);
             List<ProductVariant> variantOptions = physicalProductDAO.getVariantsByBranch(branchId);
@@ -56,9 +64,12 @@ public class PhysicalProductListServlet extends HttpServlet {
             request.setAttribute("variantOptions", variantOptions);
             request.setAttribute("imei", imei != null ? imei : "");
             request.setAttribute("status", status != null ? status : "");
-            request.setAttribute("sku", sku != null ? sku : "");
             request.setAttribute("selectedVariantId", variantId);
             request.setAttribute("importDate", importDate != null ? importDate.toString() : "");
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("totalCount", totalCount);
+            request.setAttribute("pageSize", PAGE_SIZE);
         }
 
         request.setAttribute("pageTitle", "Physical Product List");
@@ -68,6 +79,15 @@ public class PhysicalProductListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
+    }
+
+    private int parseIntOrDefault(String value, int defaultValue) {
+        if (value == null || value.trim().isEmpty()) return defaultValue;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private Integer parseIntOrNull(String value) {

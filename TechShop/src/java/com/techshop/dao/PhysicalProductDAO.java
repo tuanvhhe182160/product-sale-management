@@ -4,14 +4,21 @@ import com.techshop.dal.DBContext;
 import com.techshop.model.BranchInventoryItem;
 import com.techshop.model.PhysicalProduct;
 import com.techshop.model.ProductVariant;
-import java.sql.*;
+
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicalProductDAO extends DBContext {
 
-    private static final String BASE_SELECT_QUERY_STRING = "SELECT p.physical_id, p.variant_id, p.branch_id, p.imei, p.serial_number, "
-            + "p.status, p.import_date, p.sale_date, p.created_at, p.updated_at, "
+    private static final String BASE_SELECT_QUERY_STRING = "SELECT p.physical_id, p.variant_id, p.branch_id, "
+            + "p.imei, p.serial_number, p.status, p.import_date, p.sale_date, p.created_at, p.updated_at, "
             + "v.variant_name, v.sku, b.branch_name "
             + "FROM PhysicalProduct p "
             + "LEFT JOIN ProductVariant v ON p.variant_id = v.variant_id "
@@ -135,8 +142,9 @@ public class PhysicalProductDAO extends DBContext {
     }
 
     public List<PhysicalProduct> getByBranchWithFilters(int branchId, String imei, String status,
-                                                        Integer variantId, String sku,
-                                                        java.time.LocalDate importDate) {
+                                                        Integer variantId,
+                                                        java.time.LocalDate importDate,
+                                                        int offset, int pageSize) {
         List<PhysicalProduct> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(BASE_SELECT_QUERY_STRING + "WHERE p.branch_id = ? ");
         List<Object> parameters = new ArrayList<>();
@@ -157,17 +165,15 @@ public class PhysicalProductDAO extends DBContext {
             parameters.add(variantId);
         }
 
-        if (sku != null && !sku.trim().isEmpty()) {
-            sql.append("AND v.sku LIKE ? ");
-            parameters.add("%" + sku.trim() + "%");
-        }
-
         if (importDate != null) {
             sql.append("AND CAST(p.import_date AS DATE) = ? ");
             parameters.add(Date.valueOf(importDate));
         }
 
-        sql.append("ORDER BY p.created_at ASC");
+        sql.append("ORDER BY p.created_at DESC ");
+        sql.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        parameters.add(offset);
+        parameters.add(pageSize);
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             for (int i = 0; i < parameters.size(); i++) {
@@ -185,6 +191,51 @@ public class PhysicalProductDAO extends DBContext {
         }
 
         return list;
+    }
+
+    public int countByBranchWithFilters(int branchId, String imei, String status,
+                                        Integer variantId,
+                                        java.time.LocalDate importDate) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM PhysicalProduct p "
+                        + "LEFT JOIN ProductVariant v ON p.variant_id = v.variant_id "
+                        + "WHERE p.branch_id = ? ");
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(branchId);
+
+        if (imei != null && !imei.trim().isEmpty()) {
+            sql.append("AND p.imei LIKE ? ");
+            parameters.add("%" + imei.trim() + "%");
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append("AND p.status = ? ");
+            parameters.add(status.trim());
+        }
+
+        if (variantId != null && variantId > 0) {
+            sql.append("AND p.variant_id = ? ");
+            parameters.add(variantId);
+        }
+
+        if (importDate != null) {
+            sql.append("AND CAST(p.import_date AS DATE) = ? ");
+            parameters.add(Date.valueOf(importDate));
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < parameters.size(); i++) {
+                ps.setObject(i + 1, parameters.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("PhysicalProductDAO.countByBranchWithFilters() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     public List<String> getDistinctStatusesByBranch(int branchId) {
