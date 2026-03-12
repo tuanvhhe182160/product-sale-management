@@ -15,7 +15,7 @@ import java.util.List;
  * Hỗ trợ in nhiều hóa đơn: /invoice/print?id=1&id=2
  */
 @WebServlet("/invoice/print")
-public class InvoicePrintServlet extends HttpServlet {
+public class CashierInvoicePrintServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

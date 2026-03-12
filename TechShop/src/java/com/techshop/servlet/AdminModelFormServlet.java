@@ -14,8 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "ProductModelFormServlet", urlPatterns = {"/ProductModel/form"})
-public class ProductModelFormServlet extends HttpServlet {
+@WebServlet(name = "AdminModelFormServlet", urlPatterns = {"/ProductModel/form"})
+public class AdminModelFormServlet extends HttpServlet {
 
     private final ProductModelDAO dao = new ProductModelDAO();
 

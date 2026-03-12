@@ -225,4 +225,117 @@ public class SalesHistoryDAO extends DBContext {
         inv.setItemCount(rs.getInt("item_count"));
         return inv;
     }
+
+    // ── Báo cáo doanh thu cho Admin ─────────────────────────────────────
+
+    /**
+     * Doanh thu theo chi nhánh, filter ngày/tháng.
+     * Trả về list Object[]: [branchId, branchName, invoiceCount, totalRevenue]
+     */
+    public List<Object[]> getRevenueByBranch(String dateFrom, String dateTo) {
+        List<Object[]> list = new ArrayList<>();
+        StringBuilder onClause = new StringBuilder();
+        onClause.append("b.branch_id = i.branch_id AND i.status='COMPLETED' ");
+
+        List<Object> params = new ArrayList<>();
+        if (dateFrom != null && !dateFrom.trim().isEmpty()) {
+            onClause.append("AND CAST(i.invoice_date AS DATE) >= ? ");
+            params.add(dateFrom.trim());
+        }
+        if (dateTo != null && !dateTo.trim().isEmpty()) {
+            onClause.append("AND CAST(i.invoice_date AS DATE) <= ? ");
+            params.add(dateTo.trim());
+        }
+
+        String sql = "SELECT b.branch_id, b.branch_name, COUNT(i.invoice_id) AS cnt, "
+                   + "ISNULL(SUM(i.final_amount),0) AS revenue "
+                   + "FROM Branch b "
+                   + "LEFT JOIN Invoice i ON " + onClause
+                   + "WHERE b.status='ACTIVE' "
+                   + "GROUP BY b.branch_id, b.branch_name ORDER BY revenue DESC";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            setParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{
+                        rs.getInt("branch_id"), rs.getString("branch_name"),
+                        rs.getInt("cnt"), rs.getBigDecimal("revenue")
+                    });
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    /**
+     * Doanh thu theo ngày trong khoảng, filter chi nhánh.
+     * Trả về list Object[]: [date(String), invoiceCount, totalRevenue]
+     */
+    public List<Object[]> getDailyRevenue(int branchId, String dateFrom, String dateTo) {
+        List<Object[]> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT CAST(i.invoice_date AS DATE) AS d, COUNT(*) AS cnt, ");
+        sql.append("  SUM(i.final_amount) AS revenue ");
+        sql.append("FROM Invoice i WHERE i.status='COMPLETED' ");
+
+        List<Object> params = new ArrayList<>();
+        if (branchId > 0) {
+            sql.append("AND i.branch_id = ? ");
+            params.add(branchId);
+        }
+        if (dateFrom != null && !dateFrom.trim().isEmpty()) {
+            sql.append("AND CAST(i.invoice_date AS DATE) >= ? ");
+            params.add(dateFrom.trim());
+        }
+        if (dateTo != null && !dateTo.trim().isEmpty()) {
+            sql.append("AND CAST(i.invoice_date AS DATE) <= ? ");
+            params.add(dateTo.trim());
+        }
+        sql.append("GROUP BY CAST(i.invoice_date AS DATE) ORDER BY d DESC");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            setParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{
+                        rs.getString("d"), rs.getInt("cnt"), rs.getBigDecimal("revenue")
+                    });
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    /**
+     * Tổng doanh thu + số HĐ toàn hệ thống (hoặc theo chi nhánh), filter ngày.
+     * Trả về BigDecimal[3]: [totalInvoices, totalRevenue, avgPerInvoice]
+     */
+    public BigDecimal[] getOverallStats(int branchId, String dateFrom, String dateTo) {
+        BigDecimal[] s = { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) AS cnt, ISNULL(SUM(final_amount),0) AS rev ");
+        sql.append("FROM Invoice WHERE status='COMPLETED' ");
+
+        List<Object> params = new ArrayList<>();
+        if (branchId > 0) { sql.append("AND branch_id=? "); params.add(branchId); }
+        if (dateFrom != null && !dateFrom.trim().isEmpty()) {
+            sql.append("AND CAST(invoice_date AS DATE)>=? "); params.add(dateFrom.trim());
+        }
+        if (dateTo != null && !dateTo.trim().isEmpty()) {
+            sql.append("AND CAST(invoice_date AS DATE)<=? "); params.add(dateTo.trim());
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            setParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    s[0] = BigDecimal.valueOf(rs.getInt("cnt"));
+                    s[1] = rs.getBigDecimal("rev") != null ? rs.getBigDecimal("rev") : BigDecimal.ZERO;
+                    if (s[0].intValue() > 0) s[2] = s[1].divide(s[0], 0, java.math.RoundingMode.HALF_UP);
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return s;
+    }
 }

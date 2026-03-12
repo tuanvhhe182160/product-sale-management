@@ -21,7 +21,7 @@ import java.util.List;
  * URL: /invoice?action=export — xuất file CSV
  */
 @WebServlet("/invoice")
-public class SalesHistoryServlet extends HttpServlet {
+public class CashierSalesHistoryServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 15;
 

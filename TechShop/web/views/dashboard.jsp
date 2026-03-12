@@ -152,21 +152,21 @@
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/branch" class="btn btn-outline-success w-100 py-3">
-                                <i class="fas fa-building fa-2x mb-2 d-block"></i>
-                                Manage Branches
+                            <a href="${pageContext.request.contextPath}/cashier-mgmt" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-users-cog fa-2x mb-2 d-block"></i>
+                                Manage Cashiers
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/category" class="btn btn-outline-info w-100 py-3">
+                            <a href="${pageContext.request.contextPath}/ProductCategory" class="btn btn-outline-info w-100 py-3">
                                 <i class="fas fa-box fa-2x mb-2 d-block"></i>
                                 Manage Products
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/system-log" class="btn btn-outline-secondary w-100 py-3">
-                                <i class="fas fa-history fa-2x mb-2 d-block"></i>
-                                View System Logs
+                            <a href="${pageContext.request.contextPath}/report" class="btn btn-outline-warning w-100 py-3">
+                                <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
+                                Sales Reports
                             </a>
                         </div>
                     </div>
@@ -352,9 +352,9 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/customer" class="btn btn-outline-success w-100 py-3">
-                                <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
-                                Khách hàng
+                            <a href="${pageContext.request.contextPath}/product-detail" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-search fa-2x mb-2 d-block"></i>
+                                Tra cứu sản phẩm
                             </a>
                         </div>
                     </div>

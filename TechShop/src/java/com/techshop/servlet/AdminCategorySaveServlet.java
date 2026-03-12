@@ -12,8 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
-@WebServlet(name="CategorySaveServlet", urlPatterns={"/category/save"})
-public class CategorySaveServlet extends HttpServlet {
+@WebServlet(name="AdminCategorySaveServlet", urlPatterns={"/category/save"})
+public class AdminCategorySaveServlet extends HttpServlet {
 
     private final ProductCategoryDAO dao = new ProductCategoryDAO();
 

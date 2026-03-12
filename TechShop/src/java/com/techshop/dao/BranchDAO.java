@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BranchDAOTest extends DBContext {
+public class BranchDAO extends DBContext {
     
     /**
      * Get all branches
@@ -294,7 +294,7 @@ public class BranchDAOTest extends DBContext {
     
     //Test
     public static void main(String[] args) {
-        BranchDAOTest dao = new BranchDAOTest();
+        BranchDAO dao = new BranchDAO();
         
         System.out.println("╔════════════════════════════════════════════════════╗");
         System.out.println("║          BRANCH DAO - UNIT TEST                    ║");

@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "DeleteVariantServlet", urlPatterns = {"/variant/delete"})
-public class DeleteVariantServlet extends HttpServlet {
+@WebServlet(name = "AdminVariantDeleteServlet", urlPatterns = {"/variant/delete"})
+public class AdminVariantDeleteServlet extends HttpServlet {
 
     private VariantDAO variantDAO;
 

@@ -18,6 +18,35 @@ import java.util.List;
 
 public class ProductModelDAO extends DBContext {
 
+    /**
+     * Get all product models (all categories) — used by DashboardServlet
+     */
+    public List<ProductModel> getAll() {
+        List<ProductModel> list = new ArrayList<>();
+        String sql = "SELECT model_id, category_id, model_code, model_name, brand, "
+                   + "description, status, created_at, updated_at "
+                   + "FROM ProductModel ORDER BY model_id";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ProductModel m = new ProductModel();
+                m.setModelId(rs.getInt("model_id"));
+                m.setCategoryId(rs.getInt("category_id"));
+                m.setModelCode(rs.getString("model_code"));
+                m.setModelName(rs.getString("model_name"));
+                m.setBrand(rs.getString("brand"));
+                m.setDescription(rs.getString("description"));
+                m.setStatus(rs.getString("status"));
+                Timestamp c = rs.getTimestamp("created_at");
+                if (c != null) m.setCreatedAt(c.toLocalDateTime());
+                Timestamp u = rs.getTimestamp("updated_at");
+                if (u != null) m.setUpdatedAt(u.toLocalDateTime());
+                list.add(m);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+
     public List<ProductModel> getModelsByCategoryId(int categoryId) {
         List<ProductModel> list = new ArrayList<>();
 
@@ -71,7 +100,6 @@ public class ProductModelDAO extends DBContext {
 
         return list;
     }
-
     public List<ProductModel> getActiveModelsByCategoryId(int categoryId) {
         List<ProductModel> list = new ArrayList<>();
 

@@ -64,15 +64,20 @@
                                     <i class="fas fa-building"></i> Branches
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
+                                    <i class="fas fa-users-cog"></i> Cashiers
+                                </a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="productDropdown" role="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-box"></i> Products
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/category">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductCategory">
                                         <i class="fas fa-tags"></i> Categories
                                     </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/model">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductModel">
                                         <i class="fas fa-cubes"></i> Models
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/variant">
@@ -80,10 +85,20 @@
                                     </a></li>
                                 </ul>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report">
+                                    <i class="fas fa-chart-line"></i> Reports
+                                </a>
+                            </li>
                         </c:if>
                         
                         <!-- Shop Manager Menu -->
                         <c:if test="${sessionScope.userRole == 'Shop Manager'}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
+                                    <i class="fas fa-users-cog"></i> Cashiers
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/inventory">
                                     <i class="fas fa-warehouse"></i> Inventory
@@ -104,8 +119,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/customer">
-                                    <i class="fas fa-user-friends"></i> Customers
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier">
+                                    <i class="fas fa-shopping-cart"></i> POS
                                 </a>
                             </li>
                         </c:if>

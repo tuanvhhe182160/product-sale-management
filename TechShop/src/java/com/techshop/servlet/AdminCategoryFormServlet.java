@@ -6,6 +6,7 @@ package com.techshop.servlet;
 
 import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.model.ProductCategory;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,17 +14,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Locale;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ProductCategoryServlet", urlPatterns = "/ProductCategory")
-public class ProductCategoryServlet extends HttpServlet {
+@WebServlet(name = "AdminCategoryFormServlet", urlPatterns = {"/category/form"})
 
-    ProductCategoryDAO dao = new ProductCategoryDAO();
+public class AdminCategoryFormServlet extends HttpServlet {
+
+    private final ProductCategoryDAO dao = new ProductCategoryDAO();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,16 +42,15 @@ public class ProductCategoryServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductCategoryServlet</title>");
+            out.println("<title>Servlet CategoryFormServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductCategoryServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CategoryFormServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -63,43 +62,26 @@ public class ProductCategoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String idRaw = request.getParameter("categoryId");
 
-        String q = request.getParameter("q");
-        String status = request.getParameter("status");
-        String pageRaw = request.getParameter("page");
-
-        q = (q == null) ? "" : q.trim();
-        status = (status == null || status.trim().isEmpty()) ? "ALL" : status.trim().toUpperCase();
-
-        int page = 1;
-        try {
-            page = Integer.parseInt(pageRaw);
-            if (page < 1) {
-                page = 1;
+        //edit
+        if (idRaw != null && !idRaw.trim().isEmpty()) {
+            try {
+                int id = Integer.parseInt(idRaw);
+                ProductCategory category = dao.getById(id);
+                if (category == null) {
+                    response.sendRedirect(request.getContextPath() + "/ProductCategory");
+                    return;
+                }
+                request.setAttribute("category", category);
+            } catch (Exception e) {
+                response.sendRedirect(request.getContextPath() + "/ProductCategory");
+                return;
             }
-        } catch (Exception ignored) {
         }
 
-        int pageSize = 10;
-
-        int totalItems = dao.countCategories(q, status);
-        int totalPages = (int) Math.ceil(totalItems * 1.0 / pageSize);
-        if (totalPages == 0) {
-            totalPages = 1;
-        }
-        if (page > totalPages) {
-            page = totalPages;
-        }
-
-        List<ProductCategory> list = dao.searchCategoriesPaged(q, status, page, pageSize);
-
-        request.setAttribute("categories", list);
-        request.setAttribute("page", page);
-        request.setAttribute("pageSize", pageSize);
-        request.setAttribute("totalItems", totalItems);
-        request.setAttribute("totalPages", totalPages);
-
-        request.getRequestDispatcher("/views/Admin/adminListCategory.jsp")
+        // forward chung 1 form
+        request.getRequestDispatcher("/views/Admin/categoryForm.jsp")
                 .forward(request, response);
     }
 
@@ -125,6 +107,6 @@ public class ProductCategoryServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

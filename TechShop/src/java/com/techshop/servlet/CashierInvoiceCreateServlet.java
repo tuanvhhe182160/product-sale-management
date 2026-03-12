@@ -21,7 +21,7 @@ import java.util.*;
  *   4. Nếu có lỗi → flash error, redirect về /cashier
  */
 @WebServlet("/invoice/create")
-public class InvoiceCreateServlet extends HttpServlet {
+public class CashierInvoiceCreateServlet extends HttpServlet {
 
     private static final String MAP_KEY          = "invoiceMap";
     private static final String ACTIVE_KEY       = "activeInvoiceId";

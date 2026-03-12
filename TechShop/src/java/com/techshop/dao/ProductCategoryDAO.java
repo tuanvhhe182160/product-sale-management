@@ -10,6 +10,13 @@ import java.util.List;
 
 public class ProductCategoryDAO extends DBContext {
 
+    /**
+     * Alias for getAllCategories() — used by DashboardServlet
+     */
+    public List<ProductCategory> getAll() {
+        return getAllCategories();
+    }
+
     public List<ProductCategory> getAllCategories() {
         List<ProductCategory> list = new ArrayList<>();
 
@@ -55,7 +62,6 @@ public class ProductCategoryDAO extends DBContext {
 
         return list;
     }
-
     // Lấy category đang ACTIVE
     public List<ProductCategory> getActiveCategories() {
         List<ProductCategory> list = new ArrayList<>();

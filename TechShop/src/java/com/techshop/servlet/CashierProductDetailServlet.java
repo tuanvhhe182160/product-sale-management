@@ -19,7 +19,7 @@ import java.util.Map;
  * URL: /product-detail?variantId=5
  */
 @WebServlet("/product-detail")
-public class ProductDetailServlet extends HttpServlet {
+public class CashierProductDetailServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

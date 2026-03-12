@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAOTest extends DBContext {
+public class UserDAO extends DBContext {
     
     public List<User> getAll() {
         List<User> list = new ArrayList<>();
@@ -353,7 +353,7 @@ public class UserDAOTest extends DBContext {
     
     //Test
     public static void main(String[] args) {
-        UserDAOTest dao = new UserDAOTest();
+        UserDAO dao = new UserDAO();
         
         System.out.println("╔════════════════════════════════════════════════════╗");
         System.out.println("║           USER DAO - UNIT TEST                     ║");

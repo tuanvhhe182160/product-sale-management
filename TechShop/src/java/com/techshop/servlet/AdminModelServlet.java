@@ -19,8 +19,8 @@ import java.util.List;
  *
  * @author Admin
  */
-@WebServlet(name = "ModelListByCategoryServlet", urlPatterns = "/ProductModel")
-public class ModelListByCategoryServlet extends HttpServlet {
+@WebServlet(name = "AdminModelServlet", urlPatterns = "/ProductModel")
+public class AdminModelServlet extends HttpServlet {
 
     ProductModelDAO dao = new ProductModelDAO();
 

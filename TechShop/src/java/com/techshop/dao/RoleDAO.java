@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoleDAOTest extends DBContext {
+public class RoleDAO extends DBContext {
     
     public List<Role> getAll() {
         List<Role> list = new ArrayList<>();
@@ -209,7 +209,7 @@ public class RoleDAOTest extends DBContext {
     
     //Test
     public static void main(String[] args) {
-        RoleDAOTest dao = new RoleDAOTest();
+        RoleDAO dao = new RoleDAO();
         
         System.out.println("╔════════════════════════════════════════════════════╗");
         System.out.println("║           ROLE DAO - UNIT TEST                     ║");

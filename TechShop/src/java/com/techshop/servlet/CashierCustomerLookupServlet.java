@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Admin
  */
 @WebServlet("/customer/lookup")
-public class CustomerLookupServlet extends HttpServlet {
+public class CashierCustomerLookupServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

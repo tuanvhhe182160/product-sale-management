@@ -12,8 +12,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "CreateVariantServlet", urlPatterns = {"/variant/create"})
-public class CreateVariantServlet extends HttpServlet {
+@WebServlet(name = "AdminVariantCreateServlet", urlPatterns = {"/variant/create"})
+public class AdminVariantCreateServlet extends HttpServlet {
 
     private VariantDAO variantDAO;
 
