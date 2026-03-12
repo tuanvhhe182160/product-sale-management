@@ -1,4 +1,3 @@
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="pageTitle" value="Dashboard - TechShop" />
@@ -102,7 +101,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Top 5 Sản phẩm bán chạy nhất trong 30 ngày qua</h5>
+                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Top 5 S?n ph?m b�n ch?y nh?t trong 30 ng�y qua</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="adminProductSalesChart" style="min-height: 300px; width: 100%;"></canvas>
@@ -113,18 +112,18 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Thao tác nhanh</h5>
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Thao t�c nhanh</h5>
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush mb-3">
                         <a href="${pageContext.request.contextPath}/user" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-users text-primary me-2"></i> Quản lý nhân viên
+                            <i class="fas fa-users text-primary me-2"></i> Qu?n l� nh�n vi�n
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=product" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số Sản phẩm
+                            <i class="fas fa-chart-pie text-info me-2"></i> B�o c�o doanh s? S?n ph?m
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
+                            <i class="fas fa-map-marked-alt text-success me-2"></i> B�o c�o doanh s? Chi nh�nh
                         </a>
                     </div>
                     <hr>
@@ -223,7 +222,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small">Hóa đơn hôm nay</p>
+                            <p class="text-muted mb-1 small">H�a ??n h�m nay</p>
                             <h3 class="mb-0 fw-bold">${todayCount}</h3>
                         </div>
                         <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
@@ -238,9 +237,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small">Doanh thu hôm nay</p>
+                            <p class="text-muted mb-1 small">Doanh thu h�m nay</p>
                             <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
-                                <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
+                                <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />?
                             </h3>
                         </div>
                         <div class="bg-success bg-opacity-10 p-3 rounded-circle">
@@ -255,9 +254,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small">Doanh thu tháng này</p>
+                            <p class="text-muted mb-1 small">Doanh thu th�ng n�y</p>
                             <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
-                                <fmt:formatNumber value="${monthRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
+                                <fmt:formatNumber value="${monthRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />?
                             </h3>
                         </div>
                         <div class="bg-info bg-opacity-10 p-3 rounded-circle">
@@ -272,7 +271,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small">Tổng HĐ hoàn thành</p>
+                            <p class="text-muted mb-1 small">T?ng H? ho�n th�nh</p>
                             <h3 class="mb-0 fw-bold">${totalCompleted}</h3>
                         </div>
                         <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
@@ -290,7 +289,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small">Sản phẩm tồn kho (chi nhánh)</p>
+                            <p class="text-muted mb-1 small">S?n ph?m t?n kho (chi nh�nh)</p>
                             <h3 class="mb-0 fw-bold">${inStockCount}</h3>
                             <small class="text-muted">PhysicalProduct IN_STOCK</small>
                         </div>
@@ -307,26 +306,26 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-bolt text-warning"></i> Thao tác nhanh</h5>
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning"></i> Thao t�c nhanh</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <a href="${pageContext.request.contextPath}/cashier" class="btn btn-primary w-100 py-3">
                                 <i class="fas fa-cash-register fa-2x mb-2 d-block"></i>
-                                Bán hàng
+                                B�n h�ng
                             </a>
                         </div>
                         <div class="col-md-4">
                             <a href="${pageContext.request.contextPath}/invoice" class="btn btn-outline-info w-100 py-3">
                                 <i class="fas fa-history fa-2x mb-2 d-block"></i>
-                                Lịch sử bán hàng
+                                L?ch s? b�n h�ng
                             </a>
                         </div>
                         <div class="col-md-4">
                             <a href="${pageContext.request.contextPath}/customer" class="btn btn-outline-success w-100 py-3">
                                 <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
-                                Khách hàng
+                                Kh�ch h�ng
                             </a>
                         </div>
                     </div>
@@ -344,9 +343,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh Thu (30 Ngày)</p>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh Thu (30 Ng�y)</p>
                             <h3 class="mb-0 fw-bold text-success">
-                                <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ₫
+                                <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ?
                             </h3>
                         </div>
                         <div class="bg-success bg-opacity-10 p-3 rounded-circle">
@@ -362,9 +361,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi Nhuận (30 Ngày)</p>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">L?i Nhu?n (30 Ng�y)</p>
                             <h3 class="mb-0 fw-bold text-primary">
-                                <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ₫
+                                <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ?
                             </h3>
                         </div>
                         <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
@@ -380,7 +379,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small fw-bold text-uppercase">Hóa Đơn (30 Ngày)</p>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">H�a ??n (30 Ng�y)</p>
                             <h3 class="mb-0 fw-bold text-warning">${totalInvoices30Days}</h3>
                         </div>
                         <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
@@ -396,7 +395,7 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-toolbox text-secondary me-2"></i>Công cụ Tài chính</h5>
+                    <h5 class="mb-0"><i class="fas fa-toolbox text-secondary me-2"></i>C�ng c? T�i ch�nh</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 text-center">
@@ -404,8 +403,8 @@
                             <a href="${pageContext.request.contextPath}/report/financial" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
-                                    <h6 class="text-dark fw-bold">Báo Cáo Tài Chính</h6>
-                                    <p class="small text-muted mb-0">Xem và xuất file (CSV/Excel) doanh thu, lợi nhuận.</p>
+                                    <h6 class="text-dark fw-bold">B�o C�o T�i Ch�nh</h6>
+                                    <p class="small text-muted mb-0">Xem v� xu?t file (CSV/Excel) doanh thu, l?i nhu?n.</p>
                                 </div>
                             </a>
                         </div>
@@ -414,8 +413,8 @@
                             <a href="${pageContext.request.contextPath}/accounting/invoices" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-receipt fa-3x text-info mb-3"></i>
-                                    <h6 class="text-dark fw-bold">Tra Cứu Hóa Đơn</h6>
-                                    <p class="small text-muted mb-0">Xem chi tiết và đối soát các giao dịch bán hàng.</p>
+                                    <h6 class="text-dark fw-bold">Tra C?u H�a ??n</h6>
+                                    <p class="small text-muted mb-0">Xem chi ti?t v� ??i so�t c�c giao d?ch b�n h�ng.</p>
                                 </div>
                             </a>
                         </div>
@@ -424,8 +423,8 @@
                             <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
-                                    <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>
-                                    <p class="small text-muted mb-0">Khóa sổ dữ liệu giao dịch theo tháng/quý.</p>
+                                    <h6 class="text-dark fw-bold">Ch?t K? K? To�n</h6>
+                                    <p class="small text-muted mb-0">Kh�a s? d? li?u giao d?ch theo th�ng/qu�.</p>
                                 </div>
                             </a>
                         </div>
@@ -454,7 +453,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Gọi đến SalesReportServlet của Admin với format json
+            // G?i ??n SalesReportServlet c?a Admin v?i format json
             fetch('${pageContext.request.contextPath}/admin/sales-report?format=json')
                 .then(response => response.json())
                 .then(data => {
@@ -463,11 +462,11 @@
 
                     const ctx = document.getElementById('adminProductSalesChart').getContext('2d');
                     new Chart(ctx, {
-                        type: 'bar', // Sử dụng biểu đồ cột để so sánh sản phẩm
+                        type: 'bar', // S? d?ng bi?u ?? c?t ?? so s�nh s?n ph?m
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Số lượng bán ra',
+                                label: 'S? l??ng b�n ra',
                                 data: values,
                                 backgroundColor: 'rgba(78, 115, 223, 0.6)',
                                 borderColor: '#4e73df',
@@ -475,7 +474,7 @@
                             }]
                         },
                         options: {
-                            indexAxis: 'y', // Biểu đồ ngang để dễ đọc tên sản phẩm
+                            indexAxis: 'y', // Bi?u ?? ngang ?? d? ??c t�n s?n ph?m
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {

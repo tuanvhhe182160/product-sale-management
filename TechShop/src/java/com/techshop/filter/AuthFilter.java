@@ -129,6 +129,7 @@ public class AuthFilter implements Filter {
             if (path.equals("/dashboard") ||
                 path.startsWith("/warranty") ||  // Tiếp nhận bảo hành
                 path.startsWith("/customer") ||  // Tra cứu khách
+                path.startsWith("/cs") ||
                 path.startsWith("/invoice")) {   // Tra cứu đơn hàng
                 return true;
             }
