@@ -109,7 +109,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/inventory/report">
-                                    <i class="fas fa-chart-bar"></i> Reports
+                                    <i class="fas fa-chart-bar"></i> Inventory Report
                                 </a>
                             </li>
                         </c:if>

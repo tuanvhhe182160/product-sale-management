@@ -6,14 +6,14 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-primary mb-0">
-        <i class="fas fa-mobile-alt"></i> Physical Product List
+        <i class="fas fa-mobile-alt"></i> Physical Product Inventory
     </h2>
     <div class="d-flex align-items-center gap-2">
         <span class="badge bg-primary fs-6">
             <i class="fas fa-building"></i> ${sessionScope.branchName}
         </span>
         <a href="${pageContext.request.contextPath}/inventory/import" class="btn btn-success btn-sm">
-            <i class="fas fa-file-import"></i> Import Products
+            <i class="fas fa-plus"></i> Import Products
         </a>
     </div>
 </div>
@@ -119,10 +119,10 @@
                     <tbody>
                     <c:forEach var="p" items="${physicalProducts}" varStatus="loop">
                         <tr>
-                            <td class="text-muted">${(currentPage - 1) * pageSize + loop.count}</td>
-                            <td><strong>${p.sku}</strong></td>
+                            <td>${(currentPage - 1) * pageSize + loop.count}</td>
+                            <td>${p.sku}</td>
                             <td>${p.variantName}</td>
-                            <td><span class="fw-semibold text-primary">${p.imei}</span></td>
+                            <td>${p.imei}</td>
                             <td>${p.serialNumber}</td>
                             <td>
                                 <span class="badge ${p.status == 'IN_STOCK' ? 'bg-primary' : 'bg-secondary'}">${p.status}</span>
@@ -162,4 +162,3 @@
 </div>
 
 <jsp:include page="../common/footer.jsp" />
-

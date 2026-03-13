@@ -7,6 +7,8 @@ public class StockTransfer {
     private String transferCode;
     private int fromBranchId;
     private int toBranchId;
+    private int variantId;
+    private int requestedQuantity;
     private int requestedBy;
     private Integer approvedBy;
     private Integer receivedBy;
@@ -18,27 +20,43 @@ public class StockTransfer {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // Join fields
+    private String fromBranchName;
+    private String toBranchName;
+    private String requestedByName;
+    private String approvedByName;
+    private String variantName;
+    private String sku;
+    private int itemCount;
+
     public StockTransfer() {}
 
-    public StockTransfer(int transferId, String transferCode, int fromBranchId, int toBranchId,
-                         int requestedBy, Integer approvedBy, Integer receivedBy, String status,
-                         String note, LocalDateTime requestDate, LocalDateTime approvalDate,
-                         LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.transferId = transferId;
-        this.transferCode = transferCode;
-        this.fromBranchId = fromBranchId;
-        this.toBranchId = toBranchId;
-        this.requestedBy = requestedBy;
-        this.approvedBy = approvedBy;
-        this.receivedBy = receivedBy;
-        this.status = status;
-        this.note = note;
-        this.requestDate = requestDate;
-        this.approvalDate = approvalDate;
-        this.completionDate = completionDate;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+    public int getVariantId() { return variantId; }
+    public void setVariantId(int variantId) { this.variantId = variantId; }
+
+    public int getRequestedQuantity() { return requestedQuantity; }
+    public void setRequestedQuantity(int requestedQuantity) { this.requestedQuantity = requestedQuantity; }
+
+    public String getFromBranchName() { return fromBranchName; }
+    public void setFromBranchName(String fromBranchName) { this.fromBranchName = fromBranchName; }
+
+    public String getToBranchName() { return toBranchName; }
+    public void setToBranchName(String toBranchName) { this.toBranchName = toBranchName; }
+
+    public String getRequestedByName() { return requestedByName; }
+    public void setRequestedByName(String requestedByName) { this.requestedByName = requestedByName; }
+
+    public String getApprovedByName() { return approvedByName; }
+    public void setApprovedByName(String approvedByName) { this.approvedByName = approvedByName; }
+
+    public String getVariantName() { return variantName; }
+    public void setVariantName(String variantName) { this.variantName = variantName; }
+
+    public String getSku() { return sku; }
+    public void setSku(String sku) { this.sku = sku; }
+
+    public int getItemCount() { return itemCount; }
+    public void setItemCount(int itemCount) { this.itemCount = itemCount; }
 
     public int getTransferId() { return transferId; }
     public void setTransferId(int transferId) { this.transferId = transferId; }
