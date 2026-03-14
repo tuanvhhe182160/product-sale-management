@@ -2,6 +2,7 @@ package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
 import com.techshop.model.WarrantyCheckDTO;
+import com.techshop.model.WarrantyStatus;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,10 +64,10 @@ public class CustomerServiceDAO extends DBContext {
                                          int csUserId, String issueDescription) {
         String sqlRequest = "INSERT INTO WarrantyRequest (request_code, invoice_id, physical_id, customer_id, " +
                             "issue_description, status, customer_service_id, request_date, created_at) " +
-                            "VALUES (?, ?, ?, ?, ?, 'PENDING', ?, GETDATE(), GETDATE())";
-                            
+                            "VALUES (?, ?, ?, ?, ?, '" + WarrantyStatus.PENDING.name() + "', ?, GETDATE(), GETDATE())";
+                        
         String sqlHistory = "INSERT INTO WarrantyHistory (request_id, status, note, updated_by, updated_at) " +
-                            "VALUES (?, 'PENDING', 'Khởi tạo yêu cầu bảo hành', ?, GETDATE())";
+                            "VALUES (?, '" + WarrantyStatus.PENDING.name() + "', 'Khởi tạo yêu cầu bảo hành', ?, GETDATE())";
 
         try {
             connection.setAutoCommit(false); // Bắt đầu Transaction

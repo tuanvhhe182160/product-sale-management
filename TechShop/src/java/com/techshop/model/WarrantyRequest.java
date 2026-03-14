@@ -9,7 +9,7 @@ public class WarrantyRequest {
     private int physicalId;
     private int customerId;
     private String issueDescription;
-    private String status; // PENDING, IN_PROGRESS, COMPLETED, REJECTED, CANCELLED
+    private String status; 
     private Integer technicianId;
     private int customerServiceId;
     private String resolution;
@@ -21,15 +21,18 @@ public class WarrantyRequest {
     // Thông tin JOIN
     private String customerName;
     private String customerPhone;
+    private String customerEmail;
     private String variantName;
     private String imei;
     private String technicianName;
     private String customerServiceName;
+    private String invoiceCode;
+    private LocalDateTime invoiceDate;
 
     public WarrantyRequest() {
     }
 
-    public WarrantyRequest(int requestId, String requestCode, int invoiceId, int physicalId, int customerId, String issueDescription, String status, Integer technicianId, int customerServiceId, String resolution, LocalDateTime requestDate, LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt, String customerName, String customerPhone, String variantName, String imei, String technicianName, String customerServiceName) {
+    public WarrantyRequest(int requestId, String requestCode, int invoiceId, int physicalId, int customerId, String issueDescription, String status, Integer technicianId, int customerServiceId, String resolution, LocalDateTime requestDate, LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt, String customerName, String customerPhone, String customerEmail, String variantName, String imei, String technicianName, String customerServiceName, String invoiceCode, LocalDateTime invoiceDate) {
         this.requestId = requestId;
         this.requestCode = requestCode;
         this.invoiceId = invoiceId;
@@ -46,12 +49,15 @@ public class WarrantyRequest {
         this.updatedAt = updatedAt;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
+        this.customerEmail = customerEmail;
         this.variantName = variantName;
         this.imei = imei;
         this.technicianName = technicianName;
         this.customerServiceName = customerServiceName;
+        this.invoiceCode = invoiceCode;
+        this.invoiceDate = invoiceDate;
     }
-
+   
     public int getRequestId() {
         return requestId;
     }
@@ -212,10 +218,33 @@ public class WarrantyRequest {
         this.customerServiceName = customerServiceName;
     }
 
-    @Override
-    public String toString() {
-        return "WarrantyRequest{" + "requestId=" + requestId + ", requestCode=" + requestCode + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", customerId=" + customerId + ", issueDescription=" + issueDescription + ", status=" + status + ", technicianId=" + technicianId + ", customerServiceId=" + customerServiceId + ", resolution=" + resolution + ", requestDate=" + requestDate + ", completionDate=" + completionDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", variantName=" + variantName + ", imei=" + imei + ", technicianName=" + technicianName + ", customerServiceName=" + customerServiceName + '}';
+    public String getCustomerEmail() {
+        return customerEmail;
     }
 
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public LocalDateTime getInvoiceDate() {
+        return invoiceDate;
+    }
+
+    public void setInvoiceDate(LocalDateTime invoiceDate) {
+        this.invoiceDate = invoiceDate;
+    }
+
+    public String getInvoiceCode() {
+        return invoiceCode;
+    }
+
+    public void setInvoiceCode(String invoiceCode) {
+        this.invoiceCode = invoiceCode;
+    }
+
+    @Override
+    public String toString() {
+        return "WarrantyRequest{" + "requestId=" + requestId + ", requestCode=" + requestCode + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", customerId=" + customerId + ", issueDescription=" + issueDescription + ", status=" + status + ", technicianId=" + technicianId + ", customerServiceId=" + customerServiceId + ", resolution=" + resolution + ", requestDate=" + requestDate + ", completionDate=" + completionDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", customerEmail=" + customerEmail + ", variantName=" + variantName + ", imei=" + imei + ", technicianName=" + technicianName + ", customerServiceName=" + customerServiceName + ", invoiceCode=" + invoiceCode + ", invoiceDate=" + invoiceDate + '}';
+    }
     
 }

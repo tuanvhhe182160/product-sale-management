@@ -159,7 +159,7 @@
                         <!-- Technician Menu -->
                         <c:if test="${sessionScope.userRole == 'Technician'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/warranty">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/tech/warranty">
                                     <i class="fas fa-wrench"></i> Repairs
                                 </a>
                             </li>
