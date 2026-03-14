@@ -112,6 +112,11 @@
                                     <i class="fas fa-chart-bar"></i> Inventory Report
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/transfer">
+                                    <i class="fas fa-exchange-alt"></i> Stock Transfer
+                                </a>
+                            </li>
                         </c:if>
                         
                         <!-- Cashier Menu -->
