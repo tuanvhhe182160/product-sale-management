@@ -344,6 +344,52 @@ public class PhysicalProductDAO extends DBContext {
         return list;
     }
 
+    /**
+     * Get all IN_STOCK physical products of a specific variant at a specific branch.
+     * Used by the transfer approval page to show selectable items.
+     */
+    public List<PhysicalProduct> getInStockByVariantAndBranch(int variantId, int branchId) {
+        List<PhysicalProduct> list = new ArrayList<>();
+        String sql = BASE_SELECT_QUERY_STRING
+                + "WHERE p.variant_id = ? AND p.branch_id = ? AND p.status = 'IN_STOCK' "
+                + "ORDER BY p.import_date ASC";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, variantId);
+            ps.setInt(2, branchId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapPhysicalProduct(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("PhysicalProductDAO.getInStockByVariantAndBranch() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    /**
+     * Update a physical product's branch and status atomically.
+     * Used when receiving a stock transfer.
+     */
+    public boolean setBranchAndStatus(int physicalId, int branchId, String status) {
+        String sql = "UPDATE PhysicalProduct SET branch_id = ?, status = ?, updated_at = GETDATE() WHERE physical_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, branchId);
+            ps.setString(2, status);
+            ps.setInt(3, physicalId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("PhysicalProductDAO.setBranchAndStatus() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public int createPhysicalProduct(PhysicalProduct product) {
         String sql = "INSERT INTO PhysicalProduct (variant_id, branch_id, imei, serial_number, status, import_date, sale_date, created_at, updated_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
