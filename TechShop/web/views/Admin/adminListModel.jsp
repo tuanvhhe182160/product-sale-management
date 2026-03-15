@@ -81,6 +81,7 @@
         <div class="d-flex align-items-center">
             <c:if test="${not showCategory}">
                 <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/category">
+                <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/ProductCategory">
                     <i class="fas fa-arrow-left me-2"></i> 
                         Back to Categories
                 </a>
@@ -158,6 +159,7 @@
 
             <a class="btn btn-primary"
                href="${pageContext.request.contextPath}/model/form?categoryId=${categoryId}">
+               href="${pageContext.request.contextPath}/ProductModel/form?categoryId=${categoryId}">
                 <i class="fas fa-plus me-2"></i> New Model
             </a>
 
@@ -165,6 +167,7 @@
             <form class="d-flex gap-2 flex-wrap align-items-center mb-0"
                   method="get"
                   action="${pageContext.request.contextPath}/model">
+                  action="${pageContext.request.contextPath}/ProductModel">
 
                 <input type="hidden" name="categoryId" value="${categoryId}" />
 
@@ -188,6 +191,7 @@
 
                 <a class="btn btn-outline-secondary"
                    href="${pageContext.request.contextPath}/model?categoryId=${categoryId}">
+                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}">
                     Reset
                 </a>
             </form>
@@ -284,6 +288,7 @@
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary"
                                        href="${pageContext.request.contextPath}/model/form?id=${m.modelId}&categoryId=${categoryId}">
+                                       href="${pageContext.request.contextPath}/ProductModel/form?id=${m.modelId}&categoryId=${categoryId}">
                                         <i class="fas fa-pen me-1"></i> Edit
                                     </a>
                                 </td>
@@ -306,6 +311,7 @@
                             <li class="page-item ${page <= 1 ? 'disabled' : ''}">
                                 <a class="page-link"
                                    href="${pageContext.request.contextPath}/model?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page-1}">
+                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page-1}">
                                     Prev
                                 </a>
                             </li>
@@ -324,6 +330,7 @@
                                 <li class="page-item ${p == page ? 'active' : ''}">
                                     <a class="page-link"
                                        href="${pageContext.request.contextPath}/model?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${p}">
+                                       href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${p}">
                                         ${p}
                                     </a>
                                 </li>
@@ -333,6 +340,7 @@
                             <li class="page-item ${page >= totalPages ? 'disabled' : ''}">
                                 <a class="page-link"
                                    href="${pageContext.request.contextPath}/model?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page+1}">
+                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page+1}">
                                     Next
                                 </a>
                             </li>
@@ -436,6 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             fetch('${pageContext.request.contextPath}/model/edit?id=' + encodeURIComponent(id))
+            fetch('${pageContext.request.contextPath}/ProductModel/form?id=' + encodeURIComponent(id))
                 .then(res => res.text())
                 .then(html => {
                     content.innerHTML = html;

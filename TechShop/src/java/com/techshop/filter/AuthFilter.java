@@ -21,13 +21,31 @@ import jakarta.servlet.http.HttpSession;
     "/model/*",
     "/variant/*",
     "/product/*",   // (Admin: CRUD, Shop Manager: View/Edit Store, Cashier: Search)
+    "/cashier-mgmt", // Quản lý Cashier (Admin, Shop Manager)
+    "/user",         // Quản lý nhân viên (Admin)
+    "/user/*",
+    "/branch/*",    // Quản lý chi nhánh (Admin)
+    "/category/*",  // Định nghĩa sản phẩm (Admin)
+    "/ProductCategory", // Servlet thực tế
+    "/model/*",
+    "/ProductModel",    // Servlet thực tế
+    "/ProductModel/*",
+    "/variant",
+    "/variant/*",
+    "/product/*",   // (Admin: CRUD, Shop Manager: View/Edit Store, Cashier: Search)
+    "/product-detail", // Chi tiết sản phẩm
+    "/cashier",     // POS bán hàng (Cashier)
+    "/cart",        // Giỏ hàng (Cashier)
+    "/invoice",     // Lịch sử bán hàng
     "/invoice/*",   // Bán hàng (Cashier), Xem (Accounting, Manager)
     "/inventory/*", // Kho (Shop Manager, Admin)
     "/warranty/*",  // Bảo hành (CS, Technician)
     "/customer/*",  // Khách hàng (Cashier, CS)
     "/report/*",     // Báo cáo (Admin, Manager, Accounting)
     "/admin/*",
-    "/accounting/**"
+    "/accounting/**",
+    "/report",      // Báo cáo (Admin, Manager, Accounting)
+    "/admin/*"      // Admin reports, audit logs
 })
 public class AuthFilter implements Filter {
 
@@ -86,8 +104,9 @@ public class AuthFilter implements Filter {
 
         // --- 2. SHOP MANAGER (UC08 -> UC16) ---
         if ("Shop Manager".equalsIgnoreCase(role)) {
-            // Được phép: Dashboard, Kho, Sản phẩm (tại cửa hàng), Báo cáo cửa hàng
+            // Được phép: Dashboard, Kho, Sản phẩm (tại cửa hàng), Báo cáo cửa hàng, Quản lý Cashier
             if (path.equals("/dashboard") ||
+                path.equals("/cashier-mgmt") ||  // Quản lý cashier chi nhánh
                 path.startsWith("/inventory") || // Nhập kho, chuyển kho, kiểm kê
                 path.startsWith("/product") ||   // Quản lý sản phẩm tại cửa hàng
                 path.startsWith("/report") ||    // Xem báo cáo cửa hàng

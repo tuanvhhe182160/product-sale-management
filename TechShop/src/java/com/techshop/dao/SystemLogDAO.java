@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
@@ -54,6 +58,7 @@ public class SystemLogDAO extends DBContext {
         
         params.add(offset);
         params.add(pageSize);
+        sql.append(" ORDER BY s.created_at DESC"); // Luôn đưa log mới nhất lên đầu
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             // Đổ tham số vào PreparedStatement
@@ -178,5 +183,5 @@ public class SystemLogDAO extends DBContext {
             System.err.println("SystemLogDAO.countLogsWithFilters Error: " + e.getMessage());
         }
         return 0;
+        }
     }
-}

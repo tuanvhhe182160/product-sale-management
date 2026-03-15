@@ -13,6 +13,7 @@
                 <i class="fas fa-box"></i> Quản lý Product Variants
             </h2>
             <a href="${pageContext.request.contextPath}/variant/form"
+            <a href="${pageContext.request.contextPath}/variant/create"
                class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tạo Variant mới
             </a>
@@ -182,6 +183,7 @@
                                     <td>
                                         <a class="btn btn-sm btn-outline-primary"
                                            href="${pageContext.request.contextPath}/variant/form?id=${v.variantId}">
+                                           href="${pageContext.request.contextPath}/variant/edit?id=${v.variantId}">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a class="btn btn-sm btn-outline-danger"

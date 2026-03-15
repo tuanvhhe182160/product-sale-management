@@ -3,8 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/TechnicianServlet.java</file>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/common/header.jsp</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/model/EntityType.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/dao/AdminReportDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/model/LogAction.java</file>
         </group>
     </open-files>
 </project-private>

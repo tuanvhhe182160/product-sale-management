@@ -62,6 +62,8 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/branch">
                                     <i class="fas fa-building"></i> Branches
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
+                                    <i class="fas fa-users-cog"></i> Cashiers
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
@@ -73,6 +75,10 @@
                                         <i class="fas fa-tags"></i> Categories
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/model">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductCategory">
+                                        <i class="fas fa-tags"></i> Categories
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductModel">
                                         <i class="fas fa-cubes"></i> Models
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/variant">
@@ -98,6 +104,20 @@
                                     <i class="fas fa-building"></i> Audit Logs
                                 </a>
                             </li>
+                                    <i class="fas fa-chart-line"></i> Reports
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/report">
+                                        <i class="fas fa-chart-bar"></i> Báo cáo tổng quan
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report">
+                                        <i class="fas fa-file-invoice-dollar"></i> Doanh số sản phẩm
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/branch-report">
+                                        <i class="fas fa-building"></i> Doanh số chi nhánh
+                                    </a></li>
+                                </ul>
+                            </li>
                         </c:if>
                         
                         <!-- Shop Manager Menu -->
@@ -105,6 +125,8 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/inventory">
                                     <i class="fas fa-warehouse"></i> Inventory
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
+                                    <i class="fas fa-users-cog"></i> Cashiers
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -124,6 +146,8 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/customer">
                                     <i class="fas fa-user-friends"></i> Customers
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier">
+                                    <i class="fas fa-shopping-cart"></i> POS
                                 </a>
                             </li>
                         </c:if>
@@ -132,11 +156,13 @@
                         <c:if test="${sessionScope.userRole == 'Accounting Staff'}">
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report">
                                     <i class="fas fa-cash-register"></i> Financial Report
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/accounting/invoices">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/invoice">
                                     <i class="fas fa-user-friends"></i> Check Invoice
                                 </a>
                             </li>
@@ -146,11 +172,13 @@
                         <c:if test="${sessionScope.userRole == 'Customer Service'}">
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/cs/warranty">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
                                     <i class="fas fa-tools"></i> Warranty
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/customer">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
                                     <i class="fas fa-user-friends"></i> Customers
                                 </a>
                             </li>
@@ -160,6 +188,7 @@
                         <c:if test="${sessionScope.userRole == 'Technician'}">
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/tech/warranty">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
                                     <i class="fas fa-wrench"></i> Repairs
                                 </a>
                             </li>
@@ -177,6 +206,7 @@
                                     class="rounded-circle me-2"
                                     width="36"
                                     height="36"> ${sessionScope.userName}
+                                <i class="fas fa-user-circle"></i> ${sessionScope.userName}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">
@@ -209,4 +239,5 @@
             </div>
         </div>
     </nav>
+    <div class="container-fluid mt-4">
     <div class="container-fluid mt-4">
