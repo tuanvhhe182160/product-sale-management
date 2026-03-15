@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package com.techshop.servlet;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -8,6 +13,8 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.techshop.dao.PasswordDAO;
 import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.UserDAO;
+import com.techshop.dao.UserDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.EntityType;
 import com.techshop.model.LogAction;
 import com.techshop.model.User;
@@ -111,6 +118,8 @@ public class LoginServlet extends HttpServlet {
                 // ----------------------------------
                 response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
             }
+            // Password login not yet implemented
+            response.sendRedirect(request.getContextPath() + "/login?error=Password login not available. Please use Google login.");
         } 
         
         //GOOGLE

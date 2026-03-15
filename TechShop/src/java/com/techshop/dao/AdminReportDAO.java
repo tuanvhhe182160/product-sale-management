@@ -119,6 +119,82 @@ public class AdminReportDAO extends DBContext {
                  "GROUP BY pv.variant_name ORDER BY value DESC";
         return executeReportQuery(sql, start, end);
     }
+    // Thống kê tổng quan tất cả chi nhánh: tổng đơn, tổng doanh thu
+    public Map<String, Object> getBranchOverallStats(String from, String to) {
+        String sql = "SELECT COUNT(i.invoice_id) as total_orders, " +
+                     "ISNULL(SUM(i.final_amount), 0) as total_revenue, " +
+                     "COUNT(DISTINCT i.branch_id) as total_branches " +
+                     "FROM Invoice i " +
+                     "WHERE i.status = 'COMPLETED' " +
+                     "AND i.invoice_date BETWEEN ? AND ?";
+        Map<String, Object> result = new HashMap<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, from + " 00:00:00");
+            ps.setString(2, to + " 23:59:59");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                result.put("total_orders", rs.getInt("total_orders"));
+                result.put("total_revenue", rs.getDouble("total_revenue"));
+                result.put("total_branches", rs.getInt("total_branches"));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return result;
+    }
+
+    // Doanh thu theo từng chi nhánh (dùng cho biểu đồ + bảng)
+    public List<Map<String, Object>> getBranchSalesChart(String from, String to) {
+        String sql = "SELECT b.branch_id, b.branch_name, " +
+                     "COUNT(i.invoice_id) as total_orders, " +
+                     "ISNULL(SUM(i.final_amount), 0) as total_sales " +
+                     "FROM Branch b " +
+                     "LEFT JOIN Invoice i ON b.branch_id = i.branch_id " +
+                     "AND i.status = 'COMPLETED' " +
+                     "AND i.invoice_date BETWEEN ? AND ? " +
+                     "WHERE b.status = 'ACTIVE' " +
+                     "GROUP BY b.branch_id, b.branch_name " +
+                     "ORDER BY total_sales DESC";
+        List<Object> params = new ArrayList<>();
+        params.add(from + " 00:00:00");
+        params.add(to + " 23:59:59");
+        return executeDynamicQuery(sql, params);
+    }
+
+    // Chi tiết doanh thu theo nhân viên trong 1 chi nhánh
+    public List<Map<String, Object>> getBranchEmployeeDetail(String from, String to, int branchId) {
+        String sql = "SELECT u.user_id, u.full_name as employee_name, " +
+                     "COUNT(i.invoice_id) as total_orders, " +
+                     "ISNULL(SUM(i.final_amount), 0) as total_sales " +
+                     "FROM dbo.[User] u " +
+                     "LEFT JOIN Invoice i ON u.user_id = i.cashier_id " +
+                     "AND i.status = 'COMPLETED' " +
+                     "AND i.invoice_date BETWEEN ? AND ? " +
+                     "WHERE u.branch_id = ? AND u.status = 'ACTIVE' " +
+                     "GROUP BY u.user_id, u.full_name " +
+                     "ORDER BY total_sales DESC";
+        List<Object> params = new ArrayList<>();
+        params.add(from + " 00:00:00");
+        params.add(to + " 23:59:59");
+        params.add(branchId);
+        return executeDynamicQuery(sql, params);
+    }
+
+    // Doanh thu theo ngày của 1 chi nhánh (dùng cho biểu đồ line)
+    public List<Map<String, Object>> getBranchDailyRevenue(String from, String to, int branchId) {
+        String sql = "SELECT CAST(i.invoice_date AS DATE) as sale_date, " +
+                     "COUNT(i.invoice_id) as total_orders, " +
+                     "SUM(i.final_amount) as total_sales " +
+                     "FROM Invoice i " +
+                     "WHERE i.status = 'COMPLETED' " +
+                     "AND i.branch_id = ? " +
+                     "AND i.invoice_date BETWEEN ? AND ? " +
+                     "GROUP BY CAST(i.invoice_date AS DATE) " +
+                     "ORDER BY sale_date";
+        List<Object> params = new ArrayList<>();
+        params.add(branchId);
+        params.add(from + " 00:00:00");
+        params.add(to + " 23:59:59");
+        return executeDynamicQuery(sql, params);
+    }
     
     //helper
     private List<Map<String, Object>> executeReportQuery(String sql, String start, String end) {

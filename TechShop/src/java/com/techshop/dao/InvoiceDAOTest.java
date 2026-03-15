@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.techshop.dao;
-
 import com.techshop.dal.DBContext;
 import com.techshop.model.Invoice;
 import com.techshop.model.InvoiceItem;

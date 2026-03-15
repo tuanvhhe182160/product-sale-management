@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package com.techshop.servlet;
 
 import com.techshop.dao.UserDAO;
@@ -7,6 +12,7 @@ import com.techshop.dao.ProductModelDAO;
 import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
 import com.techshop.model.FinancialReportItem;
+import com.techshop.dao.VariantDAO;
 import com.techshop.dao.SalesHistoryDAO;
 import com.techshop.model.User;
 import java.io.IOException;

@@ -216,4 +216,5 @@ public class Invoice {
         }
         return Timestamp.valueOf(this.invoiceDate);
     }
+    
 }

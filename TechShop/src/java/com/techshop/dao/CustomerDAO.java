@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLException;
 
 /**
  * DAO xử lý nghiệp vụ khách hàng tại màn hình bán hàng (Cashier).

@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
@@ -9,6 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductCategoryDAO extends DBContext {
+
+    /**
+     * Alias for getAllCategories() — used by DashboardServlet
+     */
+    public List<ProductCategory> getAll() {
+        return getAllCategories();
+    }
 
     public List<ProductCategory> getAllCategories() {
         List<ProductCategory> list = new ArrayList<>();
