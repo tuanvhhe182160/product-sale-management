@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/LoginServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/conf/db.properties</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminCategoryFormServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/CashierServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/conf/mail.properties</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/CashierProductDetailServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminModelFormServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminCategoryServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/filter/AuthFilter.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/CashierInvoicePrintServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminVariantCreateServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/dao/SystemLogDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/DashboardServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/dal/DBContext.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/CashierCustomerLookupServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminVariantServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/CashierCartServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminCashierServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminModelServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/CashierInvoiceCreateServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminVariantDeleteServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/LogoutServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/src/java/com/techshop/servlet/AdminCategorySaveServlet.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management-test/TechShop/web/META-INF/context.xml</file>
+        </group>
+    </open-files>
+</project-private>

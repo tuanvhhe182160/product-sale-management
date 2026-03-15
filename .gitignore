@@ -1,0 +1,156 @@
+# ═══════════════════════════════════════════════════════════
+# .gitignore for Java Web Project (Multi-IDE Support)
+# NetBeans + IntelliJ IDEA + VSCode + Eclipse
+# ═══════════════════════════════════════════════════════════
+
+# ============================================================
+# BUILD OUTPUT - Không commit file đã compile
+# ============================================================
+/build/
+/dist/
+/target/
+/out/
+/bin/
+/web/WEB-INF/classes/
+*.class
+*.war
+*.ear
+
+# ============================================================
+# NETBEANS SPECIFICS
+# ============================================================
+/nbproject/private/
+/nbproject/Package-*.bash
+nbbuild/
+nbdist/
+.nbattrs
+
+# ============================================================
+# INTELLIJ IDEA SPECIFICS
+# ============================================================
+.idea/
+*.iml
+*.iws
+*.ipr
+/out/
+
+# ============================================================
+# VSCODE SPECIFICS
+# ============================================================
+.vscode/
+.factorypath
+.settings/
+.classpath
+.project
+
+# ============================================================
+# ECLIPSE SPECIFICS
+# ============================================================
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+.cproject
+.project
+.classpath
+.factorypath
+.buildpath
+.target
+
+# ============================================================
+# OS SPECIFICS - File rác hệ điều hành
+# ============================================================
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================================
+# SECRETS / CONFIGURATION - QUAN TRỌNG NHẤT!
+# ============================================================
+# File chứa password database - KHÔNG BAO GIỜ COMMIT!
+**/db.properties
+**/database.properties
+**/application.properties
+**/config.properties
+**/oauth.properties
+**/mail.properties
+
+# Các file cấu hình môi trường
+.env
+.env.local
+.env.*.local
+
+# ============================================================
+# LOGS
+# ============================================================
+*.log
+logs/
+*.log.*
+
+# ============================================================
+# TEMPORARY FILES
+# ============================================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+\#*#
+
+# ============================================================
+# TOMCAT SPECIFICS
+# ============================================================
+/catalina.base_IS_UNDEFINED/
+
+# ============================================================
+# NODE MODULES (nếu có dùng npm cho frontend)
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================================
+# BACKUP FILES
+# ============================================================
+*.bak
+*.backup
+*.old
+*-backup
+*-old
+
+# ============================================================
+# PACKAGE FILES (không commit file đóng gói)
+# ============================================================
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ============================================================
+# TEST COVERAGE
+# ============================================================
+.coverage
+htmlcov/
+coverage/
+/TechShop/dist/
+/TechShop/build/
