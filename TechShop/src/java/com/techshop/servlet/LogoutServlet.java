@@ -56,8 +56,7 @@ public class LogoutServlet extends HttpServlet {
                 );
             }
             // ----------------------------------------------
-            
-            // Invalidate session (destroy all session data)
+    // Invalidate session (destroy all session data)
             session.invalidate();
         }
         

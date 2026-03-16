@@ -8,9 +8,9 @@ import java.util.Map;
 
 public class VariantAttributeDAO extends DBContext {
 
-    // =====================================================
+    // ==============================================
     // Get attributes by variant_id
-    // =====================================================
+    // ==============================================
     public Map<String, String> getAttributesByVariantId(int variantId) {
 
         Map<String, String> attributes = new HashMap<>();
@@ -43,9 +43,9 @@ public class VariantAttributeDAO extends DBContext {
         return attributes;
     }
 
-    // =====================================================
+    // ==============================================
     // Insert single attribute
-    // =====================================================
+    // ==============================================
     public void insertAttribute(int variantId, String name, String value) {
 
         String sql = """
@@ -68,9 +68,9 @@ public class VariantAttributeDAO extends DBContext {
         }
     }
 
-    // =====================================================
+    // ==============================================
     // Delete all attributes of a variant
-    // =====================================================
+    // ==============================================
     public void deleteAttributesByVariantId(int variantId) {
 
         String sql = """
@@ -90,9 +90,9 @@ public class VariantAttributeDAO extends DBContext {
         }
     }
 
-    // =====================================================
+    // ==============================================
     // Insert multiple attributes (recommended for form save)
-    // =====================================================
+    // ==============================================
     public void insertAttributes(int variantId, Map<String, String> attributes) {
 
         String sql = """

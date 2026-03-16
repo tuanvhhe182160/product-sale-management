@@ -105,6 +105,10 @@
                                     <c:otherwise><span class="status-inactive">Vô hiệu</span></c:otherwise>
                                 </c:choose></td>
                                 <td class="text-center">
+                                    <button class="btn btn-outline-info btn-sm me-1" title="Xem chi tiết"
+                                            onclick="openDetail('${u.fullName}','${u.email}','${u.phone}','${u.roleName}','${u.branchName}','${u.status}','${u.avatarUrl}','${u.createdAt}','${u.updatedAt}',${u.userId})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                     <button class="btn btn-outline-primary btn-sm me-1" title="Sửa"
                                             onclick="openEdit(${u.userId},'${u.email}','${u.fullName}','${u.phone}',${u.roleId},${u.branchId != null ? u.branchId : 0},'${u.status}')">
                                         <i class="fas fa-edit"></i>
@@ -236,7 +240,81 @@
     </div>
 </div>
 
+<!-- Modal Xem Chi Tiết Nhân viên -->
+<div class="modal fade" id="detailUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-id-card me-1"></i>Thông tin Nhân viên</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="detailAvatar" src="" alt="Avatar" class="rounded-circle border" width="80" height="80"
+                         style="object-fit:cover;" onerror="this.style.display='none';document.getElementById('detailAvatarIcon').style.display='flex';">
+                    <div id="detailAvatarIcon" class="mx-auto rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:80px;height:80px;font-size:2rem;display:none;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h5 class="mt-2 mb-0 fw-bold" id="detailFullName"></h5>
+                    <span class="badge bg-secondary mt-1" id="detailRole"></span>
+                    <span class="ms-1" id="detailStatusBadge"></span>
+                </div>
+                <hr>
+                <table class="table table-borderless mb-0" style="font-size:.88rem;">
+                    <tr><td class="text-muted" style="width:140px;"><i class="fas fa-hashtag me-2"></i>Mã NV</td><td class="fw-semibold" id="detailUserId"></td></tr>
+                    <tr><td class="text-muted"><i class="fas fa-envelope me-2"></i>Email</td><td class="fw-semibold" id="detailEmail"></td></tr>
+                    <tr><td class="text-muted"><i class="fas fa-phone me-2"></i>Số điện thoại</td><td class="fw-semibold" id="detailPhone"></td></tr>
+                    <tr><td class="text-muted"><i class="fas fa-building me-2"></i>Chi nhánh</td><td class="fw-semibold" id="detailBranch"></td></tr>
+                    <tr><td class="text-muted"><i class="fas fa-calendar-plus me-2"></i>Ngày tạo</td><td class="fw-semibold" id="detailCreatedAt"></td></tr>
+                    <tr><td class="text-muted"><i class="fas fa-calendar-check me-2"></i>Cập nhật</td><td class="fw-semibold" id="detailUpdatedAt"></td></tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+function openDetail(name, email, phone, role, branch, status, avatar, createdAt, updatedAt, userId) {
+    document.getElementById('detailFullName').textContent = name || '—';
+    document.getElementById('detailEmail').textContent = email || '—';
+    document.getElementById('detailPhone').textContent = phone || '—';
+    document.getElementById('detailRole').textContent = role || '—';
+    document.getElementById('detailBranch').textContent = branch || '— (Không thuộc chi nhánh)';
+    document.getElementById('detailUserId').textContent = '#' + userId;
+
+    var statusBadge = document.getElementById('detailStatusBadge');
+    if (status === 'ACTIVE') {
+        statusBadge.innerHTML = '<span class="badge bg-success">Hoạt động</span>';
+    } else {
+        statusBadge.innerHTML = '<span class="badge bg-danger">Vô hiệu</span>';
+    }
+
+    // Avatar
+    var avatarImg = document.getElementById('detailAvatar');
+    var avatarIcon = document.getElementById('detailAvatarIcon');
+    if (avatar && avatar !== 'null' && avatar !== '') {
+        avatarImg.src = '${pageContext.request.contextPath}/uploads/' + avatar;
+        avatarImg.style.display = '';
+        avatarIcon.style.display = 'none';
+    } else {
+        avatarImg.style.display = 'none';
+        avatarIcon.style.display = 'flex';
+    }
+
+    // Dates
+    function formatDate(dt) {
+        if (!dt || dt === 'null') return '—';
+        return dt.replace('T', ' ').substring(0, 19);
+    }
+    document.getElementById('detailCreatedAt').textContent = formatDate(createdAt);
+    document.getElementById('detailUpdatedAt').textContent = formatDate(updatedAt);
+
+    new bootstrap.Modal(document.getElementById('detailUserModal')).show();
+}
+
 function openEdit(id, email, name, phone, roleId, branchId, status) {
     document.getElementById('editUserId').value = id;
     document.getElementById('editEmail').value = email;

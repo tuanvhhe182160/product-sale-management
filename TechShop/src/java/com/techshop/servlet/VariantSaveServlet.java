@@ -71,10 +71,8 @@ public class VariantSaveServlet extends HttpServlet {
             variant.setImageUrl(imageUrl);
 
             /*
-            ==========================
-            ATTRIBUTE PROCESSING
-            ==========================
-             */
+            ===================            ATTRIBUTE PROCESSING
+            ===================             */
             String[] names = request.getParameterValues("attributeName[]");
             String[] values = request.getParameterValues("attributeValue[]");
 
@@ -95,10 +93,8 @@ public class VariantSaveServlet extends HttpServlet {
             }
 
             /*
-            ==========================
-            USER
-            ==========================
-             */
+            ===================            USER
+            ===================             */
             HttpSession session = request.getSession(false);
             User user = (session != null)
                     ? (User) session.getAttribute("user") : null;
@@ -106,10 +102,8 @@ public class VariantSaveServlet extends HttpServlet {
             Integer userId = user != null ? user.getUserId() : null;
 
             /*
-            ==========================
-            CREATE
-            ==========================
-             */
+            ===================            CREATE
+            ===================             */
             if (idRaw == null || idRaw.isEmpty()) {
 
                 int id = variantDAO.createVariant(variant);
@@ -128,10 +122,8 @@ public class VariantSaveServlet extends HttpServlet {
             } else {
 
                 /*
-                ==========================
-                UPDATE
-                ==========================
-                 */
+                ===================                UPDATE
+                ===================                 */
                 int id = Integer.parseInt(idRaw);
 
                 variant.setVariantId(id);

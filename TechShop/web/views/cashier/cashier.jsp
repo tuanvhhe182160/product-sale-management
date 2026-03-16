@@ -1284,6 +1284,11 @@
                 </button>
                 <button type="button" class="btn btn-primary btn-sm" id="btnSaveAndCheckout">
                     <i class="fas fa-user-plus me-1"></i>Có, lưu và thanh toán
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ===== Modal Xác nhận thanh toán ===== -->
 <div class="modal fade" id="checkoutConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
@@ -1568,25 +1573,12 @@ if (flashMsg) {
 
     // Khi submit form thanh toán
     if (checkoutForm) {
-        // Flag: true khi submit được gọi từ nút trong modal (bỏ qua kiểm tra lại)
         var modalConfirmed = false;
 
         checkoutForm.addEventListener('submit', function(e) {
-            console.log('[Checkout] submit event fired, modalConfirmed=' + modalConfirmed);
-            // Nếu submit từ modal → bỏ qua toàn bộ kiểm tra, submit thật
             if (modalConfirmed) {
                 modalConfirmed = false;
-                console.log('[Checkout] modalConfirmed=true, allowing submit');
                 return; // Cho phép submit bình thường
-            }
-
-        var modalConfirmed = false;
-
-        checkoutForm.addEventListener('submit', function(e) {
-            // Nếu submit từ modal xác nhận → cho phép submit thật
-            if (modalConfirmed) {
-                modalConfirmed = false;
-                return;
             }
 
             e.preventDefault();
@@ -1597,7 +1589,6 @@ if (flashMsg) {
 
             // Chưa nhập SĐT → chặn
             if (!phone) {
-                e.preventDefault();
                 showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập số điện thoại khách hàng.');
                 phoneInput.focus();
                 return;
@@ -1605,39 +1596,12 @@ if (flashMsg) {
 
             // Khách mới chưa nhập tên → chặn
             if (!custId && !fullName) {
-                e.preventDefault();
                 showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Khách hàng mới — vui lòng nhập họ tên trước khi thanh toán.');
                 fullNameFld.focus();
                 fullNameFld.classList.add('is-invalid');
                 return;
             }
 
-            // Khách mới đã có tên → hỏi có muốn lưu vào hệ thống không
-            if (!custId && fullName) {
-                e.preventDefault();
-                document.getElementById('confirmNewCustName').textContent  = fullName;
-                document.getElementById('confirmNewCustPhone').textContent = phone;
-                document.getElementById('confirmNewCustEmail').textContent = emailFld.value.trim() || '—';
-                var modal = new bootstrap.Modal(document.getElementById('newCustomerModal'));
-                modal.show();
-                return;
-            }
-            // Khách cũ (custId có giá trị) → submit bình thường
-        });
-
-        // Nút "Có, lưu và thanh toán" → đặt flag, set saveCustomer=true rồi submit thật
-        document.getElementById('btnSaveAndCheckout').addEventListener('click', function() {
-            document.getElementById('saveCustomer').value = 'true';
-            modalConfirmed = true;
-            console.log('[Checkout] btnSaveAndCheckout clicked');
-
-            // Ẩn modal ngay lập tức (không đợi animation)
-            var modalEl = document.getElementById('newCustomerModal');
-            modalEl.classList.remove('show');
-            modalEl.style.display = 'none';
-            document.body.classList.remove('modal-open');
-            var backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) backdrop.remove();
             // Hiện modal xác nhận thanh toán
             var isNewCust = !custId && fullName;
             var custDisplay = fullName || phone;
@@ -1659,7 +1623,6 @@ if (flashMsg) {
             var newCustSection = document.getElementById('newCustSection');
             if (isNewCust) {
                 newCustSection.style.display = 'block';
-                // Reset về "Có, lưu"
                 var saveYes = document.querySelector('input[name="saveOption"][value="yes"]');
                 if (saveYes) saveYes.checked = true;
             } else {

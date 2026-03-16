@@ -134,6 +134,8 @@
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
+                        <a href="${pageContext.request.contextPath}/report" class="list-group-item list-group-item-action border-0 px-0">
+                            <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/report" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số
@@ -304,6 +306,7 @@
                         <div>
                             <p class="text-muted mb-1 small">Sản phẩm tồn kho (chi nhánh)</p>
                             <h3 class="mb-0 fw-bold">${inStockCount}</h3>
+                            <small class="text-muted">PhysicalProduct IN_STOCK</small>
                         </div>
                         <div class="bg-secondary bg-opacity-10 p-3 rounded-circle">
                             <i class="fas fa-boxes fa-2x text-secondary"></i>
@@ -339,6 +342,12 @@
                                 <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
                                 Khách hàng
                             <a href="${pageContext.request.contextPath}/product-detail" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-search fa-2x mb-2 d-block"></i>
+                                Tra cứu sản phẩm
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/product-detail" class="btn btn-outline-warning w-100 py-3">
                                 <i class="fas fa-search fa-2x mb-2 d-block"></i>
                                 Tra cứu sản phẩm
                             </a>
@@ -437,7 +446,7 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
+                            <a href="${pageContext.request.contextPath}/dashboard" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
                                     <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>
@@ -593,7 +602,7 @@
 
                     const ctx = document.getElementById('adminProductSalesChart').getContext('2d');
                     new Chart(ctx, {
-                        type: 'bar', // S? d?ng bi?u ?? c?t ?? so sánh s?n ph?m
+                        type: 'bar',
                         data: {
                             labels: labels,
                             datasets: [{
