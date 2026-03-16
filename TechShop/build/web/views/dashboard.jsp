@@ -134,8 +134,6 @@
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
-                        <a href="${pageContext.request.contextPath}/report" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/report" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số
@@ -306,7 +304,6 @@
                         <div>
                             <p class="text-muted mb-1 small">Sản phẩm tồn kho (chi nhánh)</p>
                             <h3 class="mb-0 fw-bold">${inStockCount}</h3>
-                            <small class="text-muted">PhysicalProduct IN_STOCK</small>
                         </div>
                         <div class="bg-secondary bg-opacity-10 p-3 rounded-circle">
                             <i class="fas fa-boxes fa-2x text-secondary"></i>
@@ -341,9 +338,6 @@
                             <a href="${pageContext.request.contextPath}/customer" class="btn btn-outline-success w-100 py-3">
                                 <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
                                 Khách hàng
-                            <a href="${pageContext.request.contextPath}/product-detail" class="btn btn-outline-success w-100 py-3">
-                                <i class="fas fa-search fa-2x mb-2 d-block"></i>
-                                Tra cứu sản phẩm
                             </a>
                         </div>
                         <div class="col-md-4">
@@ -424,7 +418,6 @@
                 <div class="card-body">
                     <div class="row g-3 text-center">
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/report/financial" class="text-decoration-none">
                             <a href="${pageContext.request.contextPath}/report" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
@@ -435,7 +428,6 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/accounting/invoices" class="text-decoration-none">
                             <a href="${pageContext.request.contextPath}/invoice" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-receipt fa-3x text-info mb-3"></i>
@@ -446,7 +438,7 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/dashboard" class="text-decoration-none">
+                            <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
                                     <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>
@@ -592,8 +584,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // G?i ??n SalesReportServlet c?a Admin v?i format json
-            // Gọi đến SalesReportServlet của Admin với format json
             fetch('${pageContext.request.contextPath}/admin/sales-report?format=json')
                 .then(response => response.json())
                 .then(data => {
@@ -606,11 +596,6 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'S? l??ng bán ra',
-                        type: 'bar', // Sử dụng biểu đồ cột để so sánh sản phẩm
-                        data: {
-                            labels: labels,
-                            datasets: [{
                                 label: 'Số lượng bán ra',
                                 data: values,
                                 backgroundColor: 'rgba(78, 115, 223, 0.6)',
@@ -619,8 +604,7 @@
                             }]
                         },
                         options: {
-                            indexAxis: 'y', // Bi?u ?? ngang ?? d? ??c tên s?n ph?m
-                            indexAxis: 'y', // Biểu đồ ngang để dễ đọc tên sản phẩm
+                            indexAxis: 'y',
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
