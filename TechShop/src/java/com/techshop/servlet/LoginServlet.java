@@ -13,8 +13,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.techshop.dao.PasswordDAO;
 import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.UserDAO;
-import com.techshop.dao.UserDAO;
-import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.EntityType;
 import com.techshop.model.LogAction;
 import com.techshop.model.User;
@@ -118,8 +116,7 @@ public class LoginServlet extends HttpServlet {
                 // ----------------------------------
                 response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
             }
-            // Password login not yet implemented
-            response.sendRedirect(request.getContextPath() + "/login?error=Password login not available. Please use Google login.");
+            return;
         } 
         
         //GOOGLE
@@ -237,8 +234,7 @@ public class LoginServlet extends HttpServlet {
             "Đăng nhập thành công qua " + ("google".equals(loginType) ? "Google" : "Mật khẩu")
         );
         // ------------------------------------
-        
-        // Redirect to dashboard or saved URL
+    // Redirect to dashboard or saved URL
         String redirectUrl = (String) session.getAttribute("redirectAfterLogin");
         if (redirectUrl != null) {
             session.removeAttribute("redirectAfterLogin");

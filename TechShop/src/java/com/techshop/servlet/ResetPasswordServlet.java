@@ -77,7 +77,7 @@ public class ResetPasswordServlet extends HttpServlet {
                 "Đặt lại mật khẩu thành công thông qua link xác nhận email"
             );
             // -----------------------
-            // Redirect về login với thông báo thành công
+    // Redirect về login với thông báo thành công
             response.sendRedirect(request.getContextPath() + "/login?message=Reset success! Please login again.");
             return;
         } else {

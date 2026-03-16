@@ -282,7 +282,6 @@
                         <div>
                             <p class="text-muted mb-1 small">Doanh thu hôm nay</p>
                             <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
-                                <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />
                                 <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
                             </h3>
                         </div>
@@ -300,7 +299,6 @@
                         <div>
                             <p class="text-muted mb-1 small">Doanh thu tháng này</p>
                             <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
-                                <fmt:formatNumber value="${monthRevenue}" type="currency" groupingUsed="true" currencySymbol="đ" maxFractionDigits="0" />
                                 <fmt:formatNumber value="${monthRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
                             </h3>
                         </div>
@@ -371,7 +369,10 @@
                             <a href="${pageContext.request.contextPath}/customer" class="btn btn-outline-success w-100 py-3">
                                 <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
                                 Khách hàng
-                            <a href="${pageContext.request.contextPath}/product-detail" class="btn btn-outline-success w-100 py-3">
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/product-detail" class="btn btn-outline-warning w-100 py-3">
                                 <i class="fas fa-search fa-2x mb-2 d-block"></i>
                                 Tra cứu sản phẩm
                             </a>
@@ -393,7 +394,6 @@
                         <div>
                             <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh Thu (30 Ngày)</p>
                             <h3 class="mb-0 fw-bold text-success">
-                                <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ?
                                 <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ₫
                             </h3>
                         </div>
@@ -412,7 +412,6 @@
                         <div>
                             <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi Nhuận (30 Ngày)</p>
                             <h3 class="mb-0 fw-bold text-primary">
-                                <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ?
                                 <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ₫
                             </h3>
                         </div>
@@ -450,7 +449,6 @@
                 <div class="card-body">
                     <div class="row g-3 text-center">
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/report/financial" class="text-decoration-none">
                             <a href="${pageContext.request.contextPath}/report" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
@@ -461,7 +459,6 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/accounting/invoices" class="text-decoration-none">
                             <a href="${pageContext.request.contextPath}/invoice" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-receipt fa-3x text-info mb-3"></i>
@@ -472,7 +469,6 @@
                         </div>
                         
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
                             <a href="${pageContext.request.contextPath}/dashboard" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
@@ -506,8 +502,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // G?i ??n SalesReportServlet c?a Admin v?i format json
-            // Gọi đến SalesReportServlet của Admin với format json
             fetch('${pageContext.request.contextPath}/admin/sales-report?format=json')
                 .then(response => response.json())
                 .then(data => {
@@ -516,12 +510,7 @@
 
                     const ctx = document.getElementById('adminProductSalesChart').getContext('2d');
                     new Chart(ctx, {
-                        type: 'bar', // S? d?ng bi?u ?? c?t ?? so sánh s?n ph?m
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'S? l??ng bán ra',
-                        type: 'bar', // Sử dụng biểu đồ cột để so sánh sản phẩm
+                        type: 'bar',
                         data: {
                             labels: labels,
                             datasets: [{
@@ -533,8 +522,7 @@
                             }]
                         },
                         options: {
-                            indexAxis: 'y', // Bi?u ?? ngang ?? d? ??c tên s?n ph?m
-                            indexAxis: 'y', // Biểu đồ ngang để dễ đọc tên sản phẩm
+                            indexAxis: 'y',
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {

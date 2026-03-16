@@ -164,10 +164,9 @@ public class AuthenticationUtil {
         return java.time.LocalDateTime.now().isAfter(expiryTime);
     }
     
-    // ============================================================
+    // =====================================================
     // UNIT TEST
-    // ============================================================
-    
+    // =====================================================
     public static void main(String[] args) {
         System.out.println("╔════════════════════════════════════════════════════╗");
         System.out.println("║       AUTHENTICATION UTIL - UNIT TEST              ║");
