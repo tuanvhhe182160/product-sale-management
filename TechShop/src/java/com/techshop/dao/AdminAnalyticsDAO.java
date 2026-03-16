@@ -1,0 +1,90 @@
+package com.techshop.dao;
+
+import com.techshop.dal.DBContext;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class AdminAnalyticsDAO extends DBContext {
+
+    // 1. Thống kê tổng quan (Warranty Statistics)
+    public Map<String, Object> getGeneralWarrantyStats() {
+        Map<String, Object> stats = new HashMap<>();
+        String sql = "SELECT " +
+                     "  COUNT(*) AS total_requests, " +
+                     "  SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS total_completed, " +
+                     "  SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) AS total_pending, " +
+                     "  SUM(CASE WHEN status = 'IN_PROGRESS' THEN 1 ELSE 0 END) AS total_in_progress, " +
+                     "  SUM(CASE WHEN status = 'REJECTED' THEN 1 ELSE 0 END) AS total_rejected " +
+                     "FROM WarrantyRequest";
+                     
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                stats.put("totalRequests", rs.getInt("total_requests"));
+                stats.put("totalCompleted", rs.getInt("total_completed"));
+                stats.put("totalPending", rs.getInt("total_pending"));
+                stats.put("totalInProgress", rs.getInt("total_in_progress"));
+                stats.put("totalRejected", rs.getInt("total_rejected"));
+                
+                // Tính tỷ lệ hoàn thành (Completion Rate)
+                int total = rs.getInt("total_requests");
+                int completed = rs.getInt("total_completed");
+                double completionRate = (total > 0) ? Math.round(((double) completed / total) * 100.0) : 0;
+                stats.put("completionRate", completionRate);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return stats;
+    }
+
+    // 2. Hiệu suất Kỹ thuật viên (Technician Performance)
+    public List<Map<String, Object>> getTechnicianPerformance() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT " +
+                     "  u.full_name, " +
+                     "  COUNT(wr.request_id) AS handled_requests, " +
+                     "  SUM(CASE WHEN wr.status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_requests " +
+                     "FROM WarrantyRequest wr " +
+                     "JOIN [User] u ON wr.technician_id = u.user_id " +
+                     "GROUP BY u.full_name " +
+                     "ORDER BY handled_requests DESC";
+                     
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("technicianName", rs.getString("full_name"));
+                row.put("handledRequests", rs.getInt("handled_requests"));
+                row.put("completedRequests", rs.getInt("completed_requests"));
+                list.add(row);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    // 3. Phân tích lỗi theo Sản phẩm (Warranty by Product)
+    public List<Map<String, Object>> getDefectRateByProduct() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT TOP 10 " +
+                     "  pv.variant_name, " +
+                     "  COUNT(wr.request_id) AS defect_count " +
+                     "FROM WarrantyRequest wr " +
+                     "JOIN PhysicalProduct pp ON wr.physical_id = pp.physical_id " +
+                     "JOIN ProductVariant pv ON pp.variant_id = pv.variant_id " +
+                     "GROUP BY pv.variant_name " +
+                     "ORDER BY defect_count DESC";
+                     
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("productName", rs.getString("variant_name"));
+                row.put("defectCount", rs.getInt("defect_count"));
+                list.add(row);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+}

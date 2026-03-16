@@ -122,6 +122,7 @@ public class AuthFilter implements Filter {
                 path.startsWith("/invoice") ||   // Thanh toán, xuất hóa đơn
                 path.startsWith("/customer") ||  // Tạo khách hàng
                 path.startsWith("/product") ||   // Tìm kiếm sản phẩm (UC17)
+                path.startsWith("/cashier") ||
                 path.startsWith("/variant")) {   // Tìm biến thể sản phẩm để bán
                 return true;
             }

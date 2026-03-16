@@ -176,13 +176,13 @@
                                     </c:choose>
                                 </td>
                                 <td class="text-center">
-                                    <a href="${pageContext.request.contextPath}/cashier-mgmt?cashierId=${c.userId}&branchId=${viewBranchId}&search=${search}&status=${statusFilter}"
+                                    <a href="${pageContext.request.contextPath}/admin/cashier-mgmt?cashierId=${c.userId}&branchId=${viewBranchId}&search=${search}&status=${statusFilter}"
                                        class="btn btn-outline-primary btn-sm me-1" title="Xem thống kê">
                                         <i class="fas fa-chart-bar"></i>
                                     </a>
                                     <c:choose>
                                         <c:when test="${c.status == 'ACTIVE'}">
-                                            <a href="${pageContext.request.contextPath}/cashier-mgmt?action=toggle&userId=${c.userId}&newStatus=INACTIVE"
+                                            <a href="${pageContext.request.contextPath}/admin/cashier-mgmt?action=toggle&userId=${c.userId}&newStatus=INACTIVE"
                                                class="btn btn-outline-danger btn-sm"
                                                onclick="return confirm('Vô hiệu hóa tài khoản ${c.fullName}?')"
                                                title="Vô hiệu hóa">
@@ -190,7 +190,7 @@
                                             </a>
                                         </c:when>
                                         <c:otherwise>
-                                            <a href="${pageContext.request.contextPath}/cashier-mgmt?action=toggle&userId=${c.userId}&newStatus=ACTIVE"
+                                            <a href="${pageContext.request.contextPath}/admin/cashier-mgmt?action=toggle&userId=${c.userId}&newStatus=ACTIVE"
                                                class="btn btn-outline-success btn-sm"
                                                onclick="return confirm('Kích hoạt lại tài khoản ${c.fullName}?')"
                                                title="Kích hoạt">
@@ -228,7 +228,7 @@
             </h6>
 
             <!-- Filter tháng/năm -->
-            <form method="get" action="${pageContext.request.contextPath}/cashier-mgmt" class="row g-2 mb-3">
+            <form method="get" action="${pageContext.request.contextPath}/admin/cashier-mgmt" class="row g-2 mb-3">
                 <input type="hidden" name="cashierId" value="${selectedCashierId}">
                 <input type="hidden" name="branchId" value="${viewBranchId}">
                 <input type="hidden" name="search" value="${search}">
@@ -294,7 +294,7 @@
 <div class="modal fade" id="addCashierModal" tabindex="-1" aria-labelledby="addCashierModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" action="${pageContext.request.contextPath}/cashier-mgmt?action=add">
+            <form method="post" action="${pageContext.request.contextPath}/admin/cashier-mgmt?action=add">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addCashierModalLabel">
                         <i class="fas fa-user-plus me-1"></i>Thêm Cashier mới

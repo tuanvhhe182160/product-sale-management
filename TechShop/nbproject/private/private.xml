@@ -3,8 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/InvoicePrintServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/categoryForm.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/WarrantyServlet.java</file>
             <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/filter/AuthFilter.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/audit-log.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/adminModelForm.jsp</file>
             <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/common/header.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/dashboard.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/adminListModel.jsp</file>
         </group>
     </open-files>
 </project-private>

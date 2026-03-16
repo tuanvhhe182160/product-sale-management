@@ -118,14 +118,24 @@
                 <div class="card-body">
                     <div class="list-group list-group-flush mb-3">
                         <a href="${pageContext.request.contextPath}/user" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-users text-primary me-2"></i> Quản lý nhân viên
+                                <i class="fas fa-chart-pie text-info me-2"></i>Quản lý User
+                                
                         </a>
+                        <a href="${pageContext.request.contextPath}/admin/cashier-mgmt" class="list-group-item list-group-item-action border-0 px-0">
+                                <i class="fas fa-chart-pie text-info me-2"></i>Quản lý Cashier
+                                
+                        </a>
+                        <a href="${pageContext.request.contextPath}/category" class="list-group-item list-group-item-action border-0 px-0">
+                                <i class="fas fa-chart-pie text-info me-2"></i>Quản lý sản phẩm
+                                
+                        </a>               
                         <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=product" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số Sản phẩm
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
-                        <a href="${pageContext.request.contextPath}/report" class="list-group-item list-group-item-action border-0 px-0">
+                        </a>
+                        <a href="${pageContext.request.contextPath}/admin/report" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số
                         </a>
                     </div>
@@ -147,47 +157,7 @@
                 </div>
             </div>
         </div>
-    </div>  
-    </div>
-    
-    <!-- Quick Actions -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-bolt text-warning"></i> Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/user" class="btn btn-outline-primary w-100 py-3">
-                                <i class="fas fa-users fa-2x mb-2 d-block"></i>
-                                Manage Users
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/cashier-mgmt" class="btn btn-outline-success w-100 py-3">
-                                <i class="fas fa-users-cog fa-2x mb-2 d-block"></i>
-                                Manage Cashiers
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/ProductCategory" class="btn btn-outline-info w-100 py-3">
-                                <i class="fas fa-box fa-2x mb-2 d-block"></i>
-                                Manage Products
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="${pageContext.request.contextPath}/report" class="btn btn-outline-warning w-100 py-3">
-                                <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
-                                Sales Reports
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </div>      
 </c:if>
 
 <!-- Manager Dashboard -->
@@ -282,7 +252,6 @@
                         <div>
                             <p class="text-muted mb-1 small">Doanh thu hôm nay</p>
                             <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
-                                <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />
                                 <fmt:formatNumber value="${todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
                             </h3>
                         </div>
@@ -300,7 +269,6 @@
                         <div>
                             <p class="text-muted mb-1 small">Doanh thu tháng này</p>
                             <h3 class="mb-0 fw-bold" style="font-size:1.3rem;">
-                                <fmt:formatNumber value="${monthRevenue}" type="currency" groupingUsed="true" currencySymbol="đ" maxFractionDigits="0" />
                                 <fmt:formatNumber value="${monthRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ
                             </h3>
                         </div>
@@ -336,7 +304,6 @@
                         <div>
                             <p class="text-muted mb-1 small">Sản phẩm tồn kho (chi nhánh)</p>
                             <h3 class="mb-0 fw-bold">${inStockCount}</h3>
-                            <small class="text-muted">PhysicalProduct IN_STOCK</small>
                         </div>
                         <div class="bg-secondary bg-opacity-10 p-3 rounded-circle">
                             <i class="fas fa-boxes fa-2x text-secondary"></i>
@@ -393,7 +360,6 @@
                         <div>
                             <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh Thu (30 Ngày)</p>
                             <h3 class="mb-0 fw-bold text-success">
-                                <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ?
                                 <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ₫
                             </h3>
                         </div>
@@ -412,7 +378,6 @@
                         <div>
                             <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi Nhuận (30 Ngày)</p>
                             <h3 class="mb-0 fw-bold text-primary">
-                                <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ?
                                 <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ₫
                             </h3>
                         </div>
@@ -473,7 +438,6 @@
                         
                         <div class="col-md-4">
                             <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
-                            <a href="${pageContext.request.contextPath}/dashboard" class="text-decoration-none">
                                 <div class="p-4 border rounded bg-light hover-shadow transition-all">
                                     <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
                                     <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>

@@ -22,7 +22,6 @@
 
             <a class="btn btn-outline-secondary"
                href="${pageContext.request.contextPath}/category">
-               href="${pageContext.request.contextPath}/ProductCategory">
                 Back
             </a>
         </div>

@@ -19,7 +19,7 @@ import java.util.List;
  * GET  /cashier-mgmt?action=toggle  → vô hiệu hóa / kích hoạt
  * POST /cashier-mgmt?action=add     → thêm cashier mới
  */
-@WebServlet("/cashier-mgmt")
+@WebServlet("/admin/cashier-mgmt")
 public class AdminCashierServlet extends HttpServlet {
 
     @Override
@@ -48,7 +48,7 @@ public class AdminCashierServlet extends HttpServlet {
         if ("add".equals(req.getParameter("action"))) {
             handleAdd(req, resp, session, role);
         } else {
-            resp.sendRedirect(req.getContextPath() + "/cashier-mgmt");
+            resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt");
         }
     }
 
@@ -125,7 +125,7 @@ public class AdminCashierServlet extends HttpServlet {
 
         if (email == null || email.trim().isEmpty() || fullName == null || fullName.trim().isEmpty()) {
             session.setAttribute("mgmtError", "Email và họ tên không được để trống.");
-            resp.sendRedirect(req.getContextPath() + "/cashier-mgmt");
+            resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt");
             return;
         }
 
@@ -137,24 +137,24 @@ public class AdminCashierServlet extends HttpServlet {
             String bp = req.getParameter("addBranchId");
             if (bp == null || bp.trim().isEmpty()) {
                 session.setAttribute("mgmtError", "Vui lòng chọn chi nhánh.");
-                resp.sendRedirect(req.getContextPath() + "/cashier-mgmt"); return;
+                resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt"); return;
             }
             try { targetBranchId = Integer.parseInt(bp.trim()); }
             catch (NumberFormatException e) {
                 session.setAttribute("mgmtError", "Chi nhánh không hợp lệ.");
-                resp.sendRedirect(req.getContextPath() + "/cashier-mgmt"); return;
+                resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt"); return;
             }
         }
 
         if (targetBranchId <= 0) {
             session.setAttribute("mgmtError", "Chi nhánh không hợp lệ.");
-            resp.sendRedirect(req.getContextPath() + "/cashier-mgmt"); return;
+            resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt"); return;
         }
 
         UserDAO userDAO = new UserDAO();
         if (userDAO.isEmailExist(email.trim())) {
             session.setAttribute("mgmtError", "Email đã tồn tại trong hệ thống.");
-            resp.sendRedirect(req.getContextPath() + "/cashier-mgmt"); return;
+            resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt"); return;
         }
 
         // Dùng UserDAO.insert() — tạo User object với role Cashier
@@ -170,7 +170,7 @@ public class AdminCashierServlet extends HttpServlet {
         session.setAttribute(ok ? "mgmtSuccess" : "mgmtError",
             ok ? "Đã thêm cashier " + fullName.trim() + " thành công."
                : "Thêm cashier thất bại.");
-        resp.sendRedirect(req.getContextPath() + "/cashier-mgmt");
+        resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt");
     }
 
     // ── Toggle trạng thái (ACTIVE / INACTIVE) ──────────────────────────
@@ -180,7 +180,7 @@ public class AdminCashierServlet extends HttpServlet {
         String newStatus = req.getParameter("newStatus");
 
         if (uidStr == null || newStatus == null) {
-            resp.sendRedirect(req.getContextPath() + "/cashier-mgmt");
+            resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt");
             return;
         }
 
@@ -194,7 +194,7 @@ public class AdminCashierServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             session.setAttribute("mgmtError", "User ID không hợp lệ.");
         }
-        resp.sendRedirect(req.getContextPath() + "/cashier-mgmt");
+        resp.sendRedirect(req.getContextPath() + "/admin/cashier-mgmt");
     }
 
     // ── Kiểm tra quyền truy cập ────────────────────────────────────────
