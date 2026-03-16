@@ -30,17 +30,12 @@ public class WarrantyRequest {
     private String customerServiceName;
     private String invoiceCode;
     private LocalDateTime invoiceDate;
+    private int variantId;
 
     public WarrantyRequest() {
     }
 
-    public WarrantyRequest(int requestId, String requestCode, int invoiceId, int physicalId,
-            int customerId, String issueDescription, String status, Integer technicianId,
-            int customerServiceId, String resolution, LocalDateTime requestDate,
-            LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt,
-            String customerName, String customerPhone, String customerEmail,
-            String variantName, String imei, String technicianName,
-            String customerServiceName, String invoiceCode, LocalDateTime invoiceDate) {
+    public WarrantyRequest(int requestId, String requestCode, int invoiceId, int physicalId, int customerId, String issueDescription, String status, Integer technicianId, int customerServiceId, String resolution, LocalDateTime requestDate, LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt, String customerName, String customerPhone, String customerEmail, String variantName, String imei, String technicianName, String customerServiceName, String invoiceCode, LocalDateTime invoiceDate, int variantId) {
         this.requestId = requestId;
         this.requestCode = requestCode;
         this.invoiceId = invoiceId;
@@ -64,7 +59,10 @@ public class WarrantyRequest {
         this.customerServiceName = customerServiceName;
         this.invoiceCode = invoiceCode;
         this.invoiceDate = invoiceDate;
+        this.variantId = variantId;
     }
+
+    
 
     public int getRequestId() {
         return requestId;
@@ -250,21 +248,19 @@ public class WarrantyRequest {
         this.invoiceDate = invoiceDate;
     }
 
+    public int getVariantId() {
+        return variantId;
+    }
+
+    public void setVariantId(int variantId) {
+        this.variantId = variantId;
+    }
+
     @Override
     public String toString() {
-        return "WarrantyRequest{" + "requestId=" + requestId + ", requestCode=" + requestCode
-                + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId
-                + ", customerId=" + customerId + ", issueDescription=" + issueDescription
-                + ", status=" + status + ", technicianId=" + technicianId
-                + ", customerServiceId=" + customerServiceId + ", resolution=" + resolution
-                + ", requestDate=" + requestDate + ", completionDate=" + completionDate
-                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-                + ", customerName=" + customerName + ", customerPhone=" + customerPhone
-                + ", customerEmail=" + customerEmail + ", variantName=" + variantName
-                + ", imei=" + imei + ", technicianName=" + technicianName
-                + ", customerServiceName=" + customerServiceName + ", invoiceCode=" + invoiceCode
-                + ", invoiceDate=" + invoiceDate + '}';
+        return "WarrantyRequest{" + "requestId=" + requestId + ", requestCode=" + requestCode + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", customerId=" + customerId + ", issueDescription=" + issueDescription + ", status=" + status + ", technicianId=" + technicianId + ", customerServiceId=" + customerServiceId + ", resolution=" + resolution + ", requestDate=" + requestDate + ", completionDate=" + completionDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", customerEmail=" + customerEmail + ", variantName=" + variantName + ", imei=" + imei + ", technicianName=" + technicianName + ", customerServiceName=" + customerServiceName + ", invoiceCode=" + invoiceCode + ", invoiceDate=" + invoiceDate + ", variantId=" + variantId + '}';
     }
+    
     
     public Date getLegacyRequestDate() {
         if (this.requestDate == null) return null;

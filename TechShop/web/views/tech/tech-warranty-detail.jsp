@@ -32,17 +32,22 @@
                         <div class="col-sm-9">${reqDetail.customerEmail}</div>
                     </div>
                     <hr>
-                    <div class="row mb-2">
+                    
+                    <div class="row mb-2 align-items-center">
                         <div class="col-sm-3 text-muted">Sản phẩm:</div>
-                        <div class="col-sm-9 fw-bold text-primary">${reqDetail.variantName}</div>
+                        <div class="col-sm-9">
+                            <span class="fw-bold text-primary me-2">${reqDetail.variantName}</span>
+                            <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#specModal">
+                                <i class="fas fa-microchip"></i> Xem Cấu Hình
+                            </button>
+                        </div>
                     </div>
+                    
                     <div class="row mb-2">
-                        <div class="col-sm-3 text-muted">IMEI:</div>
+                        <div class="col-sm-3 text-muted">IMEI/Serial:</div>
                         <div class="col-sm-9 fw-bold">${reqDetail.imei}</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3 text-muted">Hóa đơn gốc:</div>
-                        <div class="col-sm-9"><a href="#" class="text-decoration-none">${reqDetail.invoiceCode}</a> (Mua ngày: <fmt:formatDate value="${reqDetail.legacyInvoiceDate}" pattern="dd/MM/yyyy"/>)</div>                    </div>
+                    
                     <hr>
                     <div class="row">
                         <div class="col-sm-12 text-muted mb-1">Mô tả lỗi từ khách hàng (CS ghi nhận):</div>
@@ -68,7 +73,8 @@
                         <tbody>
                             <c:forEach var="hist" items="${historyList}">
                                 <tr>
-                                    <td><fmt:formatDate value="${hist.legacyUpdatedAt}" pattern="dd/MM/yyyy HH:mm"/></td>                                    <td><span class="badge bg-dark">${hist.status}</span></td>
+                                    <td><fmt:formatDate value="${hist.legacyUpdatedAt}" pattern="dd/MM/yyyy HH:mm"/></td>
+                                    <td><span class="badge bg-dark">${hist.status}</span></td>
                                     <td>${hist.updatedByName}</td>
                                     <td>${hist.note}</td>
                                 </tr>
@@ -133,4 +139,46 @@
         </div>
     </div>
 </div>
-<%@ include file="../common/footer.jsp" %>  
+
+<div class="modal fade" id="specModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-cogs me-2"></i>Thông số phần cứng</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="p-3 bg-light border-bottom text-center">
+                    <h6 class="text-primary fw-bold mb-0">${reqDetail.variantName}</h6>
+                </div>
+                
+                <table class="table table-striped table-sm mb-0">
+                    <tbody>
+                        <c:forEach var="attr" items="${variantAttributes}">
+                            <tr>
+                                <th class="w-50 text-end pe-3 align-middle">${attr.attributeName}</th>
+                                <td class="ps-3 fw-bold text-dark align-middle">${attr.attributeValue}</td>
+                            </tr>
+                        </c:forEach>
+                        
+                        <c:if test="${empty variantAttributes}">
+                            <tr><td colspan="2" class="text-center text-muted py-3">Không có thông số kỹ thuật chi tiết.</td></tr>
+                        </c:if>
+
+                        <c:if test="${not empty variantDetail}">
+                            <tr class="table-success">
+                                <th class="w-50 text-end pe-3 align-middle">Bảo hành mặc định</th>
+                                <td class="ps-3 text-success fw-bold align-middle">${variantDetail.warrantyMonths} Tháng</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%@ include file="../common/footer.jsp" %>
