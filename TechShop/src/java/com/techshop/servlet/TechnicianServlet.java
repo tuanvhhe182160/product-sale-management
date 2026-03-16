@@ -17,11 +17,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
-@WebServlet(name = "TechnicianServlet", urlPatterns = {"/tech/warranty"})
+@WebServlet(name = "TechnicianServlet", urlPatterns = {"/tech/warranty", "/tech/warranty/list", "/tech/warranty/detail"})
 public class TechnicianServlet extends HttpServlet {
-
     private final TechnicianDAO techDAO = new TechnicianDAO();
     private final SystemLogDAO logDAO = new SystemLogDAO();
 
@@ -41,12 +41,14 @@ public class TechnicianServlet extends HttpServlet {
         try {
             // Luồng 1: Hiển thị danh sách và bộ lọc
             if (path.endsWith("/list") || path.equals("/tech/warranty")) {
+                String search = request.getParameter("search");
                 String status = request.getParameter("status");
                 String fromDate = request.getParameter("fromDate");
                 String toDate = request.getParameter("toDate");
+                int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
 
                 // Lấy danh sách từ DAO
-                List<WarrantyRequest> list = techDAO.getWarrantyRequests(status, fromDate, toDate);
+                List<WarrantyRequest> list = techDAO.getWarrantyRequests(branchId, search, status, fromDate, toDate);
                 
                 request.setAttribute("requestList", list);
                 request.getRequestDispatcher("/views/tech/tech-warranty-list.jsp").forward(request, response);
@@ -68,8 +70,9 @@ public class TechnicianServlet extends HttpServlet {
                 }
             }
         } catch (Exception e) {
+            System.err.println("=== LỖI KHI CẬP NHẬT BẢO HÀNH ===");
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/tech/warranty/list?error=Có lỗi xảy ra khi tải dữ liệu.");
+            response.sendRedirect(request.getContextPath() + "/tech/warranty/list?error=Lỗi hệ thống: " + e.getMessage());
         }
     }
     
@@ -131,7 +134,8 @@ public class TechnicianServlet extends HttpServlet {
                     "Kỹ thuật viên cập nhật trạng thái #" + requestCode + " thành: " + newStatus.name()
                 );
 
-                response.sendRedirect(request.getContextPath() + "/tech/warranty/detail?id=" + requestId + "&message=Cập nhật tiến độ thành công!");
+                String successMsg = URLEncoder.encode("Cập nhật tiến độ thành công!", "UTF-8");
+                response.sendRedirect(request.getContextPath() + "/tech/warranty/detail?id=" + requestId + "&message=" + successMsg);
             } else {
                 response.sendRedirect(request.getContextPath() + "/tech/warranty/detail?id=" + requestId + "&error=Có lỗi xảy ra khi lưu dữ liệu.");
             }

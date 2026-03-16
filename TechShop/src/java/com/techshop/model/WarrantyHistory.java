@@ -1,6 +1,7 @@
 package com.techshop.model;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public class WarrantyHistory {
     private int historyId;
@@ -87,5 +88,8 @@ public class WarrantyHistory {
         return "WarrantyHistory{" + "historyId=" + historyId + ", requestId=" + requestId + ", status=" + status + ", note=" + note + ", updatedBy=" + updatedBy + ", updatedAt=" + updatedAt + ", updatedByName=" + updatedByName + '}';
     }
 
-    
+    public Date getLegacyUpdatedAt() {
+        if (this.updatedAt == null) return null;
+        return java.sql.Timestamp.valueOf(this.updatedAt);
+    }
 }

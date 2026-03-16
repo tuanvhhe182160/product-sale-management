@@ -452,6 +452,119 @@
     </div>
 </c:if>
 
+<!-- CS Dashboard -->
+<c:if test="${dashboardType == 'customer_service'}">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Thao Tác Nhanh (Customer Service)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 text-center">
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/cs/warranty/list" class="text-decoration-none">
+                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
+                                    <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                                    <h6 class="text-dark fw-bold">Theo Dõi Bảo Hành</h6>
+                                    <p class="small text-muted mb-0">Tra cứu tiến độ sửa chữa cho khách gọi lên.</p>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/cs/warranty" class="text-decoration-none">
+                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
+                                    <i class="fas fa-plus-circle fa-3x text-success mb-3"></i>
+                                    <h6 class="text-dark fw-bold">Kiểm Tra & Lập Phiếu</h6>
+                                    <p class="small text-muted mb-0">Check IMEI và tạo yêu cầu bảo hành mới.</p>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <a href="${pageContext.request.contextPath}/customer" class="text-decoration-none">
+                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
+                                    <i class="fas fa-users fa-3x text-info mb-3"></i>
+                                    <h6 class="text-dark fw-bold">Hồ Sơ Khách Hàng</h6>
+                                    <p class="small text-muted mb-0">Quản lý thông tin và lịch sử mua hàng.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</c:if>
+
+<!-- Technician Dashboard -->
+<c:if test="${dashboardType == 'technician'}">
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <a href="${pageContext.request.contextPath}/tech/warranty/list?status=PENDING" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 border-start border-warning border-4 hover-shadow" style="transition: transform 0.2s;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small fw-bold text-uppercase">Bảo Hành Mới (Chờ Nhận)</p>
+                                <h3 class="mb-0 fw-bold text-warning">${pendingCount != null ? pendingCount : 0} ca</h3>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                                <i class="fas fa-exclamation-circle fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-6">
+            <a href="${pageContext.request.contextPath}/tech/warranty/list?status=IN_PROGRESS" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 border-start border-info border-4 hover-shadow" style="transition: transform 0.2s;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small fw-bold text-uppercase">Đang Xử Lý (Của bạn)</p>
+                                <h3 class="mb-0 fw-bold text-info">${inProgressCount != null ? inProgressCount : 0} ca</h3>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                                <i class="fas fa-tools fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-search text-primary me-2"></i>Tra Cứu Nhanh Hồ Sơ</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="${pageContext.request.contextPath}/tech/warranty/list" method="GET" class="row g-3 mb-3">
+                        <div class="col-md-10">
+                            <input type="text" name="search" class="form-control form-control-lg bg-light" placeholder="Nhập IMEI hoặc Mã phiếu để vào việc ngay..." required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-search"></i> Tra Cứu</button>
+                        </div>
+                    </form>
+                    
+                    <hr class="text-muted my-4">
+                    
+                    <a href="${pageContext.request.contextPath}/tech/warranty/list" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-list me-2"></i> Mở toàn bộ danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</c:if>
+
 <!-- Default Dashboard -->
 <c:if test="${dashboardType == 'default'}">
     <div class="row">

@@ -159,6 +159,7 @@ public class AuthFilter implements Filter {
         if ("Technician".equalsIgnoreCase(role)) {
             // Được phép: Dashboard, Cập nhật bảo hành
             if (path.equals("/dashboard") ||
+                path.equals("/product-detail") ||
                 path.startsWith("/warranty")) {  // Cập nhật trạng thái sửa chữa
                 return true;
             }

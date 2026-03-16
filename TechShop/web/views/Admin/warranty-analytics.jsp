@@ -1,19 +1,9 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <title>Thống Kê Bảo Hành (Admin)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .card-stats { transition: transform 0.2s; }
-        .card-stats:hover { transform: translateY(-5px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
-    </style>
-</head>
-<body class="bg-light">
+<c:set var="pageTitle" value="Thông Số Bảo Hành - TechShop" />
+<%@ include file="../common/header.jsp" %>
 <div class="container-fluid py-4 px-4 mb-5">
     
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -212,5 +202,4 @@
         options: { responsive: true, maintainAspectRatio: false }
     });
 </script>
-</body>
-</html>
+<%@ include file="../common/footer.jsp" %>  

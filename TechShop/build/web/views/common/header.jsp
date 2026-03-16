@@ -175,6 +175,11 @@
                                     <i class="fas fa-user-friends"></i> Customers
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cs/warranty/list">
+                                    <i class="fas fa-user-friends"></i> Tracking
+                                </a>
+                            </li>
                         </c:if>
                         
                         <!-- Technician Menu -->
