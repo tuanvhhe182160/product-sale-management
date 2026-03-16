@@ -44,7 +44,6 @@ import jakarta.servlet.http.HttpSession;
     "/report/*",     // Báo cáo (Admin, Manager, Accounting)
     "/admin/*",
     "/accounting/**",
-    "/report",      // Báo cáo (Admin, Manager, Accounting)
     "/admin/*"      // Admin reports, audit logs
 })
 public class AuthFilter implements Filter {

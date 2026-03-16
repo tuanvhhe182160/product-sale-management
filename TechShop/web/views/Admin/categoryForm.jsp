@@ -74,7 +74,6 @@
 
                 <div class="d-flex justify-content-end gap-2">
                     <a href="${pageContext.request.contextPath}/category"
-                    <a href="${pageContext.request.contextPath}/ProductCategory"
                        class="btn btn-secondary">
                         Cancel
                     </a>

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet("/report")
+@WebServlet("/admin/report")
 public class RevenueOverviewServlet extends HttpServlet {
 
     @Override

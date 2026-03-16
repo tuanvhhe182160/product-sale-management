@@ -75,10 +75,6 @@
                                         <i class="fas fa-tags"></i> Categories
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/model">
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductCategory">
-                                        <i class="fas fa-tags"></i> Categories
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductModel">
                                         <i class="fas fa-cubes"></i> Models
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/variant">
@@ -91,6 +87,9 @@
                                     <i class="fas fa-box"></i> Reports
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/report">
+                                        <i class="fas fa-tags"></i> General
+                                    </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch">
                                         <i class="fas fa-tags"></i> By Branch
                                     </a></li>
@@ -102,22 +101,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
                                     <i class="fas fa-building"></i> Audit Logs
-                                </a>
-                            </li>
-                                    <i class="fas fa-chart-line"></i> Reports
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/report">
-                                        <i class="fas fa-chart-bar"></i> Báo cáo tổng quan
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report">
-                                        <i class="fas fa-file-invoice-dollar"></i> Doanh số sản phẩm
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/branch-report">
-                                        <i class="fas fa-building"></i> Doanh số chi nhánh
-                                    </a></li>
-                                </ul>
-                            </li>
+                                </a>                            
                         </c:if>
                         
                         <!-- Shop Manager Menu -->
@@ -206,7 +190,6 @@
                                     class="rounded-circle me-2"
                                     width="36"
                                     height="36"> ${sessionScope.userName}
-                                <i class="fas fa-user-circle"></i> ${sessionScope.userName}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">

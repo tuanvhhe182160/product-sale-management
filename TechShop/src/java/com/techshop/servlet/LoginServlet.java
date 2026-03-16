@@ -90,7 +90,7 @@ public class LoginServlet extends HttpServlet {
         if ("password".equals(loginType)) {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
-        
+
             PasswordDAO dao = new PasswordDAO();
             User user = null;
             try {
@@ -98,29 +98,23 @@ public class LoginServlet extends HttpServlet {
             } catch (Exception ex) {
                 Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
-            if (user != null) {
-                // Success
-                System.out.println("Found user");
-                authorizeToSystem(request, response, user.getEmail());
-            } else {
-                // Failed
-                System.out.println("Found 0 user");
-                // --- GHI LOG ĐĂNG NHẬP THẤT BẠI ---
-                logDAO.logAction(
-                    null, 
-                    LogAction.FAILED_LOGIN, 
-                    EntityType.SYSTEM, 
-                    null, 
-                    request.getRemoteAddr(), 
-                    "Đăng nhập thất bại (Sai mật khẩu) cho email: " + email
-                );
-                // ----------------------------------
-                response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
-            }
-            // Password login not yet implemented
-            response.sendRedirect(request.getContextPath() + "/login?error=Password login not available. Please use Google login.");
-        } 
+            
+        if (user != null) {
+            authorizeToSystem(request, response, user.getEmail());
+            return; // QUAN TRỌNG
+        } else {
+            logDAO.logAction(
+                null,
+                LogAction.FAILED_LOGIN,
+                EntityType.SYSTEM,
+                null,
+                request.getRemoteAddr(),
+                "Đăng nhập thất bại (Sai mật khẩu) cho email: " + email
+            );
+            response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
+            return; // QUAN TRỌNG
+        }
+    }
         
         //GOOGLE
         else if ("google".equals(loginType)) {
