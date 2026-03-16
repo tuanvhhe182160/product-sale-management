@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package com.techshop.servlet;
 
 import com.techshop.dao.VariantDAO;
@@ -35,10 +39,8 @@ public class ManageVariantServlet extends HttpServlet {
         try {
 
             /*
-            =========================
-            PARAMETERS
-            =========================
-            */
+            ==================            PARAMETERS
+            ==================            */
             String search = request.getParameter("search");
 
             String categoryStr = request.getParameter("categoryId");
@@ -60,10 +62,8 @@ public class ManageVariantServlet extends HttpServlet {
             }
 
             /*
-            =========================
-            DATA
-            =========================
-            */
+            ==================            DATA
+            ==================            */
 
             // variants list
             List<ProductVariant> variants =
@@ -78,10 +78,8 @@ public class ManageVariantServlet extends HttpServlet {
                     categoryDAO.getActiveCategories();
 
             /*
-            =========================
-            ATTRIBUTES
-            =========================
-            */
+            ==================            ATTRIBUTES
+            ==================            */
 
             request.setAttribute("variants", variants);
             request.setAttribute("models", models);

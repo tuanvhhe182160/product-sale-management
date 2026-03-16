@@ -11,8 +11,6 @@ import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.dao.ProductModelDAO;
 import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
-import com.techshop.model.FinancialReportItem;
-import com.techshop.dao.VariantDAO;
 import com.techshop.dao.SalesHistoryDAO;
 import com.techshop.dao.TechnicianDAO;
 import com.techshop.model.User;

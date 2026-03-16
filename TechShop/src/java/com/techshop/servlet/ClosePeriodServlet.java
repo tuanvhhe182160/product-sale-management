@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package com.techshop.servlet;
 
 import com.techshop.dao.AccountingPeriodDAO;
@@ -25,9 +29,9 @@ public class ClosePeriodServlet extends HttpServlet {
         logDAO = new SystemLogDAO();
     }
 
-    // =========================
+    // ==================
     // GET → list hoặc preview
-    // =========================
+    // ==================
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -51,9 +55,9 @@ public class ClosePeriodServlet extends HttpServlet {
         }
     }
 
-    // =========================
+    // ==================
     // POST → close kỳ
-    // =========================
+    // ==================
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -67,9 +71,9 @@ public class ClosePeriodServlet extends HttpServlet {
         }
     }
 
-    // ======================================
+    // ===============================
     // 1️⃣ Xem trước dữ liệu chốt kỳ
-    // ======================================
+    // ===============================
     private void previewPeriod(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -84,9 +88,9 @@ public class ClosePeriodServlet extends HttpServlet {
                .forward(request, response);
     }
 
-    // ======================================
+    // ===============================
     // 2️⃣ Chốt kỳ
-    // ======================================
+    // ===============================
     private void closePeriod(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
@@ -135,9 +139,9 @@ public class ClosePeriodServlet extends HttpServlet {
         }
     }
 
-    // ======================================
+    // ===============================
     // 3️⃣ Danh sách kỳ đã chốt
-    // ======================================
+    // ===============================
     private void listClosedPeriods(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

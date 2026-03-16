@@ -15,33 +15,28 @@ import jakarta.servlet.http.HttpSession;
 // Filter áp dụng cho tất cả các trang chức năng
 @WebFilter(filterName = "AuthFilter", urlPatterns = {
     "/dashboard",
-    "/user/*",      // Quản lý nhân viên (Admin)
-    "/branch/*",    // Quản lý chi nhánh (Admin)
-    "/category/*",  // Định nghĩa sản phẩm (Admin)
-    "/model/*",
-    "/variant/*",
-    "/product/*",   // (Admin: CRUD, Shop Manager: View/Edit Store, Cashier: Search)
-    "/cashier-mgmt", // Quản lý Cashier (Admin, Shop Manager)
-    "/user",         // Quản lý nhân viên (Admin)
+    "/user",
     "/user/*",
-    "/branch/*",    // Quản lý chi nhánh (Admin)
-    "/category/*",  // Định nghĩa sản phẩm (Admin)
-    "/ProductCategory", // Servlet thực tế
+    "/branch/*",
+    "/category/*",
+    "/ProductCategory",
     "/model/*",
-    "/ProductModel",    // Servlet thực tế
+    "/ProductModel",
     "/ProductModel/*",
     "/variant",
     "/variant/*",
-    "/product/*",   // (Admin: CRUD, Shop Manager: View/Edit Store, Cashier: Search)
-    "/product-detail", // Chi tiết sản phẩm
-    "/cashier",     // POS bán hàng (Cashier)
-    "/cart",        // Giỏ hàng (Cashier)
-    "/invoice",     // Lịch sử bán hàng
-    "/invoice/*",   // Bán hàng (Cashier), Xem (Accounting, Manager)
-    "/inventory/*", // Kho (Shop Manager, Admin)
-    "/warranty/*",  // Bảo hành (CS, Technician)
-    "/customer/*",  // Khách hàng (Cashier, CS)
-    "/report/*",     // Báo cáo (Admin, Manager, Accounting)
+    "/product/*",
+    "/product-detail",
+    "/cashier-mgmt",
+    "/cashier",
+    "/cart",
+    "/invoice",
+    "/invoice/*",
+    "/inventory/*",
+    "/warranty/*",
+    "/customer/*",
+    "/report",
+    "/report/*",
     "/admin/*",
     "/accounting/**",
     "/admin/*"      // Admin reports, audit logs
@@ -117,8 +112,10 @@ public class AuthFilter implements Filter {
 
         // --- 3. CASHIER (UC17 -> UC24) ---
         if ("Cashier".equalsIgnoreCase(role)) {
-            // Được phép: Dashboard, Bán hàng (Invoice), Khách hàng, Tìm kiếm sản phẩm
+            // Được phép: Dashboard, POS, Bán hàng (Invoice), Khách hàng, Tìm kiếm sản phẩm
             if (path.equals("/dashboard") ||
+                path.startsWith("/cashier") ||   // POS bán hàng
+                path.startsWith("/cart") ||      // Giỏ hàng
                 path.startsWith("/invoice") ||   // Thanh toán, xuất hóa đơn
                 path.startsWith("/customer") ||  // Tạo khách hàng
                 path.startsWith("/product") ||   // Tìm kiếm sản phẩm (UC17)
