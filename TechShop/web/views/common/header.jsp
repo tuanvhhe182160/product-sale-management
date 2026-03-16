@@ -108,6 +108,10 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/inventory/list">
+                                    <i class="fas fa-warehouse"></i> Inventory
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/inventory/report">
                                     <i class="fas fa-chart-bar"></i> Inventory Report
                                 </a>
