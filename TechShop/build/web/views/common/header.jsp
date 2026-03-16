@@ -44,8 +44,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
-                                    <i class="fas fa-users-cog"></i> Cashiers
+                                <a class="nav-link" href="${pageContext.request.contextPath}/branch">
+                                    <i class="fas fa-building"></i> Branches
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
@@ -53,10 +53,10 @@
                                     <i class="fas fa-box"></i> Products
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductCategory">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/category">
                                         <i class="fas fa-tags"></i> Categories
                                     </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductModel">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/model">
                                         <i class="fas fa-cubes"></i> Models
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/variant">
@@ -92,7 +92,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
-                                    <i class="fas fa-clipboard-list"></i> Audit Logs
+                                    <i class="fas fa-building"></i> Audit Logs
                                 </a>
                             </li>
                             
@@ -101,8 +101,6 @@
                         <!-- Shop Manager Menu -->
                         <c:if test="${sessionScope.userRole == 'Shop Manager'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/inventory">
-                                    <i class="fas fa-warehouse"></i> Inventory
                                 <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
                                     <i class="fas fa-users-cog"></i> Cashiers
                                 </a>
@@ -146,7 +144,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/invoice">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/accounting/invoices">
                                     <i class="fas fa-user-friends"></i> Check Invoice
                                 </a>
                             </li>
@@ -155,12 +153,12 @@
                         <!-- Customer Service Menu -->
                         <c:if test="${sessionScope.userRole == 'Customer Service'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cs/warranty">
                                     <i class="fas fa-tools"></i> Warranty
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/customer">
                                     <i class="fas fa-user-friends"></i> Customers
                                 </a>
                             </li>
@@ -174,7 +172,7 @@
                         <!-- Technician Menu -->
                         <c:if test="${sessionScope.userRole == 'Technician'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/tech/warranty">
                                     <i class="fas fa-wrench"></i> Repairs
                                 </a>
                             </li>
@@ -188,8 +186,10 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <img src="${pageContext.request.contextPath}/uploads/${user.avatarUrl}"
-                                    alt="Avatar" class="rounded-circle me-2" width="36" height="36">
-                                ${sessionScope.userName}
+                                    alt="Avatar"
+                                    class="rounded-circle me-2"
+                                    width="36"
+                                    height="36"> ${sessionScope.userName}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">

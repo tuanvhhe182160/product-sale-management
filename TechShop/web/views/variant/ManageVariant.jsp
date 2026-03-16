@@ -4,6 +4,36 @@
 <%@ page import="com.techshop.util.DateTimeUtil" %>
 <jsp:include page="../common/header.jsp" />
 
+<style>
+/* ===== BLUE THEME ===== */
+.variant-img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #0d6efd;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
+}
+
+.pagination .page-link {
+    color: #0d6efd;
+}
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.table-primary th {
+    background-color: #0d6efd;
+    color: #fff;
+}
+</style>
+
 <div class="row">
     <div class="col-12">
 
@@ -12,9 +42,7 @@
             <h2 class="text-primary">
                 <i class="fas fa-box"></i> Quản lý Product Variants
             </h2>
-            <a href="${pageContext.request.contextPath}/variant/form"
-            <a href="${pageContext.request.contextPath}/variant/create"
-               class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/variant/form" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tạo Variant mới
             </a>
         </div>
@@ -183,7 +211,6 @@
                                     <td>
                                         <a class="btn btn-sm btn-outline-primary"
                                            href="${pageContext.request.contextPath}/variant/form?id=${v.variantId}">
-                                           href="${pageContext.request.contextPath}/variant/edit?id=${v.variantId}">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a class="btn btn-sm btn-outline-danger"
@@ -232,35 +259,7 @@
     </div>
 </div>
 
-<style>
-/* ===== BLUE THEME ===== */
-.variant-img {
-    width: 55px;
-    height: 55px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #0d6efd;
-}
 
-.form-control:focus,
-.form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
-}
-
-.pagination .page-link {
-    color: #0d6efd;
-}
-.pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.table-primary th {
-    background-color: #0d6efd;
-    color: #fff;
-}
-</style>
 <script>
 
 document.addEventListener("DOMContentLoaded", function(){

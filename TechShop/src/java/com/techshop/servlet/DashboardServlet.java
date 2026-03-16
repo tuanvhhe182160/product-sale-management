@@ -13,6 +13,7 @@ import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
 import com.techshop.dao.SalesHistoryDAO;
 import com.techshop.dao.TechnicianDAO;
+import com.techshop.model.FinancialReportItem;
 import com.techshop.model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
