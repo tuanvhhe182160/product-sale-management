@@ -4,7 +4,7 @@
     Author     : Admin
 --%>
 
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:set var="isEdit" value="${not empty category and not empty category.categoryId}" />
@@ -21,7 +21,7 @@
             </h5>
 
             <a class="btn btn-outline-secondary"
-               href="${pageContext.request.contextPath}/ProductCategory">
+               href="${pageContext.request.contextPath}/category">
                 Back
             </a>
         </div>
@@ -72,7 +72,7 @@
                 </c:choose>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <a href="${pageContext.request.contextPath}/ProductCategory"
+                    <a href="${pageContext.request.contextPath}/category"
                        class="btn btn-secondary">
                         Cancel
                     </a>
@@ -89,4 +89,5 @@
 </div>
 
 <%@ include file="../common/footer.jsp" %>
+
 

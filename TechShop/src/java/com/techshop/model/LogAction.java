@@ -43,12 +43,21 @@ public enum LogAction {
     CREATE_INVOICE,
     CANCEL_INVOICE,
     EXPORT_INVOICE,
+    PRINT_INVOICE,
     
     // Nhóm Báo cáo / Kế toán
+    APPROVE_PAYMENT,
     VIEW_FINANCIAL_REPORT,
     EXPORT_FINANCIAL_REPORT,
     CLOSE_ACCOUNTING_PERIOD,
     
+    //Nhóm Bảo hành
+    UPDATE_WARRANTY_REQUEST,
+    CREATE_WARRANTY_REQUEST,
+    
+    //Nhóm Chăm sóc KH
+    UPDATE_CUSTOMER,
+    CREATE_CUSTOMER,
     //Nhóm Hệ thống
     EXPORT_AUDIT_LOGS
 }

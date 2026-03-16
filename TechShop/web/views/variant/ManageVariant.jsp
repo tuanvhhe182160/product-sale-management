@@ -1,8 +1,38 @@
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="com.techshop.util.NumberUtil" %>
 <%@ page import="com.techshop.util.DateTimeUtil" %>
 <jsp:include page="../common/header.jsp" />
+
+<style>
+/* ===== BLUE THEME ===== */
+.variant-img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #0d6efd;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
+}
+
+.pagination .page-link {
+    color: #0d6efd;
+}
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.table-primary th {
+    background-color: #0d6efd;
+    color: #fff;
+}
+</style>
 
 <div class="row">
     <div class="col-12">
@@ -12,8 +42,7 @@
             <h2 class="text-primary">
                 <i class="fas fa-box"></i> Quản lý Product Variants
             </h2>
-            <a href="${pageContext.request.contextPath}/variant/create"
-               class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/variant/form" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tạo Variant mới
             </a>
         </div>
@@ -35,53 +64,86 @@
 
         <!-- SEARCH + FILTER -->
         <div class="card mb-3 border-primary">
-            <div class="card-body">
-                <form method="GET"
-                      action="${pageContext.request.contextPath}/variant"
-                      class="row g-3">
+    <div class="card-body">
+        <form method="GET"
+              action="${pageContext.request.contextPath}/variant"
+              class="row g-3">
 
-                    <div class="col-md-5">
-                        <label class="form-label fw-semibold text-primary">
-                            Tìm kiếm
-                        </label>
-                        <input type="text"
-                               class="form-control"
-                               name="search"
-                               value="${searchValue}">
-                    </div>
-
-                    <div class="col-md-5">
-                        <label class="form-label fw-semibold text-primary">
-                            Lọc theo Model
-                        </label>
-                        <select class="form-select" name="modelId">
-                            <option value="">-- Tất cả Models --</option>
-                            <c:forEach var="m" items="${models}">
-                                <option value="${m.modelId}"
-                                        ${m.modelId == selectedModelId ? 'selected' : ''}>
-                                    ${m.categoryName} - ${m.brand} - ${m.modelName}
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">
-                            <i class="fas fa-search"></i> Tìm
-                        </button>
-                    </div>
-
-                    <c:if test="${searchValue != null || selectedModelId != null}">
-                        <div class="col-12">
-                            <a href="${pageContext.request.contextPath}/variant"
-                               class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-times"></i> Xóa bộ lọc
-                            </a>
-                        </div>
-                    </c:if>
-                </form>
+            <!-- SEARCH -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold text-primary">
+                    Tìm kiếm
+                </label>
+                <input type="text"
+                       class="form-control"
+                       name="search"
+                       value="${searchValue}">
             </div>
-        </div>
+
+            <!-- CATEGORY -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold text-primary">
+                    Category
+                </label>
+
+                <select class="form-select"
+                        name="categoryId"
+                        id="categoryFilter">
+
+                    <option value="">-- Tất cả Category --</option>
+
+                    <c:forEach var="c" items="${categories}">
+                        <option value="${c.categoryId}"
+                                ${c.categoryId == selectedCategoryId ? 'selected' : ''}>
+                            ${c.categoryName}
+                        </option>
+                    </c:forEach>
+
+                </select>
+            </div>
+
+            <!-- MODEL -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold text-primary">
+                    Model
+                </label>
+
+                <select class="form-select"
+                        name="modelId"
+                        id="modelFilter">
+
+                    <option value="">-- Tất cả Models --</option>
+
+                    <c:forEach var="m" items="${models}">
+                        <option value="${m.modelId}"
+                                data-category="${m.categoryId}"
+                                ${m.modelId == selectedModelId ? 'selected' : ''}>
+                            ${m.brand} - ${m.modelName}
+                        </option>
+                    </c:forEach>
+
+                </select>
+            </div>
+
+            <!-- BUTTON -->
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Tìm
+                </button>
+            </div>
+
+            <c:if test="${searchValue != null || selectedModelId != null || selectedCategoryId != null}">
+                <div class="col-12">
+                    <a href="${pageContext.request.contextPath}/variant"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-times"></i> Xóa bộ lọc
+                    </a>
+                </div>
+            </c:if>
+
+        </form>
+    </div>
+</div>
 
         <!-- TABLE -->
         <div class="card border-primary">
@@ -148,7 +210,7 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-sm btn-outline-primary"
-                                           href="${pageContext.request.contextPath}/variant/edit?id=${v.variantId}">
+                                           href="${pageContext.request.contextPath}/variant/form?id=${v.variantId}">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a class="btn btn-sm btn-outline-danger"
@@ -197,34 +259,40 @@
     </div>
 </div>
 
-<style>
-/* ===== BLUE THEME ===== */
-.variant-img {
-    width: 55px;
-    height: 55px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #0d6efd;
-}
 
-.form-control:focus,
-.form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
-}
+<script>
 
-.pagination .page-link {
-    color: #0d6efd;
-}
-.pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
+document.addEventListener("DOMContentLoaded", function(){
 
-.table-primary th {
-    background-color: #0d6efd;
-    color: #fff;
-}
-</style>
+    const category = document.getElementById("categoryFilter");
+    const model = document.getElementById("modelFilter");
 
+    function filterModels(){
+
+        const selectedCategory = category.value;
+
+        Array.from(model.options).forEach(function(option){
+
+            const optionCategory = option.dataset.category;
+
+            if(!optionCategory){
+                return;
+            }
+
+            if(selectedCategory === "" || optionCategory === selectedCategory){
+                option.style.display = "block";
+            }else{
+                option.style.display = "none";
+            }
+
+        });
+    }
+
+    category.addEventListener("change", filterModels);
+
+    filterModels();
+
+});
+
+</script>
 <jsp:include page="../common/footer.jsp" />

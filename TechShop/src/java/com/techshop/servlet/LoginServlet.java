@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package com.techshop.servlet;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -83,7 +88,7 @@ public class LoginServlet extends HttpServlet {
         if ("password".equals(loginType)) {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
-        
+
             PasswordDAO dao = new PasswordDAO();
             User user = null;
             try {
@@ -91,27 +96,23 @@ public class LoginServlet extends HttpServlet {
             } catch (Exception ex) {
                 Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
-            if (user != null) {
-                // Success
-                System.out.println("Found user");
-                authorizeToSystem(request, response, user.getEmail());
-            } else {
-                // Failed
-                System.out.println("Found 0 user");
-                // --- GHI LOG ĐĂNG NHẬP THẤT BẠI ---
-                logDAO.logAction(
-                    null, 
-                    LogAction.FAILED_LOGIN, 
-                    EntityType.SYSTEM, 
-                    null, 
-                    request.getRemoteAddr(), 
-                    "Đăng nhập thất bại (Sai mật khẩu) cho email: " + email
-                );
-                // ----------------------------------
-                response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
-            }
-        } 
+            
+        if (user != null) {
+            authorizeToSystem(request, response, user.getEmail());
+            return; // QUAN TRỌNG
+        } else {
+            logDAO.logAction(
+                null,
+                LogAction.FAILED_LOGIN,
+                EntityType.SYSTEM,
+                null,
+                request.getRemoteAddr(),
+                "Đăng nhập thất bại (Sai mật khẩu) cho email: " + email
+            );
+            response.sendRedirect(request.getContextPath() + "/login?error=Invalid email or password");
+            return; // QUAN TRỌNG
+        }
+    }
         
         //GOOGLE
         else if ("google".equals(loginType)) {
@@ -228,8 +229,7 @@ public class LoginServlet extends HttpServlet {
             "Đăng nhập thành công qua " + ("google".equals(loginType) ? "Google" : "Mật khẩu")
         );
         // ------------------------------------
-        
-        // Redirect to dashboard or saved URL
+    // Redirect to dashboard or saved URL
         String redirectUrl = (String) session.getAttribute("redirectAfterLogin");
         if (redirectUrl != null) {
             session.removeAttribute("redirectAfterLogin");

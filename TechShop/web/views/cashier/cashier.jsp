@@ -1,7 +1,7 @@
 <%--
     cashier.jsp – Layout 2 cột: trái tìm sản phẩm, phải giỏ hàng + khách hàng
 --%>
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -1289,6 +1289,75 @@
         </div>
     </div>
 </div>
+<!-- ===== Modal Xác nhận thanh toán ===== -->
+<div class="modal fade" id="checkoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header py-3" style="background:#eff6ff;border-bottom:1px solid #bfdbfe;">
+                <h6 class="modal-title fw-bold mb-0" style="color:#1e40af;">
+                    <i class="fas fa-receipt me-2"></i>Xác nhận thanh toán
+                </h6>
+                <button type="button" class="btn-close" id="btnCheckoutClose" title="Đóng để thêm sản phẩm"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tóm tắt đơn hàng -->
+                <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Khách hàng:</span>
+                        <strong id="confirmCustInfo"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Số sản phẩm:</span>
+                        <strong id="confirmItemCount"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Tổng tiền hàng:</span>
+                        <strong id="confirmCartTotal"></strong>
+                    </div>
+                    <div id="confirmDiscountRow" class="d-flex justify-content-between mb-1" style="display:none;">
+                        <span class="text-muted">Giảm giá:</span>
+                        <span id="confirmDiscount" style="color:#e53e3e;font-weight:600;"></span>
+                    </div>
+                    <div class="d-flex justify-content-between" style="border-top:1px dashed #dee2e6;padding-top:6px;margin-top:4px;">
+                        <span style="font-weight:700;color:#0d6efd;">Khách cần trả:</span>
+                        <span id="confirmFinalAmount" style="font-weight:700;color:#0d6efd;font-size:.95rem;"></span>
+                    </div>
+                </div>
+
+                <!-- Thông tin khách mới (ẩn nếu khách cũ) -->
+                <div id="newCustSection" style="display:none;">
+                    <div class="alert alert-info py-2 small mb-2">
+                        <i class="fas fa-user-plus me-1"></i>
+                        Khách hàng mới — bạn có muốn lưu vào hệ thống?
+                    </div>
+                    <div class="d-flex gap-2 mb-2">
+                        <label style="flex:1;display:flex;align-items:center;gap:6px;border:1.5px solid #10b981;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.78rem;background:#f0fdf4;">
+                            <input type="radio" name="saveOption" value="yes" checked style="accent-color:#10b981;" />
+                            <span><i class="fas fa-user-plus me-1"></i>Có, lưu khách hàng</span>
+                        </label>
+                        <label style="flex:1;display:flex;align-items:center;gap:6px;border:1.5px solid #e2e6ea;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:.78rem;">
+                            <input type="radio" name="saveOption" value="no" style="accent-color:#6c757d;" />
+                            <span>Không, bỏ qua</span>
+                        </label>
+                    </div>
+                </div>
+
+                <p style="font-size:.78rem;color:#6c757d;margin:0;">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Nhấn <strong>✕</strong> hoặc <strong>Quay lại</strong> nếu muốn thêm sản phẩm.
+                </p>
+            </div>
+            <div class="modal-footer py-2 gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnCheckoutBack">
+                    <i class="fas fa-arrow-left me-1"></i>Quay lại
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnCheckoutConfirm">
+                    <i class="fas fa-check-circle me-1"></i>Xác nhận thanh toán
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%@ include file="../common/footer.jsp" %>
 
@@ -1504,17 +1573,15 @@ if (flashMsg) {
 
     // Khi submit form thanh toán
     if (checkoutForm) {
-        // Flag: true khi submit được gọi từ nút trong modal (bỏ qua kiểm tra lại)
         var modalConfirmed = false;
 
         checkoutForm.addEventListener('submit', function(e) {
-            console.log('[Checkout] submit event fired, modalConfirmed=' + modalConfirmed);
-            // Nếu submit từ modal → bỏ qua toàn bộ kiểm tra, submit thật
             if (modalConfirmed) {
                 modalConfirmed = false;
-                console.log('[Checkout] modalConfirmed=true, allowing submit');
                 return; // Cho phép submit bình thường
             }
+
+            e.preventDefault();
 
             var phone    = phoneInput.value.trim();
             var custId   = customerIdFld.value.trim();
@@ -1522,7 +1589,6 @@ if (flashMsg) {
 
             // Chưa nhập SĐT → chặn
             if (!phone) {
-                e.preventDefault();
                 showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập số điện thoại khách hàng.');
                 phoneInput.focus();
                 return;
@@ -1530,39 +1596,60 @@ if (flashMsg) {
 
             // Khách mới chưa nhập tên → chặn
             if (!custId && !fullName) {
-                e.preventDefault();
                 showStatus('error', '<i class="fas fa-exclamation-circle me-1"></i>Khách hàng mới — vui lòng nhập họ tên trước khi thanh toán.');
                 fullNameFld.focus();
                 fullNameFld.classList.add('is-invalid');
                 return;
             }
 
-            // Khách mới đã có tên → hỏi có muốn lưu vào hệ thống không
-            if (!custId && fullName) {
-                e.preventDefault();
-                document.getElementById('confirmNewCustName').textContent  = fullName;
-                document.getElementById('confirmNewCustPhone').textContent = phone;
-                document.getElementById('confirmNewCustEmail').textContent = emailFld.value.trim() || '—';
-                var modal = new bootstrap.Modal(document.getElementById('newCustomerModal'));
-                modal.show();
-                return;
+            // Hiện modal xác nhận thanh toán
+            var isNewCust = !custId && fullName;
+            var custDisplay = fullName || phone;
+            document.getElementById('confirmCustInfo').textContent = custDisplay + ' (' + phone + ')';
+            document.getElementById('confirmItemCount').textContent = '${not empty activeCart ? activeCart.size() : 0} sản phẩm';
+            document.getElementById('confirmCartTotal').textContent = '<fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ';
+
+            var discountVal = parseFloat(document.getElementById('discountAmount').value) || 0;
+            var discountRow = document.getElementById('confirmDiscountRow');
+            if (discountVal > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('confirmDiscount').textContent = '- ' + discountVal.toLocaleString('vi-VN') + 'đ';
+            } else {
+                discountRow.style.display = 'none';
             }
-            // Khách cũ (custId có giá trị) → submit bình thường
+            document.getElementById('confirmFinalAmount').textContent = '<fmt:formatNumber value="${finalAmount}" type="number" groupingUsed="true"/>đ';
+
+            // Hiện/ẩn phần lưu khách hàng mới
+            var newCustSection = document.getElementById('newCustSection');
+            if (isNewCust) {
+                newCustSection.style.display = 'block';
+                var saveYes = document.querySelector('input[name="saveOption"][value="yes"]');
+                if (saveYes) saveYes.checked = true;
+            } else {
+                newCustSection.style.display = 'none';
+            }
+
+            var modal = new bootstrap.Modal(document.getElementById('checkoutConfirmModal'));
+            modal.show();
         });
 
-        // Nút "Có, lưu và thanh toán" → đặt flag, set saveCustomer=true rồi submit thật
-        document.getElementById('btnSaveAndCheckout').addEventListener('click', function() {
-            document.getElementById('saveCustomer').value = 'true';
-            modalConfirmed = true;
-            console.log('[Checkout] btnSaveAndCheckout clicked');
+        // Nút "Xác nhận thanh toán" trong modal
+        document.getElementById('btnCheckoutConfirm').addEventListener('click', function() {
+            // Kiểm tra lưu khách hàng mới
+            var newCustSection = document.getElementById('newCustSection');
+            if (newCustSection.style.display !== 'none') {
+                var saveOpt = document.querySelector('input[name="saveOption"]:checked');
+                document.getElementById('saveCustomer').value = (saveOpt && saveOpt.value === 'yes') ? 'true' : 'false';
+            } else {
+                document.getElementById('saveCustomer').value = 'false';
+            }
 
-            // Ẩn modal ngay lập tức (không đợi animation)
-            var modalEl = document.getElementById('newCustomerModal');
-            modalEl.classList.remove('show');
-            modalEl.style.display = 'none';
-            document.body.classList.remove('modal-open');
-            var backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) backdrop.remove();
+            modalConfirmed = true;
+
+            // Ẩn modal
+            var modalEl = document.getElementById('checkoutConfirmModal');
+            var bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
 
             // Submit form
             checkoutForm.submit();
@@ -1585,6 +1672,16 @@ if (flashMsg) {
             // Submit form
             checkoutForm.submit();
         });
+        // Nút "Quay lại" và nút X → đóng modal, quay về tab giỏ hàng để thêm sản phẩm
+        function closeCheckoutModal() {
+            var modalEl = document.getElementById('checkoutConfirmModal');
+            var bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
+            switchTab('cart');
+        }
+
+        document.getElementById('btnCheckoutBack').addEventListener('click', closeCheckoutModal);
+        document.getElementById('btnCheckoutClose').addEventListener('click', closeCheckoutModal);
 
         // Xóa lỗi khi nhân viên bắt đầu nhập tên
         fullNameFld.addEventListener('input', function() {

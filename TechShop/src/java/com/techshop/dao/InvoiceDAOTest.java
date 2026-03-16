@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.techshop.dao;
-
 import com.techshop.dal.DBContext;
 import com.techshop.model.Invoice;
 import com.techshop.model.InvoiceItem;
@@ -183,6 +182,54 @@ public class InvoiceDAOTest extends DBContext{
             System.err.println("getInvoiceItems Error: " + e.getMessage());
         }
 
+        return list;
+    }
+    
+    // --- BỔ SUNG VÀO INVOICEDAO ---
+    public List<Invoice> getCustomerInvoices(int customerId, String fromDate, String toDate, String status) {
+        List<com.techshop.model.Invoice> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Invoice WHERE customer_id = ? ");
+        List<Object> params = new ArrayList<>();
+        params.add(customerId);
+
+        // Lọc theo ngày bắt đầu
+        if (fromDate != null && !fromDate.trim().isEmpty()) {
+            sql.append(" AND CAST(invoice_date AS DATE) >= ? ");
+            params.add(fromDate.trim());
+        }
+        // Lọc theo ngày kết thúc
+        if (toDate != null && !toDate.trim().isEmpty()) {
+            sql.append(" AND CAST(invoice_date AS DATE) <= ? ");
+            params.add(toDate.trim());
+        }
+        // Lọc theo trạng thái
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND status = ? ");
+            params.add(status.trim());
+        }
+        
+        sql.append(" ORDER BY invoice_date DESC"); // Đơn mới nhất xếp lên đầu
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    com.techshop.model.Invoice inv = new com.techshop.model.Invoice();
+                    inv.setInvoiceId(rs.getInt("invoice_id"));
+                    inv.setInvoiceCode(rs.getString("invoice_code"));
+                    inv.setTotalAmount(rs.getBigDecimal("total_amount"));
+                    inv.setDiscountAmount(rs.getBigDecimal("discount_amount"));
+                    inv.setFinalAmount(rs.getBigDecimal("final_amount"));
+                    inv.setInvoiceDate(rs.getTimestamp("invoice_date").toLocalDateTime());
+                    inv.setStatus(rs.getString("status"));
+                    list.add(inv);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 }

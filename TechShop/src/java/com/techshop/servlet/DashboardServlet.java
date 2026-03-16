@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package com.techshop.servlet;
 
 import com.techshop.dao.UserDAO;
@@ -6,13 +11,9 @@ import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.dao.ProductModelDAO;
 import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
-import com.techshop.model.FinancialReportItem;
-import com.techshop.dao.UserDAOTest;
-import com.techshop.dao.BranchDAOTest;
-import com.techshop.dao.ProductCategoryDAOTest;
-import com.techshop.dao.ProductModelDAOTest;
-import com.techshop.dao.ProductVariantDAOTest;
 import com.techshop.dao.SalesHistoryDAO;
+import com.techshop.dao.TechnicianDAO;
+import com.techshop.model.FinancialReportItem;
 import com.techshop.model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -186,6 +187,12 @@ public class DashboardServlet extends HttpServlet {
 
     // technician
     private void loadTechnicianDashboard(HttpServletRequest request, User user) {
+        int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
+        
+        TechnicianDAO techDAO = new TechnicianDAO();
+        request.setAttribute("pendingCount", techDAO.countPendingRequests(branchId));
+        request.setAttribute("inProgressCount", techDAO.countInProgressRequests(user.getUserId()));
+        
         request.setAttribute("dashboardType", "technician");
     }
     

@@ -169,8 +169,7 @@ public class ProfileServlet extends HttpServlet {
             "Người dùng cập nhật ảnh đại diện"
         );
         // --------------------------
-
-        // update session
+    // update session
         currentUser.setAvatarUrl(newFileName);
         request.getSession().setAttribute("user", currentUser);
 

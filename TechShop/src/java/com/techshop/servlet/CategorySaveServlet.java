@@ -1,12 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package com.techshop.servlet;
 
 import com.techshop.dao.ProductCategoryDAO;
+import com.techshop.dao.SystemLogDAO; 
 import com.techshop.model.ProductCategory;
+import com.techshop.model.EntityType; 
+import com.techshop.model.LogAction; 
+import com.techshop.model.User; 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -16,6 +15,7 @@ import java.io.IOException;
 public class CategorySaveServlet extends HttpServlet {
 
     private final ProductCategoryDAO dao = new ProductCategoryDAO();
+    private final SystemLogDAO logDAO = new SystemLogDAO(); 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -68,6 +68,11 @@ public class CategorySaveServlet extends HttpServlet {
             return;
         }
 
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = (user != null) ? user.getUserId() : null;
+        // ---------------------------------
+
         if (!isEdit) {
             ProductCategory c = new ProductCategory();
             c.setCategoryCode(code);
@@ -75,12 +80,24 @@ public class CategorySaveServlet extends HttpServlet {
             c.setDescription(desc);
             c.setStatus("ACTIVE"); 
             dao.createCategory(c);
+            
+            // --- GHI LOG ---
+            logDAO.logAction(
+                userId, 
+                LogAction.CREATE_CATEGORY, 
+                EntityType.CATEGORY, 
+                null, 
+                request.getRemoteAddr(), 
+                "Thêm mới danh mục: " + name + " (Mã: " + code + ")"
+            );
+            // ----------------------------------
+            
         } else {
             int id;
             try {
                 id = Integer.parseInt(idRaw);
             } catch (Exception e) {
-                response.sendRedirect(request.getContextPath() + "/ProductCategory");
+                response.sendRedirect(request.getContextPath() + "/category");
                 return;
             }
 
@@ -91,9 +108,19 @@ public class CategorySaveServlet extends HttpServlet {
             c.setDescription(desc);
             c.setStatus(status); 
             dao.updateCategory(c);
+            
+            // --- GHI LOG ---
+            logDAO.logAction(
+                userId, 
+                LogAction.UPDATE_CATEGORY, 
+                EntityType.CATEGORY, 
+                id, 
+                request.getRemoteAddr(), 
+                "Cập nhật thông tin danh mục: " + name + " (Mã: " + code + ")"
+            );
+            // ----------------------------------
         }
 
-        response.sendRedirect(request.getContextPath() + "/ProductCategory");
+        response.sendRedirect(request.getContextPath() + "/category");
     }
 }
-

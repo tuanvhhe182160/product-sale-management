@@ -19,6 +19,7 @@ public enum EntityType {
     INVENTORY_TRANSACTION,
     WARRANTY_REQUEST,
     ACCOUNTING,
+    CUSTOMER,
     REPORT, // Dành cho các hành động liên quan đến xuất báo cáo
     SYSTEM  // Dành cho các hành động chung chung như Login/Logout
 }

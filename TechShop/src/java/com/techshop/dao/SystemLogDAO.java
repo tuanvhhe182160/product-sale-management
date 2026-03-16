@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
@@ -11,7 +15,7 @@ import java.util.List;
 public class SystemLogDAO extends DBContext {
 
     // Hàm lấy danh sách log có kèm bộ lọc (Filter)
-    public List<SystemLog> getLogsWithFilters(String startDate, String endDate, String action, String searchKeyword) {
+    public List<SystemLog> getLogsWithFilters(String startDate, String endDate, String action, String searchKeyword, int offset, int pageSize) {
         List<SystemLog> list = new ArrayList<>();
         
         // JOIN với bảng User để lấy tên người thực hiện
@@ -49,7 +53,11 @@ public class SystemLogDAO extends DBContext {
             params.add(likeKeyword);
         }
 
-        sql.append(" ORDER BY s.created_at DESC"); // Luôn đưa log mới nhất lên đầu
+        sql.append(" ORDER BY s.created_at DESC "); // Luôn đưa log mới nhất lên đầu
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+        
+        params.add(offset);
+        params.add(pageSize);
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             // Đổ tham số vào PreparedStatement
@@ -123,6 +131,56 @@ public class SystemLogDAO extends DBContext {
             ps.executeUpdate();
         } catch (SQLException e) {
             System.err.println("SystemLogDAO.logAction Error: " + e.getMessage());
+        }              
+    }
+    
+    public int countLogsWithFilters(String startDate, String endDate,
+        String action, String searchKeyword) {
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT COUNT(*) " +
+            "FROM SystemLog s " +
+            "LEFT JOIN [User] u ON s.user_id = u.user_id " +
+            "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            sql.append(" AND CAST(s.created_at AS DATE) >= ? ");
+            params.add(startDate);
+        }
+
+        if (endDate != null && !endDate.trim().isEmpty()) {
+            sql.append(" AND CAST(s.created_at AS DATE) <= ? ");
+            params.add(endDate);
+        }
+
+        if (action != null && !action.trim().isEmpty() && !action.equals("ALL")) {
+            sql.append(" AND s.action = ? ");
+            params.add(action);
+        }
+
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            sql.append(" AND (u.full_name LIKE ? OR s.entity_type LIKE ? OR s.details LIKE ?) ");
+            String likeKeyword = "%" + searchKeyword + "%";
+            params.add(likeKeyword);
+            params.add(likeKeyword);
+            params.add(likeKeyword);
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("SystemLogDAO.countLogsWithFilters Error: " + e.getMessage());
+        }
+        return 0;
         }
     }
-}

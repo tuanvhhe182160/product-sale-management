@@ -4,7 +4,7 @@
     Author     : Admin
 --%>
 
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:set var="pageTitle" value="Models - TechShop" />
@@ -96,7 +96,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Total Models</div>
-                    <p class="value"><c:out value="${models.size()}" /></p>
+                    <p class="value"><c:out value="${totalItems}" /></p>
                 </div>
                 <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-cubes fa-2x text-primary"></i>
@@ -110,7 +110,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Active</div>
-                    <p class="value"><c:out value="${activeCount}" /></p>
+                    <p class="value" id="activeCount"><c:out value="${activeCount}" /></p>
                 </div>
                 <div class="bg-info bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-check-circle fa-2x text-info"></i>
@@ -124,7 +124,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Inactive</div>
-                    <p class="value"><c:out value="${inactiveCount}" /></p>
+                    <p class="value" id="inactiveCount"><c:out value="${inactiveCount}" /></p>
                 </div>
                 <div class="bg-secondary bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-ban fa-2x text-secondary"></i>
@@ -138,7 +138,7 @@
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
                     <div class="label">Brands</div>
-                    <p class="value"><c:out value="${brandCount}" /></p>
+                    <p class="value" id="brandCount"><c:out value="${brandCount}" /></p>
                 </div>
                 <div class="bg-info bg-opacity-10 p-3 rounded-circle">
                     <i class="fas fa-tag fa-2x text-info"></i>
@@ -157,14 +157,14 @@
         <div class="d-flex flex-wrap align-items-center gap-2">
 
             <a class="btn btn-primary"
-               href="${pageContext.request.contextPath}/ProductModel/form?categoryId=${categoryId}">
+               href="${pageContext.request.contextPath}/model/form?categoryId=${categoryId}">
                 <i class="fas fa-plus me-2"></i> New Model
             </a>
 
             <!-- Filter form -->
             <form class="d-flex gap-2 flex-wrap align-items-center mb-0"
                   method="get"
-                  action="${pageContext.request.contextPath}/ProductModel">
+                  action="${pageContext.request.contextPath}/model">
 
                 <input type="hidden" name="categoryId" value="${categoryId}" />
 
@@ -187,7 +187,7 @@
                 </button>
 
                 <a class="btn btn-outline-secondary"
-                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}">
+                   href="${pageContext.request.contextPath}/model?categoryId=${categoryId}">
                     Reset
                 </a>
             </form>
@@ -229,8 +229,9 @@
 
                     <tbody>
                         <c:forEach items="${models}" var="m" varStatus="st">
-                            <tr>
-                                <td class="text-muted">${st.index + 1}</td>
+                            <tr data-text="${m.modelCode} ${m.modelName} ${m.brand}"
+                                data-status="${m.status}">
+                                <td class="text-muted">${(page - 1) * pageSize + st.index + 1}</td>
 
                                 <td>
                                     <span class="badge bg-primary bg-opacity-10 text-primary">
@@ -282,7 +283,7 @@
 
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary"
-                                       href="${pageContext.request.contextPath}/ProductModel/form?id=${m.modelId}&categoryId=${categoryId}">
+                                       href="${pageContext.request.contextPath}/model/form?id=${m.modelId}&categoryId=${categoryId}">
                                         <i class="fas fa-pen me-1"></i> Edit
                                     </a>
                                 </td>
@@ -304,7 +305,7 @@
 
                             <li class="page-item ${page <= 1 ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page-1}">
+                                   href="${pageContext.request.contextPath}/model?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page-1}">
                                     Prev
                                 </a>
                             </li>
@@ -322,7 +323,7 @@
                             <c:forEach begin="${start}" end="${end}" var="p">
                                 <li class="page-item ${p == page ? 'active' : ''}">
                                     <a class="page-link"
-                                       href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${p}">
+                                       href="${pageContext.request.contextPath}/model?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${p}">
                                         ${p}
                                     </a>
                                 </li>
@@ -331,7 +332,7 @@
                             <!-- Next -->
                             <li class="page-item ${page >= totalPages ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   href="${pageContext.request.contextPath}/ProductModel?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page+1}">
+                                   href="${pageContext.request.contextPath}/model?categoryId=${categoryId}&q=${param.q}&status=${param.status}&page=${page+1}">
                                     Next
                                 </a>
                             </li>
@@ -435,6 +436,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             fetch('${pageContext.request.contextPath}/model/edit?id=' + encodeURIComponent(id))
+            fetch('${pageContext.request.contextPath}/ProductModel/form?id=' + encodeURIComponent(id))
                 .then(res => res.text())
                 .then(html => {
                     content.innerHTML = html;

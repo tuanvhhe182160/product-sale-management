@@ -41,7 +41,23 @@ public class AuditLogServlet extends HttpServlet {
         String searchKeyword = request.getParameter("searchKeyword");
         
         // 2. Lấy dữ liệu từ DAO
-        List<SystemLog> logs = logDAO.getLogsWithFilters(startDate, endDate, actionFilter, searchKeyword);
+        int page = 1;
+        int pageSize = 20;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null) {
+            page = Integer.parseInt(pageParam);
+        }
+
+        int offset = (page - 1) * pageSize;
+        List<SystemLog> logs = logDAO.getLogsWithFilters(
+            startDate, endDate, actionFilter, searchKeyword, offset, pageSize);
+
+        int totalLogs = logDAO.countLogsWithFilters(startDate, endDate, actionFilter, searchKeyword);
+        int totalPages = (int) Math.ceil((double) totalLogs / pageSize);
+
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalLogs", totalLogs);
         
         // 3. Xử lý xuất file CSV nếu Admin yêu cầu (Use Case: Export Audit Logs)
         String action = request.getParameter("action");

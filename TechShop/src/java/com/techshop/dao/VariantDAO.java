@@ -4,60 +4,88 @@ import com.techshop.dal.DBContext;
 import com.techshop.model.ProductModel;
 import com.techshop.model.ProductVariant;
 import com.techshop.model.VariantAttribute;
-import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VariantDAO extends DBContext {
 
     // Get all variants with JOIN info (with search and filter support)
-    public List<ProductVariant> getAllVariants(String search, Integer modelId) {
+    public List<ProductVariant> getAllVariants(String search, Integer categoryId, Integer modelId) {
+
         List<ProductVariant> variants = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT v.variant_id, v.model_id, v.sku, v.variant_name, "
-                + "v.base_price, v.cost_price, v.warranty_months, v.image_url, "
-                + "v.status, v.created_at, v.updated_at, "
-                + "m.model_name, m.brand, c.category_name "
-                + "FROM ProductVariant v "
-                + "INNER JOIN ProductModel m ON v.model_id = m.model_id "
-                + "INNER JOIN ProductCategory c ON m.category_id = c.category_id ");
-        
-        // Add WHERE conditions
+
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                v.variant_id,
+                v.model_id,
+                v.sku,
+                v.variant_name,
+                v.base_price,
+                v.cost_price,
+                v.warranty_months,
+                v.image_url,
+                v.status,
+                v.created_at,
+                v.updated_at,
+
+                m.model_name,
+                m.brand,
+
+                c.category_name
+
+            FROM ProductVariant v
+            INNER JOIN ProductModel m ON v.model_id = m.model_id
+            INNER JOIN ProductCategory c ON m.category_id = c.category_id
+        """);
+
         List<String> conditions = new ArrayList<>();
         List<Object> parameters = new ArrayList<>();
-        
+
         if (search != null && !search.trim().isEmpty()) {
-            conditions.add("(v.sku LIKE ? OR v.variant_name LIKE ? OR m.model_name LIKE ? OR m.brand LIKE ?)");
-            String searchPattern = "%" + search.trim() + "%";
-            parameters.add(searchPattern);
-            parameters.add(searchPattern);
-            parameters.add(searchPattern);
-            parameters.add(searchPattern);
+            conditions.add("""
+                (
+                    v.sku LIKE ?
+                    OR v.variant_name LIKE ?
+                    OR m.model_name LIKE ?
+                    OR m.brand LIKE ?
+                )
+            """);
+
+            String pattern = "%" + search.trim() + "%";
+
+            parameters.add(pattern);
+            parameters.add(pattern);
+            parameters.add(pattern);
+            parameters.add(pattern);
         }
-        
+
+        if (categoryId != null && categoryId > 0) {
+            conditions.add("m.category_id = ?");
+            parameters.add(categoryId);
+        }
+
         if (modelId != null && modelId > 0) {
             conditions.add("v.model_id = ?");
             parameters.add(modelId);
         }
-        
-        if (!conditions.isEmpty()) {
-            sql.append("WHERE ").append(String.join(" AND ", conditions));
-        }
-        
-        // Order by created_at ASC (newest at bottom)
-        sql.append(" ORDER BY v.created_at ASC");
 
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            // Set parameters
+        if (!conditions.isEmpty()) {          
+            sql.append(" WHERE ")
+            .append(String.join(" AND ", conditions));
+        }
+
+        sql.append(" ORDER BY v.created_at DESC");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) 
+        {
             for (int i = 0; i < parameters.size(); i++) {
                 ps.setObject(i + 1, parameters.get(i));
-            }
-            
+            }   
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ProductVariant variant = mapVariantFromResultSet(rs);
@@ -65,16 +93,15 @@ public class VariantDAO extends DBContext {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error getting all variants: " + e.getMessage());
+            System.err.println("Error getting variants: " + e.getMessage());
             e.printStackTrace();
         }
-
         return variants;
     }
     
     // Overload method for backward compatibility
     public List<ProductVariant> getAllVariants() {
-        return getAllVariants(null, null);
+        return getAllVariants(null, null, null);
     }
     
     /**
@@ -381,5 +408,26 @@ public class VariantDAO extends DBContext {
         }
 
         return variant;
+    }
+    
+    public List<VariantAttribute> getAttributesByVariantId(int variantId) {
+        List<VariantAttribute> list = new ArrayList<>();
+        String sql = "SELECT * FROM VariantAttribute WHERE variant_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, variantId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    VariantAttribute attr = new VariantAttribute();
+                    attr.setAttributeId(rs.getInt("attribute_id"));
+                    attr.setVariantId(rs.getInt("variant_id"));
+                    attr.setAttributeName(rs.getString("attribute_name"));
+                    attr.setAttributeValue(rs.getString("attribute_value"));
+                    list.add(attr);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

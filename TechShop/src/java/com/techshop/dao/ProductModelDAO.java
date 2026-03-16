@@ -2,10 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-/**
- *
- * @author Admin
- */
 package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
@@ -210,6 +206,29 @@ public class ProductModelDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public int countBrands(int categoryId) {
+        String sql = """
+            SELECT COUNT(DISTINCT brand)
+            FROM ProductModel
+            WHERE category_id = ?
+            AND brand IS NOT NULL
+            AND brand <> ''
+        """;
+
+        try 
+        {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            ps.setInt(1, categoryId);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
     
     /**

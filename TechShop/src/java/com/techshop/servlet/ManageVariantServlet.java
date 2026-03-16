@@ -1,62 +1,108 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package com.techshop.servlet;
 
 import com.techshop.dao.VariantDAO;
+import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.model.ProductModel;
 import com.techshop.model.ProductVariant;
+import com.techshop.model.ProductCategory;
+
 import java.io.IOException;
 import java.util.List;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 
 @WebServlet(name = "ManageVariantServlet", urlPatterns = {"/variant"})
 public class ManageVariantServlet extends HttpServlet {
 
     private VariantDAO variantDAO;
+    private ProductCategoryDAO categoryDAO;
 
     @Override
     public void init() throws ServletException {
         variantDAO = new VariantDAO();
+        categoryDAO = new ProductCategoryDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
         try {
-            // Get search and filter parameters
+
+            /*
+            ==================            PARAMETERS
+            ==================            */
             String search = request.getParameter("search");
+
+            String categoryStr = request.getParameter("categoryId");
             String modelIdStr = request.getParameter("modelId");
+
+            Integer categoryId = null;
             Integer modelId = null;
-            
-            if (modelIdStr != null && !modelIdStr.trim().isEmpty()) {
+
+            if (categoryStr != null && !categoryStr.isBlank()) {
+                try {
+                    categoryId = Integer.parseInt(categoryStr);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            if (modelIdStr != null && !modelIdStr.isBlank()) {
                 try {
                     modelId = Integer.parseInt(modelIdStr);
-                } catch (NumberFormatException e) {
-                    // Invalid modelId, ignore
-                }
+                } catch (NumberFormatException ignored) {}
             }
-            
-            // Get variants with search and filter
-            List<ProductVariant> variants = variantDAO.getAllVariants(search, modelId);
-            
-            // Get all models for filter dropdown
-            List<ProductModel> models = variantDAO.getAllActiveModels();
-            
+
+            /*
+            ==================            DATA
+            ==================            */
+
+            // variants list
+            List<ProductVariant> variants =
+                    variantDAO.getAllVariants(search, categoryId, modelId);
+
+            // models for filter
+            List<ProductModel> models =
+                    variantDAO.getAllActiveModels();
+
+            // categories for filter
+            List<ProductCategory> categories =
+                    categoryDAO.getActiveCategories();
+
+            /*
+            ==================            ATTRIBUTES
+            ==================            */
+
             request.setAttribute("variants", variants);
             request.setAttribute("models", models);
+            request.setAttribute("categories", categories);
+
             request.setAttribute("searchValue", search != null ? search : "");
+            request.setAttribute("selectedCategoryId", categoryId);
             request.setAttribute("selectedModelId", modelId);
+
             request.setAttribute("pageTitle", "Quản lý Variant");
-            request.getRequestDispatcher("/views/variant/ManageVariant.jsp").forward(request, response);
+
+            request.getRequestDispatcher("/views/variant/ManageVariant.jsp")
+                    .forward(request, response);
+
         } catch (Exception e) {
+
             e.printStackTrace();
-            request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            request.getRequestDispatcher("/views/variant/ManageVariant.jsp").forward(request, response);
+
+            request.setAttribute("error",
+                    "Có lỗi xảy ra: " + e.getMessage());
+
+            request.getRequestDispatcher("/views/variant/ManageVariant.jsp")
+                    .forward(request, response);
         }
     }
 
@@ -65,4 +111,3 @@ public class ManageVariantServlet extends HttpServlet {
         return "Manage Variant Servlet - List all variants";
     }
 }
-

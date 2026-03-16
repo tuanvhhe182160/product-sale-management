@@ -1,7 +1,11 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.InvoicePrintDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.InvoicePrintData;
+import com.techshop.model.EntityType; 
+import com.techshop.model.LogAction; 
+import com.techshop.model.User; 
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,6 +21,8 @@ import java.util.List;
 @WebServlet("/invoice/print")
 public class InvoicePrintServlet extends HttpServlet {
 
+    private final SystemLogDAO logDAO = new SystemLogDAO(); 
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -30,12 +36,28 @@ public class InvoicePrintServlet extends HttpServlet {
         InvoicePrintDAO dao = new InvoicePrintDAO();
         List<InvoicePrintData> invoices = new ArrayList<>();
 
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = (user != null) ? user.getUserId() : null;
+
         for (String idParam : idParams) {
             try {
                 int invoiceId = Integer.parseInt(idParam.trim());
                 InvoicePrintData data = dao.getInvoicePrintData(invoiceId);
+                
                 if (data != null) {
                     invoices.add(data);
+                    
+                    // --- GHI LOG ---
+                    logDAO.logAction(
+                        userId, 
+                        LogAction.PRINT_INVOICE,
+                        EntityType.INVOICE, 
+                        invoiceId, 
+                        request.getRemoteAddr(), 
+                        "In ấn/Xuất file hóa đơn (Mã HĐ: " + data.getInvoiceCode() + ")"
+                    );
+                    // -----------------------
                 }
             } catch (NumberFormatException ignored) {}
         }

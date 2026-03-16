@@ -8,33 +8,6 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
-    <servlet>
-        <servlet-name>ForgotPasswordServlet</servlet-name>
-        <servlet-class>com.techshop.servlet.ForgotPasswordServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ForgotPasswordServlet</servlet-name>
-        <url-pattern>/forgot-password</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>ResetPasswordServlet</servlet-name>
-        <servlet-class>com.techshop.servlet.ResetPasswordServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ResetPasswordServlet</servlet-name>
-        <url-pattern>/reset-password</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>UserManageServlet</servlet-name>
-        <servlet-class>com.techshop.servlet.UserManageServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>UserManageServlet</servlet-name>
-        <url-pattern>/user</url-pattern>
-    </servlet-mapping>
-
     <welcome-file-list>
         <welcome-file>login</welcome-file>
     </welcome-file-list>
@@ -43,6 +16,7 @@
         <error-code>403</error-code>
         <location>/views/errors/403.jsp</location>
     </error-page>
+
     <error-page>
         <error-code>404</error-code>
         <location>/views/errors/404.jsp</location>

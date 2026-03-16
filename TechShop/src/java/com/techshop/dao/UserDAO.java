@@ -2,499 +2,215 @@ package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
 import com.techshop.model.User;
-import com.techshop.util.AuthenticationUtil;
-import java.sql.*;
-import java.time.LocalDateTime;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO extends DBContext {
-    
+
+    private static final int CASHIER_ROLE_ID = 3;
+
+    private static final String USER_SELECT =
+            "SELECT u.user_id, u.email, u.full_name, u.phone, u.avatar_url, " +
+            "       u.role_id, u.branch_id, u.status, " +
+            "       u.created_at, u.updated_at, " +
+            "       r.role_name, b.branch_name " +
+            "FROM [User] u " +
+            "LEFT JOIN Role r ON u.role_id = r.role_id " +
+            "LEFT JOIN Branch b ON u.branch_id = b.branch_id ";
+
     public List<User> getAll() {
-        List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +  
-                    "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "ORDER BY u.user_id";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                list.add(user);
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getAll() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return list;
+        String sql = USER_SELECT + "ORDER BY u.user_id";
+        return queryUsers(sql);
     }
 
     public User getById(int id) {
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
-                     "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "WHERE u.user_id = ?";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                rs.close();
-                ps.close();
-                return user;
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getById() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return null;
+        String sql = USER_SELECT + "WHERE u.user_id = ?";
+        return queryUser(sql, id);
     }
-    
+
     public User getByEmail(String email) {
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
-                    "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "WHERE u.email = ? AND u.status = 'ACTIVE'";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                rs.close();
-                ps.close();
-                return user;
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getByEmail() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return null;
+        String sql = USER_SELECT + "WHERE u.email = ? AND u.status = 'ACTIVE'";
+        return queryUser(sql, email);
     }
-    
+
     public List<User> getAllByRole(int roleId) {
-        List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
-                    "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "WHERE u.role_id = ? " +
-                     "ORDER BY u.user_id";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, roleId);
-            ResultSet rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                list.add(user);
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getAllByRole() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return list;
+        String sql = USER_SELECT + "WHERE u.role_id = ? ORDER BY u.user_id";
+        return queryUsers(sql, roleId);
     }
-    
+
     public List<User> getAllByBranch(int branchId) {
-        List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
-                    "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "WHERE u.branch_id = ? " +
-                     "ORDER BY u.user_id";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, branchId);
-            ResultSet rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                list.add(user);
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getAllByBranch() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return list;
+        String sql = USER_SELECT + "WHERE u.branch_id = ? ORDER BY u.user_id";
+        return queryUsers(sql, branchId);
     }
-    
+
     public List<User> getAllCashier() {
-        List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
-                    "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "WHERE u.role_id = 3 " +
-                     "ORDER BY u.user_id";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                list.add(user);
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getAllByRole() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return list;
+        String sql = USER_SELECT + "WHERE u.role_id = ? ORDER BY u.user_id";
+        return queryUsers(sql, CASHIER_ROLE_ID);
     }
-    
+
     public List<User> getCashiersByBranchId(int branchId) {
-        List<User> list = new ArrayList<>();
-        String sql = "SELECT u.user_id, u.email, u.full_name, u.phone, " +
-                    "       u.avatar_url, " +
-                     "       u.role_id, u.branch_id, u.status, " +
-                     "       u.created_at, u.updated_at, " +
-                     "       r.role_name, " +
-                     "       b.branch_name " +
-                     "FROM [User] u " +
-                     "LEFT JOIN Role r ON u.role_id = r.role_id " +
-                     "LEFT JOIN Branch b ON u.branch_id = b.branch_id " +
-                     "WHERE u.role_id = 3 " +
-                     "AND u.branch_id = ? " +
-                     "ORDER BY u.user_id";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, branchId);
-            ResultSet rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                User user = extractUserFromResultSet(rs);
-                list.add(user);
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.getAllByRole() Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return list;
+        String sql = USER_SELECT + "WHERE u.role_id = ? AND u.branch_id = ? ORDER BY u.user_id";
+        return queryUsers(sql, CASHIER_ROLE_ID, branchId);
     }
-    
+
     public boolean insert(User user) {
         String sql = "INSERT INTO [User] (email, full_name, phone, role_id, branch_id, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getFullName());
             ps.setString(3, user.getPhone());
             ps.setInt(4, user.getRoleId());
-            
-            // Handle nullable branch_id (Admin can have NULL)
-            if (user.getBranchId() != null) {
-                ps.setInt(5, user.getBranchId());
-            } else {
-                ps.setNull(5, Types.INTEGER);
-            }
-            
-            ps.setString(6, user.getStatus());
-            
-            int rowsAffected = ps.executeUpdate();
-            ps.close();
-            
-            return rowsAffected > 0;
-            
+            setNullableInt(ps, 5, user.getBranchId());
+            ps.setString(6, user.getStatus() != null ? user.getStatus() : "ACTIVE");
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("UserDAO.insert() Error: " + e.getMessage());
-            e.printStackTrace();
+            logError("insert", e);
             return false;
         }
     }
-    
+
     public boolean update(User user) {
         String sql = "UPDATE [User] " +
                      "SET email = ?, full_name = ?, phone = ?, role_id = ?, branch_id = ?, status = ?, updated_at = GETDATE() " +
                      "WHERE user_id = ?";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getFullName());
             ps.setString(3, user.getPhone());
             ps.setInt(4, user.getRoleId());
-            
-            // Handle nullable branch_id
-            if (user.getBranchId() != null) {
-                ps.setInt(5, user.getBranchId());
-            } else {
-                ps.setNull(5, Types.INTEGER);
-            }
-            
+            setNullableInt(ps, 5, user.getBranchId());
             ps.setString(6, user.getStatus());
             ps.setInt(7, user.getUserId());
-            
-            int rowsAffected = ps.executeUpdate();
-            ps.close();
-            
-            return rowsAffected > 0;
-            
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("UserDAO.update() Error: " + e.getMessage());
-            e.printStackTrace();
+            logError("update", e);
             return false;
         }
     }
-    
+
     public boolean updateStatus(int userId, String status) {
         String sql = "UPDATE [User] SET status = ?, updated_at = GETDATE() WHERE user_id = ?";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, status);
-            ps.setInt(2, userId);
-            
-            int rowsAffected = ps.executeUpdate();
-            ps.close();
-            
-            return rowsAffected > 0;
-            
+        return executeUpdate(sql, status, userId);
+    }
+
+    public boolean isEmailExist(String email) {
+        String sql = "SELECT COUNT(1) FROM [User] WHERE email = ?";
+        return queryCount(sql, email) > 0;
+    }
+
+    public boolean isEmailExistExcludeId(String email, int excludeId) {
+        String sql = "SELECT COUNT(1) FROM [User] WHERE email = ? AND user_id != ?";
+        return queryCount(sql, email, excludeId) > 0;
+    }
+
+    private List<User> queryUsers(String sql, Object... params) {
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            bindParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    users.add(extractUserFromResultSet(rs));
+                }
+            }
         } catch (SQLException e) {
-            System.err.println("UserDAO.updateStatus() Error: " + e.getMessage());
-            e.printStackTrace();
+            logError("queryUsers", e);
+        }
+        return users;
+    }
+
+    private User queryUser(String sql, Object... params) {
+        List<User> users = queryUsers(sql, params);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    private int queryCount(String sql, Object... params) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            bindParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            logError("queryCount", e);
+        }
+        return 0;
+    }
+
+    private boolean executeUpdate(String sql, Object... params) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            bindParams(ps, params);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logError("executeUpdate", e);
             return false;
         }
     }
-    
-    public boolean isEmailExist(String email) {
-        String sql = "SELECT COUNT(*) FROM [User] WHERE email = ?";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                rs.close();
-                ps.close();
-                return count > 0;
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.isEmailExist() Error: " + e.getMessage());
-            e.printStackTrace();
+
+    private void bindParams(PreparedStatement ps, Object... params) throws SQLException {
+        if (params == null) {
+            return;
         }
-        
-        return false;
+
+        for (int i = 0; i < params.length; i++) {
+            Object value = params[i];
+            int index = i + 1;
+            if (value == null) {
+                ps.setNull(index, Types.NULL);
+            } else if (value instanceof Integer) {
+                ps.setInt(index, (Integer) value);
+            } else if (value instanceof String) {
+                ps.setString(index, (String) value);
+            } else {
+                ps.setObject(index, value);
+            }
+        }
     }
-    
-    public boolean isEmailExistExcludeId(String email, int excludeId) {
-        String sql = "SELECT COUNT(*) FROM [User] WHERE email = ? AND user_id != ?";
-        
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, email);
-            ps.setInt(2, excludeId);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                rs.close();
-                ps.close();
-                return count > 0;
-            }
-            
-            rs.close();
-            ps.close();
-            
-        } catch (SQLException e) {
-            System.err.println("UserDAO.isEmailExistExcludeId() Error: " + e.getMessage());
-            e.printStackTrace();
+
+    private void setNullableInt(PreparedStatement ps, int index, Integer value) throws SQLException {
+        if (value == null) {
+            ps.setNull(index, Types.INTEGER);
+        } else {
+            ps.setInt(index, value);
         }
-        
-        return false;
-    }   
-    
+    }
+
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));
         user.setEmail(rs.getString("email"));
         user.setFullName(rs.getString("full_name"));
         user.setPhone(rs.getString("phone"));
-        user.setAvatarUrl(rs.getString("avatar_url")); //Avatar
-        user.setRoleId(rs.getInt("role_id"));        
-        
-        // Handle nullable branch_id
-        int branchId = rs.getInt("branch_id");
-        if (!rs.wasNull()) {
-            user.setBranchId(branchId);
-        } else {
-            user.setBranchId(null);
-        }
-        
+        user.setAvatarUrl(rs.getString("avatar_url"));
+        user.setRoleId(rs.getInt("role_id"));
+
+        user.setBranchId((Integer) rs.getObject("branch_id"));
         user.setStatus(rs.getString("status"));
-        
-        // Handle timestamp conversion
+
         Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
             user.setCreatedAt(createdTs.toLocalDateTime());
         }
-        
+
         Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
             user.setUpdatedAt(updatedTs.toLocalDateTime());
         }
-        
-        // JOIN data
+
         user.setRoleName(rs.getString("role_name"));
-        user.setBranchName(rs.getString("branch_name"));       
-        
+        user.setBranchName(rs.getString("branch_name"));
         return user;
     }
-    
-    //Test
-    public static void main(String[] args) {
-        UserDAO dao = new UserDAO();
-        
-        System.out.println("╔════════════════════════════════════════════════════╗");
-        System.out.println("║           USER DAO - UNIT TEST                     ║");
-        System.out.println("╚════════════════════════════════════════════════════╝\n");
-        
-        // Test 1: getAll()
-        System.out.println("TEST 1: getAll()");
-        System.out.println("─────────────────────────────────────────────────────");
-        List<User> users = dao.getAll();
-        if (users.isEmpty()) {
-            System.out.println("❌ No users found in database!");
-        } else {
-            System.out.println("✅ Found " + users.size() + " users:");
-            for (User user : users) {
-                System.out.println("   - " + user.getEmail() + " (" + user.getRoleName() + 
-                                 (user.getBranchName() != null ? " @ " + user.getBranchName() : " @ NO BRANCH") + ")");
-            }
-        }
-        
-        // Test 2: getById()
-        System.out.println("\nTEST 2: getById(1)");
-        System.out.println("─────────────────────────────────────────────────────");
-        User admin = dao.getById(1);
-        if (admin != null) {
-            System.out.println("✅ Found: " + admin.getFullName() + " - " + admin.getEmail());
-            System.out.println("   Role: " + admin.getRoleName());
-            System.out.println("   Branch: " + (admin.getBranchName() != null ? admin.getBranchName() : "NULL (Admin)"));
-        } else {
-            System.out.println("❌ User ID 1 not found!");
-        }
-        
-        // Test 3: getByEmail() - CRITICAL for login
-        System.out.println("\nTEST 3: getByEmail('tuanvhhe182160@fpt.edu.vn') - LOGIN TEST");
-        System.out.println("─────────────────────────────────────────────────────");
-        User loginTest = dao.getByEmail("tuanvhhe182160@fpt.edu.vn");
-        if (loginTest != null) {
-            System.out.println("✅ Login would succeed!");
-            System.out.println("   User: " + loginTest.getFullName());
-            System.out.println("   Role: " + loginTest.getRoleName());
-            System.out.println("   Status: " + loginTest.getStatus());
-        } else {
-            System.out.println("❌ Login would fail - email not found or inactive!");
-        }
-        
-        // Test 4: getAllByRole()
-        System.out.println("\nTEST 4: getAllByRole(3) - All Cashiers");
-        System.out.println("─────────────────────────────────────────────────────");
-        List<User> cashiers = dao.getAllByRole(3);
-        System.out.println("Found " + cashiers.size() + " cashier(s)");
-        for (User cashier : cashiers) {
-            System.out.println("   - " + cashier.getFullName());
-        }
-        
-        // Test 5: isEmailExist()
-        System.out.println("\nTEST 5: isEmailExist()");
-        System.out.println("─────────────────────────────────────────────────────");
-        boolean existAdmin = dao.isEmailExist("tuanvhhe182160@fpt.edu.vn");
-        boolean existFake = dao.isEmailExist("fake@email.com");
-        System.out.println("'tuanvhhe182160@fpt.edu.vn' exists: " + (existAdmin ? "✅ YES" : "❌ NO"));
-        System.out.println("'fake@email.com' exists: " + (existFake ? "❌ YES (ERROR!)" : "✅ NO (correct)"));
-        
-        System.out.println("\n╔════════════════════════════════════════════════════╗");
-        System.out.println("║              ALL TESTS COMPLETED!                  ║");
-        System.out.println("╚════════════════════════════════════════════════════╝");
+
+    private void logError(String methodName, SQLException e) {
+        System.err.println("UserDAO." + methodName + "() Error: " + e.getMessage());
+        e.printStackTrace();
     }
 }

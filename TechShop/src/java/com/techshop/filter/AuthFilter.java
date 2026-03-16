@@ -15,20 +15,32 @@ import jakarta.servlet.http.HttpSession;
 // Filter áp dụng cho tất cả các trang chức năng
 @WebFilter(filterName = "AuthFilter", urlPatterns = {
     "/dashboard",
-    "/user/*",      // Quản lý nhân viên (Admin)
-    "/branch/*",    // Quản lý chi nhánh (Admin)
-    "/category/*",  // Định nghĩa sản phẩm (Admin)
+    "/user",
+    "/user/*",
+    "/branch/*",
+    "/category/*",
+    "/ProductCategory",
     "/model/*",
+    "/ProductModel",
+    "/ProductModel/*",
+    "/variant",
     "/variant/*",
-    "/product/*",   // (Admin: CRUD, Shop Manager: View/Edit Store, Cashier: Search)
-    "/invoice/*",   // Bán hàng (Cashier), Xem (Accounting, Manager)
-    "/inventory/*", // Kho (Shop Manager, Admin)
-    "/transfer/*",  // Chuyển kho (Shop Manager, Admin)
-    "/warranty/*",  // Bảo hành (CS, Technician)
-    "/customer/*",  // Khách hàng (Cashier, CS)
-    "/report/*",     // Báo cáo (Admin, Manager, Accounting)
+    "/product/*",
+    "/product-detail",
+    "/cashier-mgmt",
+    "/cashier",
+    "/cart",
+    "/invoice",
+    "/invoice/*",
+    "/inventory/*",
+        "/transfer/*",  // Chuyển kho (Shop Manager, Admin)
+    "/warranty/*",
+    "/customer/*",
+    "/report",
+    "/report/*",
     "/admin/*",
-    "/accounting/**"
+    "/accounting/**",
+    "/admin/*"      // Admin reports, audit logs
 })
 public class AuthFilter implements Filter {
 
@@ -87,8 +99,9 @@ public class AuthFilter implements Filter {
 
         // --- 2. SHOP MANAGER (UC08 -> UC16) ---
         if ("Shop Manager".equalsIgnoreCase(role)) {
-            // Được phép: Dashboard, Kho, Sản phẩm (tại cửa hàng), Báo cáo cửa hàng, Yêu cầu chuyển nhận hàng giữa các chi nhánh
+            // Được phép: Dashboard, Kho, Sản phẩm (tại cửa hàng), Báo cáo cửa hàng, Quản lý Cashier, Yêu cầu chuyển nhận hàng giữa các chi nhánh
             if (path.equals("/dashboard") ||
+                path.equals("/cashier-mgmt") ||  // Quản lý cashier chi nhánh
                 path.startsWith("/inventory") || // Nhập kho, chuyển kho, kiểm kê
                 path.startsWith("/transfer") ||  // Yêu cầu chuyển nhận hàng giữa các chi nhánh
                 path.startsWith("/product") ||   // Quản lý sản phẩm tại cửa hàng
@@ -101,11 +114,14 @@ public class AuthFilter implements Filter {
 
         // --- 3. CASHIER (UC17 -> UC24) ---
         if ("Cashier".equalsIgnoreCase(role)) {
-            // Được phép: Dashboard, Bán hàng (Invoice), Khách hàng, Tìm kiếm sản phẩm
+            // Được phép: Dashboard, POS, Bán hàng (Invoice), Khách hàng, Tìm kiếm sản phẩm
             if (path.equals("/dashboard") ||
+                path.startsWith("/cashier") ||   // POS bán hàng
+                path.startsWith("/cart") ||      // Giỏ hàng
                 path.startsWith("/invoice") ||   // Thanh toán, xuất hóa đơn
                 path.startsWith("/customer") ||  // Tạo khách hàng
                 path.startsWith("/product") ||   // Tìm kiếm sản phẩm (UC17)
+                path.startsWith("/cashier") ||
                 path.startsWith("/variant")) {   // Tìm biến thể sản phẩm để bán
                 return true;
             }
@@ -131,6 +147,7 @@ public class AuthFilter implements Filter {
             if (path.equals("/dashboard") ||
                 path.startsWith("/warranty") ||  // Tiếp nhận bảo hành
                 path.startsWith("/customer") ||  // Tra cứu khách
+                path.startsWith("/cs") ||
                 path.startsWith("/invoice")) {   // Tra cứu đơn hàng
                 return true;
             }
@@ -141,6 +158,7 @@ public class AuthFilter implements Filter {
         if ("Technician".equalsIgnoreCase(role)) {
             // Được phép: Dashboard, Cập nhật bảo hành
             if (path.equals("/dashboard") ||
+                path.equals("/product-detail") ||
                 path.startsWith("/warranty")) {  // Cập nhật trạng thái sửa chữa
                 return true;
             }
