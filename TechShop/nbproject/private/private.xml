@@ -3,8 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/warranty-analytics.jsp</file>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/dao/AdminAnalyticsDAO.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/VariantFormServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/VariantSaveServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/conf/db.properties</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/conf/db-example.properties</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/variant/variantForm.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/DashboardServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/variant/ManageVariant.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/adminListCategory.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/adminListModel.jsp</file>
         </group>
     </open-files>
 </project-private>

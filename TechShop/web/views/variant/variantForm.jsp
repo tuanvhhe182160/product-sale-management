@@ -36,10 +36,7 @@
         <div class="card shadow-sm">
             <div class="card-body">
 
-                <form action="${pageContext.request.contextPath}/variant/save"
-                <form action="${pageContext.request.contextPath}/${isEdit ? 'variant/edit' : 'variant/create'}"
-                      method="POST">
-
+                <form action="${pageContext.request.contextPath}/variant/save" method="post">
                     <!-- HIDDEN ID -->
                     <input type="hidden"
                            name="variantId"

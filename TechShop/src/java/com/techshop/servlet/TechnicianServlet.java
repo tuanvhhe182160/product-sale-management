@@ -2,9 +2,12 @@ package com.techshop.servlet;
 
 import com.techshop.dao.TechnicianDAO;
 import com.techshop.dao.SystemLogDAO;
+import com.techshop.dao.VariantDAO;
 import com.techshop.model.EntityType;
 import com.techshop.model.LogAction;
+import com.techshop.model.ProductVariant;
 import com.techshop.model.User;
+import com.techshop.model.VariantAttribute;
 import com.techshop.model.WarrantyHistory;
 import com.techshop.model.WarrantyRequest;
 import com.techshop.model.WarrantyStatus;
@@ -62,6 +65,15 @@ public class TechnicianServlet extends HttpServlet {
                 List<WarrantyHistory> history = techDAO.getWarrantyHistory(requestId);
                 
                 if (detail != null) {
+                    VariantDAO variantDAO = new VariantDAO();
+               
+                    // 1. Lấy thông tin gốc (Để lấy warrantyMonths)
+                    ProductVariant variantDetail = variantDAO.getVariantById(detail.getVariantId());
+                    // 2. Lấy danh sách thông số linh hoạt (RAM, ROM, CPU, Màu...)
+                    List<VariantAttribute> variantAttributes = variantDAO.getAttributesByVariantId(detail.getVariantId());
+                
+                    request.setAttribute("variantDetail", variantDetail);
+                    request.setAttribute("variantAttributes", variantAttributes);
                     request.setAttribute("reqDetail", detail);
                     request.setAttribute("historyList", history);
                     request.getRequestDispatcher("/views/tech/tech-warranty-detail.jsp").forward(request, response);

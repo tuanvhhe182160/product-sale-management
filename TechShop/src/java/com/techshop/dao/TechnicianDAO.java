@@ -57,13 +57,14 @@ public class TechnicianDAO extends DBContext {
     
     // 2. Lấy chi tiết 1 yêu cầu bảo hành (Gom thông tin từ 5 bảng)
     public WarrantyRequest getWarrantyDetail(int requestId) {
-        String sql = "SELECT wr.*, c.full_name, c.email, c.phone, pp.imei, pv.variant_name, i.invoice_code, i.invoice_date " +
+        String sql = "SELECT wr.*, c.full_name, c.email, c.phone, pp.imei, pv.variant_name, pv.variant_id, i.invoice_code, i.invoice_date " +
                      "FROM WarrantyRequest wr " +
                      "JOIN Customer c ON wr.customer_id = c.customer_id " +
                      "JOIN PhysicalProduct pp ON wr.physical_id = pp.physical_id " +
                      "JOIN ProductVariant pv ON pp.variant_id = pv.variant_id " +
                      "JOIN Invoice i ON wr.invoice_id = i.invoice_id " +
                      "WHERE wr.request_id = ?";
+                     
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, requestId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -78,9 +79,15 @@ public class TechnicianDAO extends DBContext {
                     req.setCustomerEmail(rs.getString("email"));
                     req.setCustomerPhone(rs.getString("phone"));
                     req.setImei(rs.getString("imei"));
-                    req.setVariantName(rs.getString("variant_name"));
+                    req.setVariantName(rs.getString("variant_name"));                   
+                    req.setVariantId(rs.getInt("variant_id"));
+                    
                     req.setInvoiceCode(rs.getString("invoice_code"));
-                    req.setInvoiceDate(rs.getTimestamp("invoice_date").toLocalDateTime());
+                    
+                    if (rs.getTimestamp("invoice_date") != null) {
+                        req.setInvoiceDate(rs.getTimestamp("invoice_date").toLocalDateTime());
+                    }
+                    
                     return req;
                 }
             }

@@ -409,4 +409,25 @@ public class VariantDAO extends DBContext {
 
         return variant;
     }
+    
+    public List<VariantAttribute> getAttributesByVariantId(int variantId) {
+        List<VariantAttribute> list = new ArrayList<>();
+        String sql = "SELECT * FROM VariantAttribute WHERE variant_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, variantId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    VariantAttribute attr = new VariantAttribute();
+                    attr.setAttributeId(rs.getInt("attribute_id"));
+                    attr.setVariantId(rs.getInt("variant_id"));
+                    attr.setAttributeName(rs.getString("attribute_name"));
+                    attr.setAttributeValue(rs.getString("attribute_value"));
+                    list.add(attr);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
