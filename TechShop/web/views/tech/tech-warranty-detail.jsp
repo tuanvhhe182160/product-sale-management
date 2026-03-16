@@ -42,8 +42,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-3 text-muted">Hóa đơn gốc:</div>
-                        <div class="col-sm-9"><a href="#" class="text-decoration-none">${reqDetail.invoiceCode}</a> (Mua ngày: <fmt:formatDate value="${reqDetail.invoiceDate}" pattern="dd/MM/yyyy"/>)</div>
-                    </div>
+                        <div class="col-sm-9"><a href="#" class="text-decoration-none">${reqDetail.invoiceCode}</a> (Mua ngày: <fmt:formatDate value="${reqDetail.legacyInvoiceDate}" pattern="dd/MM/yyyy"/>)</div>                    </div>
                     <hr>
                     <div class="row">
                         <div class="col-sm-12 text-muted mb-1">Mô tả lỗi từ khách hàng (CS ghi nhận):</div>
@@ -69,8 +68,7 @@
                         <tbody>
                             <c:forEach var="hist" items="${historyList}">
                                 <tr>
-                                    <td><fmt:formatDate value="${hist.updatedAt}" pattern="dd/MM/yyyy HH:mm"/></td>
-                                    <td><span class="badge bg-dark">${hist.status}</span></td>
+                                    <td><fmt:formatDate value="${hist.legacyUpdatedAt}" pattern="dd/MM/yyyy HH:mm"/></td>                                    <td><span class="badge bg-dark">${hist.status}</span></td>
                                     <td>${hist.updatedByName}</td>
                                     <td>${hist.note}</td>
                                 </tr>

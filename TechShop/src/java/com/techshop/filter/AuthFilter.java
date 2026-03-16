@@ -38,7 +38,8 @@ import jakarta.servlet.http.HttpSession;
     "/report",
     "/report/*",
     "/admin/*",
-    "/accounting/*"
+    "/accounting/**",
+    "/admin/*"      // Admin reports, audit logs
 })
 public class AuthFilter implements Filter {
 
@@ -118,6 +119,7 @@ public class AuthFilter implements Filter {
                 path.startsWith("/invoice") ||   // Thanh toán, xuất hóa đơn
                 path.startsWith("/customer") ||  // Tạo khách hàng
                 path.startsWith("/product") ||   // Tìm kiếm sản phẩm (UC17)
+                path.startsWith("/cashier") ||
                 path.startsWith("/variant")) {   // Tìm biến thể sản phẩm để bán
                 return true;
             }
@@ -154,6 +156,7 @@ public class AuthFilter implements Filter {
         if ("Technician".equalsIgnoreCase(role)) {
             // Được phép: Dashboard, Cập nhật bảo hành
             if (path.equals("/dashboard") ||
+                path.equals("/product-detail") ||
                 path.startsWith("/warranty")) {  // Cập nhật trạng thái sửa chữa
                 return true;
             }

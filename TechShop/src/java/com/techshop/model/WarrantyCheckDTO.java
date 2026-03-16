@@ -23,11 +23,12 @@ public class WarrantyCheckDTO {
     private int warrantyMonths;
     private Timestamp warrantyEndDate;
     private String warrantyStatus;
+    private String customerEmail;
 
     public WarrantyCheckDTO() {
     }
 
-    public WarrantyCheckDTO(String imei, String variantName, String invoiceCode, Timestamp invoiceDate, String customerName, String customerPhone, int customerId, int invoiceId, int physicalId, int warrantyMonths, Timestamp warrantyEndDate, String warrantyStatus) {
+    public WarrantyCheckDTO(String imei, String variantName, String invoiceCode, Timestamp invoiceDate, String customerName, String customerPhone, int customerId, int invoiceId, int physicalId, int warrantyMonths, Timestamp warrantyEndDate, String warrantyStatus, String customerEmail) {
         this.imei = imei;
         this.variantName = variantName;
         this.invoiceCode = invoiceCode;
@@ -40,6 +41,7 @@ public class WarrantyCheckDTO {
         this.warrantyMonths = warrantyMonths;
         this.warrantyEndDate = warrantyEndDate;
         this.warrantyStatus = warrantyStatus;
+        this.customerEmail = customerEmail;
     }
 
     public String getImei() {
@@ -138,9 +140,17 @@ public class WarrantyCheckDTO {
         this.warrantyStatus = warrantyStatus;
     }
 
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }    
+
     @Override
     public String toString() {
-        return "WarrantyCheckDTO{" + "imei=" + imei + ", variantName=" + variantName + ", invoiceCode=" + invoiceCode + ", invoiceDate=" + invoiceDate + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", customerId=" + customerId + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", warrantyMonths=" + warrantyMonths + ", warrantyEndDate=" + warrantyEndDate + ", warrantyStatus=" + warrantyStatus + '}';
+        return "WarrantyCheckDTO{" + "imei=" + imei + ", variantName=" + variantName + ", invoiceCode=" + invoiceCode + ", invoiceDate=" + invoiceDate + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", customerId=" + customerId + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", warrantyMonths=" + warrantyMonths + ", warrantyEndDate=" + warrantyEndDate + ", warrantyStatus=" + warrantyStatus + ", customerEmail=" + customerEmail + '}';
     }
     
     

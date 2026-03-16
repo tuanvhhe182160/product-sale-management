@@ -58,7 +58,6 @@ public class SystemLogDAO extends DBContext {
         
         params.add(offset);
         params.add(pageSize);
-        sql.append(" ORDER BY s.created_at DESC"); // Luôn đưa log mới nhất lên đầu
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             // Đổ tham số vào PreparedStatement

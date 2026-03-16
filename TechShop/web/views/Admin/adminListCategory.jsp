@@ -135,7 +135,6 @@
             <form class="d-flex gap-2 flex-wrap align-items-center"
                   method="get"
                   action="${pageContext.request.contextPath}/category">
-                  action="${pageContext.request.contextPath}/ProductCategory">
 
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -158,7 +157,6 @@
 
                 <a class="btn btn-outline-secondary"
                    href="${pageContext.request.contextPath}/category">
-                   href="${pageContext.request.contextPath}/ProductCategory">
                     Reset
                 </a>
             </form>

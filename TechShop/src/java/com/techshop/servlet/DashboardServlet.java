@@ -12,7 +12,7 @@ import com.techshop.dao.ProductModelDAO;
 import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
 import com.techshop.dao.SalesHistoryDAO;
-import com.techshop.model.FinancialReportItem;
+import com.techshop.dao.TechnicianDAO;
 import com.techshop.model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -186,6 +186,12 @@ public class DashboardServlet extends HttpServlet {
 
     // technician
     private void loadTechnicianDashboard(HttpServletRequest request, User user) {
+        int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
+        
+        TechnicianDAO techDAO = new TechnicianDAO();
+        request.setAttribute("pendingCount", techDAO.countPendingRequests(branchId));
+        request.setAttribute("inProgressCount", techDAO.countInProgressRequests(user.getUserId()));
+        
         request.setAttribute("dashboardType", "technician");
     }
     

@@ -22,7 +22,6 @@
 
             <a class="btn btn-outline-secondary"
                href="${pageContext.request.contextPath}/category">
-               href="${pageContext.request.contextPath}/ProductCategory">
                 Back
             </a>
         </div>
@@ -74,7 +73,6 @@
 
                 <div class="d-flex justify-content-end gap-2">
                     <a href="${pageContext.request.contextPath}/category"
-                    <a href="${pageContext.request.contextPath}/ProductCategory"
                        class="btn btn-secondary">
                         Cancel
                     </a>

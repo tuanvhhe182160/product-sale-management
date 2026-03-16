@@ -19,6 +19,11 @@
         <div class="card-body">
             <form action="${pageContext.request.contextPath}/tech/warranty/list" method="GET" class="row g-3">
                 <div class="col-md-3">
+                    <label class="form-label fw-bold">Tìm nhanh</label>
+                    <input type="text" name="search" class="form-control" value="${param.search}" placeholder="Mã phiếu, IMEI...">
+                </div>
+                
+                <div class="col-md-2">
                     <label class="form-label fw-bold">Trạng thái</label>
                     <select name="status" class="form-select">
                         <option value="">Tất cả</option>
@@ -31,11 +36,11 @@
                     <label class="form-label fw-bold">Từ ngày</label>
                     <input type="date" name="fromDate" class="form-control" value="${param.fromDate}">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label fw-bold">Đến ngày</label>
                     <input type="date" name="toDate" class="form-control" value="${param.toDate}">
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
+                <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">Lọc Dữ Liệu</button>
                 </div>
             </form>
@@ -59,8 +64,7 @@
                     <c:forEach var="req" items="${requestList}">
                         <tr>
                             <td class="text-center fw-bold">${req.requestCode}</td>
-                            <td class="text-center"><fmt:formatDate value="${req.requestDate}" pattern="dd/MM/yyyy"/></td>
-                            <td>${req.customerName}</td>
+                            <td class="text-center"><fmt:formatDate value="${req.legacyRequestDate}" pattern="dd/MM/yyyy"/></td>                            <td>${req.customerName}</td>
                             <td><span class="d-inline-block text-truncate" style="max-width: 200px;">${req.issueDescription}</span></td>
                             <td class="text-center">
                                 <c:choose>

@@ -44,8 +44,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
-                                    <i class="fas fa-users-cog"></i> Cashiers
+                                <a class="nav-link" href="${pageContext.request.contextPath}/branch">
+                                    <i class="fas fa-building"></i> Branches
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
@@ -53,10 +53,10 @@
                                     <i class="fas fa-box"></i> Products
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductCategory">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/category">
                                         <i class="fas fa-tags"></i> Categories
                                     </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProductModel">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/model">
                                         <i class="fas fa-cubes"></i> Models
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/variant">
@@ -70,7 +70,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/report">
-                                        <i class="fas fa-chart-bar"></i> General
+                                        <i class="fas fa-tags"></i> General
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch">
                                         <i class="fas fa-building"></i> By Branch
@@ -81,10 +81,21 @@
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
-                                    <i class="fas fa-clipboard-list"></i> Audit Logs
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/cashier-mgmt">
+                                    <i class="fas fa-building"></i> Cashiers
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/analytics/warranty">
+                                    <i class="fas fa-building"></i> Warranty
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
+                                    <i class="fas fa-building"></i> Audit Logs
+                                </a>
+                            </li>
+                            
                         </c:if>
 
                         <!-- Shop Manager Menu -->
@@ -115,7 +126,12 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/customer">
-                                    <i class="fas fa-user-friends"></i> Customers
+                                    <i class="fas fa-user-friends"></i> Customers                                
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier">
+                                    <i class="fas fa-shopping-cart"></i> POS
                                 </a>
                             </li>
                         </c:if>
@@ -123,12 +139,12 @@
                         <!-- Accounting Staff Menu -->
                         <c:if test="${sessionScope.userRole == 'Accounting Staff'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/report">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">                               
                                     <i class="fas fa-cash-register"></i> Financial Report
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/invoice">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/accounting/invoices">
                                     <i class="fas fa-user-friends"></i> Check Invoice
                                 </a>
                             </li>
@@ -137,13 +153,18 @@
                         <!-- Customer Service Menu -->
                         <c:if test="${sessionScope.userRole == 'Customer Service'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cs/warranty">
                                     <i class="fas fa-tools"></i> Warranty
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/customer">
                                     <i class="fas fa-user-friends"></i> Customers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cs/warranty/list">
+                                    <i class="fas fa-user-friends"></i> Tracking
                                 </a>
                             </li>
                         </c:if>
@@ -151,7 +172,7 @@
                         <!-- Technician Menu -->
                         <c:if test="${sessionScope.userRole == 'Technician'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/tech/warranty">
                                     <i class="fas fa-wrench"></i> Repairs
                                 </a>
                             </li>
@@ -165,8 +186,10 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <img src="${pageContext.request.contextPath}/uploads/${user.avatarUrl}"
-                                    alt="Avatar" class="rounded-circle me-2" width="36" height="36">
-                                ${sessionScope.userName}
+                                    alt="Avatar"
+                                    class="rounded-circle me-2"
+                                    width="36"
+                                    height="36"> ${sessionScope.userName}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><h6 class="dropdown-header">

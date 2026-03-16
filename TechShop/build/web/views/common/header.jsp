@@ -70,7 +70,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/report">
-                                        <i class="fas fa-chart-bar"></i> General
+                                        <i class="fas fa-tags"></i> General
                                     </a></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch">
                                         <i class="fas fa-building"></i> By Branch
@@ -81,15 +81,28 @@
                                 </ul>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/cashier-mgmt">
+                                    <i class="fas fa-building"></i> Cashiers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/analytics/warranty">
+                                    <i class="fas fa-building"></i> Warranty
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
                                     <i class="fas fa-clipboard-list"></i> Audit Logs
                                 </a>
                             </li>
+                            
                         </c:if>
 
                         <!-- Shop Manager Menu -->
                         <c:if test="${sessionScope.userRole == 'Shop Manager'}">
                             <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/inventory">
+                                    <i class="fas fa-warehouse"></i> Inventory
                                 <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
                                     <i class="fas fa-users-cog"></i> Cashiers
                                 </a>
@@ -115,7 +128,12 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/customer">
-                                    <i class="fas fa-user-friends"></i> Customers
+                                    <i class="fas fa-user-friends"></i> Customers                                
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier">
+                                    <i class="fas fa-shopping-cart"></i> POS
                                 </a>
                             </li>
                         </c:if>
@@ -123,7 +141,7 @@
                         <!-- Accounting Staff Menu -->
                         <c:if test="${sessionScope.userRole == 'Accounting Staff'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/report">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">                               
                                     <i class="fas fa-cash-register"></i> Financial Report
                                 </a>
                             </li>
@@ -144,6 +162,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/dashboard">
                                     <i class="fas fa-user-friends"></i> Customers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/cs/warranty/list">
+                                    <i class="fas fa-user-friends"></i> Tracking
                                 </a>
                             </li>
                         </c:if>

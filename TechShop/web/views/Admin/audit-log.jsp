@@ -15,13 +15,16 @@
         </h2>
         <a href="${pageContext.request.contextPath}/admin/audit-logs?action=export&startDate=${startDate}&endDate=${endDate}&actionFilter=${actionFilter}&searchKeyword=${searchKeyword}"
            class="btn btn-success shadow-sm">
-            <i class="fas fa-file-csv fa-sm text-white-50 me-1"></i> Xuất CSV
+            <i class="fas fa-file-csv fa-sm text-white-50 me-1"></i>
+            Xuất CSV
         </a>
     </div>
+
 
     <!-- FILTER CARD -->
     <div class="card shadow-sm mb-4 border-0">
         <div class="card-body bg-light rounded">
+
             <form action="${pageContext.request.contextPath}/admin/audit-logs" method="GET" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label class="form-label fw-bold text-muted small">Từ ngày</label>
@@ -156,7 +159,7 @@
                     </nav>
                 </div>
             </div>
-        </c:if>
+        </c:if>                    
     </div>
 </div>
 

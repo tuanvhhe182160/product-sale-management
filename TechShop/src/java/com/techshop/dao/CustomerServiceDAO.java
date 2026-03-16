@@ -2,6 +2,7 @@ package com.techshop.dao;
 
 import com.techshop.dal.DBContext;
 import com.techshop.model.WarrantyCheckDTO;
+import com.techshop.model.WarrantyRequest;
 import com.techshop.model.WarrantyStatus;
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class CustomerServiceDAO extends DBContext {
                      "  pp.physical_id, pp.imei, " +
                      "  pv.variant_name, " +
                      "  i.invoice_id, i.invoice_code, i.invoice_date, " +
-                     "  c.customer_id, c.full_name AS customer_name, c.phone AS customer_phone, " +
+                     "  c.customer_id, c.full_name AS customer_name, c.email, c.phone AS customer_phone, " +
                      "  ii.warranty_months, " +
                      "  DATEADD(month, ii.warranty_months, i.invoice_date) AS warranty_end_date, " +
                      "  CASE " +
@@ -45,6 +46,7 @@ public class CustomerServiceDAO extends DBContext {
                     dto.setInvoiceDate(rs.getTimestamp("invoice_date"));
                     dto.setCustomerId(rs.getInt("customer_id"));
                     dto.setCustomerName(rs.getString("customer_name"));
+                    dto.setCustomerEmail(rs.getString("email"));
                     dto.setCustomerPhone(rs.getString("customer_phone"));
                     dto.setWarrantyMonths(rs.getInt("warranty_months"));
                     dto.setWarrantyEndDate(rs.getTimestamp("warranty_end_date"));
@@ -147,5 +149,83 @@ public class CustomerServiceDAO extends DBContext {
         } finally {
             try { connection.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
         }
+    }
+    
+    public List<WarrantyRequest> getWarrantyRequestsForCS(int branchId, String keyword, String status, String fromDate, String toDate) {
+        List<WarrantyRequest> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT wr.request_id, wr.request_code, wr.request_date, wr.issue_description, wr.status, " +
+            "c.full_name, c.phone, pp.imei, pv.variant_name " +
+            "FROM WarrantyRequest wr " +
+            "JOIN Customer c ON wr.customer_id = c.customer_id " +
+            "JOIN PhysicalProduct pp ON wr.physical_id = pp.physical_id " +
+            "JOIN ProductVariant pv ON pp.variant_id = pv.variant_id " +
+            "JOIN [User] cs ON wr.customer_service_id = cs.user_id " +
+            "WHERE cs.branch_id = ? "
+        );
+        List<Object> params = new ArrayList<>();
+        params.add(branchId);
+        
+        // Lọc theo từ khóa (SĐT, IMEI, Mã phiếu)
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (c.phone LIKE ? OR pp.imei LIKE ? OR wr.request_code LIKE ?) ");
+            String searchPattern = "%" + keyword.trim() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+        }
+        // Lọc theo trạng thái
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND wr.status = ? ");
+            params.add(status.trim());
+        }
+        // Lọc theo ngày
+        if (fromDate != null && !fromDate.trim().isEmpty()) {
+            sql.append(" AND CAST(wr.request_date AS DATE) >= ? ");
+            params.add(fromDate.trim());
+        }
+        if (toDate != null && !toDate.trim().isEmpty()) {
+            sql.append(" AND CAST(wr.request_date AS DATE) <= ? ");
+            params.add(toDate.trim());
+        }
+        sql.append(" ORDER BY wr.request_date DESC");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    WarrantyRequest req = new WarrantyRequest();
+                    req.setRequestId(rs.getInt("request_id"));
+                    req.setRequestCode(rs.getString("request_code"));
+                    if(rs.getTimestamp("request_date") != null) {
+                        req.setRequestDate(rs.getTimestamp("request_date").toLocalDateTime());
+                    }
+                    req.setIssueDescription(rs.getString("issue_description"));
+                    req.setStatus(rs.getString("status"));
+                    req.setCustomerName(rs.getString("full_name"));
+                    req.setCustomerPhone(rs.getString("phone"));
+                    req.setImei(rs.getString("imei"));
+                    req.setVariantName(rs.getString("variant_name"));
+                    list.add(req);
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+    
+    public boolean hasActiveWarrantyRequest(int physicalId) {
+        // Nếu status là PENDING hoặc IN_PROGRESS nghĩa là máy vẫn đang nằm viện
+        String sql = "SELECT COUNT(*) FROM WarrantyRequest WHERE physical_id = ? AND status IN ('PENDING', 'IN_PROGRESS')";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, physicalId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // Trả về true nếu đang có phiếu chưa xong
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

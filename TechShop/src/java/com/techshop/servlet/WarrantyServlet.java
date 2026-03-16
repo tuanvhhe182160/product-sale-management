@@ -2,10 +2,13 @@ package com.techshop.servlet;
 
 import com.techshop.dao.CustomerServiceDAO;
 import com.techshop.dao.SystemLogDAO;
+import com.techshop.dao.TechnicianDAO;
 import com.techshop.model.EntityType;
 import com.techshop.model.LogAction;
 import com.techshop.model.User;
 import com.techshop.model.WarrantyCheckDTO;
+import com.techshop.model.WarrantyRequest;
+import com.techshop.util.EmailUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,8 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
 
-@WebServlet(name = "WarrantyServlet", urlPatterns = {"/cs/warranty"})
+@WebServlet(name = "WarrantyServlet", urlPatterns = {"/cs/warranty", "/cs/warranty/list", "/cs/warranty/detail"})
 public class WarrantyServlet extends HttpServlet {
 
     private final CustomerServiceDAO csDAO = new CustomerServiceDAO();
@@ -25,9 +30,54 @@ public class WarrantyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        String path = request.getServletPath();
         String action = request.getParameter("action");
+        
+        // Màn hình theo dõi danh sách bảo hành cho CS
+        if (path.endsWith("/list")) {
+            HttpSession session = request.getSession(false);
+            User user = (session != null) ? (User) session.getAttribute("user") : null;
+            
+            if (user == null) {
+                response.sendRedirect(request.getContextPath() + "/login");
+                return;
+            }
+            int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
+            
+            String keyword = request.getParameter("search");
+            String status = request.getParameter("status");
+            String fromDate = request.getParameter("fromDate");
+            String toDate = request.getParameter("toDate");
 
+            List<WarrantyRequest> warrantyList = csDAO.getWarrantyRequestsForCS(branchId, keyword, status, fromDate, toDate);
+            
+            request.setAttribute("warrantyList", warrantyList);
+            request.getRequestDispatcher("/views/cs/cs-warranty-list.jsp").forward(request, response);
+            return;
+        }
+
+        if (path.endsWith("/detail")) {
+            try {
+                int requestId = Integer.parseInt(request.getParameter("id"));
+                
+                // Tái sử dụng TechnicianDAO để lấy dữ liệu
+                TechnicianDAO techDAO = new TechnicianDAO();
+                WarrantyRequest detail = techDAO.getWarrantyDetail(requestId);
+                List<com.techshop.model.WarrantyHistory> history = techDAO.getWarrantyHistory(requestId);
+                
+                if (detail != null) {
+                    request.setAttribute("reqDetail", detail);
+                    request.setAttribute("historyList", history);
+                    request.getRequestDispatcher("/views/cs/cs-warranty-detail.jsp").forward(request, response);
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/cs/warranty/list?error=Không tìm thấy yêu cầu bảo hành.");
+                }
+            } catch (NumberFormatException e) {
+                response.sendRedirect(request.getContextPath() + "/cs/warranty/list?error=Mã bảo hành không hợp lệ.");
+            }
+            return;
+        }
+        
         // Use Case: Check Warranty Status / Search Order by IMEI
         if ("check".equals(action)) {
             String imei = request.getParameter("imei");
@@ -57,71 +107,48 @@ public class WarrantyServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         
-        // Lấy thông tin nhân viên CS đang thao tác
-        HttpSession session = request.getSession(false);
-        User user = (session != null) ? (User) session.getAttribute("user") : null;
-        Integer csUserId = (user != null) ? user.getUserId() : null;
-
-        if (csUserId == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        try {
-            // Use Case: Create Warranty Request
-            if ("create".equals(action)) {
+        if ("create".equals(action)) {
+            try {
                 int invoiceId = Integer.parseInt(request.getParameter("invoiceId"));
                 int physicalId = Integer.parseInt(request.getParameter("physicalId"));
                 int customerId = Integer.parseInt(request.getParameter("customerId"));
-                String issueDescription = request.getParameter("issueDescription");
-                String imei = request.getParameter("imei"); // Để ghi log/redirect
+                String imei = request.getParameter("imei");
+                String issueDesc = request.getParameter("issueDescription");
+                
+                // Lấy ID nhân viên CS đang đăng nhập
+                HttpSession session = request.getSession(false);
+                com.techshop.model.User user = (session != null) ? (com.techshop.model.User) session.getAttribute("user") : null;
+                int csId = (user != null) ? user.getUserId() : 1; 
 
-                boolean success = csDAO.createWarrantyRequest(invoiceId, physicalId, customerId, csUserId, issueDescription);
-
-                if (success) {
-                    // --- GHI LOG ---
-                    logDAO.logAction(
-                        csUserId, 
-                        LogAction.CREATE_WARRANTY_REQUEST, 
-                        EntityType.WARRANTY_REQUEST, 
-                        null, 
-                        request.getRemoteAddr(), 
-                        "Tạo yêu cầu bảo hành mới cho IMEI: " + imei
-                    );
-                    
-                    response.sendRedirect(request.getContextPath() + "/cs/warranty?action=check&imei=" + imei + "&message=Tạo yêu cầu bảo hành thành công!");
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/cs/warranty?action=check&imei=" + imei + "&error=Có lỗi xảy ra khi tạo yêu cầu.");
+                // 👉 1. KIỂM TRA: MÁY CÓ ĐANG NẰM VIỆN KHÔNG?
+                if (csDAO.hasActiveWarrantyRequest(physicalId)) {
+                    String errorMsg = java.net.URLEncoder.encode("Lỗi: Máy có IMEI " + imei + " đang có yêu cầu bảo hành chưa xử lý xong!", "UTF-8");
+                    response.sendRedirect(request.getContextPath() + "/cs/warranty?action=check&imei=" + imei + "&error=" + errorMsg);
+                    return;
                 }
-            } 
-            
-            // Use Case: Update Request Status
-            else if ("update".equals(action)) {
-                int requestId = Integer.parseInt(request.getParameter("requestId"));
-                String newStatus = request.getParameter("status"); 
-                String note = request.getParameter("note");
 
-                boolean success = csDAO.updateWarrantyStatus(requestId, newStatus, note, csUserId);
+                // 👉 2. TẠO PHIẾU
+                boolean success = csDAO.createWarrantyRequest(invoiceId, physicalId, customerId, csId, issueDesc);
 
+                // 👉 3. REDIRECT CHỐNG TRẮNG TRANG
                 if (success) {
-                    // --- GHI LOG ---
-                    logDAO.logAction(
-                        csUserId, 
-                        LogAction.UPDATE_WARRANTY_REQUEST, 
-                        EntityType.WARRANTY_REQUEST, 
-                        requestId, 
-                        request.getRemoteAddr(), 
-                        "Cập nhật trạng thái yêu cầu bảo hành thành: " + newStatus
-                    );
+                    String customerEmail = request.getParameter("customerEmail");
+                    String customerName = request.getParameter("customerName");
+                    String productName = request.getParameter("variantName");
+                    String tempRequestCode = "Mới tạo (Đang đồng bộ)";
+                    EmailUtil.sendNewWarrantyEmail(customerEmail, customerName, tempRequestCode, productName, imei, issueDesc);
                     
-                    response.sendRedirect(request.getContextPath() + "/cs/warranty/list?message=Cập nhật trạng thái thành công!");
+                    String successMsg = URLEncoder.encode("Tạo yêu cầu bảo hành thành công!", "UTF-8");
+                    response.sendRedirect(request.getContextPath() + "/cs/warranty?action=check&imei=" + imei + "&message=" + successMsg);
                 } else {
-                    response.sendRedirect(request.getContextPath() + "/cs/warranty/list?error=Có lỗi xảy ra khi cập nhật.");
+                    String errorMsg = java.net.URLEncoder.encode("Lỗi hệ thống khi lưu yêu cầu.", "UTF-8");
+                    response.sendRedirect(request.getContextPath() + "/cs/warranty?action=check&imei=" + imei + "&error=" + errorMsg);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                String errorMsg = java.net.URLEncoder.encode("Dữ liệu đầu vào không hợp lệ.", "UTF-8");
+                response.sendRedirect(request.getContextPath() + "/cs/warranty?error=" + errorMsg);
             }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/cs/warranty?error=Dữ liệu đầu vào không hợp lệ.");
         }
     }
 }

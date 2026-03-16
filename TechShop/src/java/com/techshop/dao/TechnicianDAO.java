@@ -55,47 +55,6 @@ public class TechnicianDAO extends DBContext {
         }
     }
     
-    // 1. Lấy danh sách yêu cầu bảo hành (Có bộ lọc)
-    public List<WarrantyRequest> getWarrantyRequests(String status, String fromDate, String toDate) {
-        List<WarrantyRequest> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(
-            "SELECT wr.request_id, wr.request_code, wr.request_date, wr.issue_description, wr.status, c.full_name AS customer_name " +
-            "FROM WarrantyRequest wr JOIN Customer c ON wr.customer_id = c.customer_id WHERE 1=1 "
-        );
-        List<Object> params = new ArrayList<>();
-
-        if (status != null && !status.trim().isEmpty()) {
-            sql.append(" AND wr.status = ? ");
-            params.add(status.trim());
-        }
-        if (fromDate != null && !fromDate.trim().isEmpty()) {
-            sql.append(" AND CAST(wr.request_date AS DATE) >= ? ");
-            params.add(fromDate.trim());
-        }
-        if (toDate != null && !toDate.trim().isEmpty()) {
-            sql.append(" AND CAST(wr.request_date AS DATE) <= ? ");
-            params.add(toDate.trim());
-        }
-        sql.append(" ORDER BY wr.request_date DESC");
-
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    WarrantyRequest req = new WarrantyRequest();
-                    req.setRequestId(rs.getInt("request_id"));
-                    req.setRequestCode(rs.getString("request_code"));
-                    req.setRequestDate(rs.getTimestamp("request_date").toLocalDateTime());
-                    req.setIssueDescription(rs.getString("issue_description"));
-                    req.setStatus(rs.getString("status")); 
-                    req.setCustomerName(rs.getString("customer_name"));
-                    list.add(req);
-                }
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return list;
-    }
-
     // 2. Lấy chi tiết 1 yêu cầu bảo hành (Gom thông tin từ 5 bảng)
     public WarrantyRequest getWarrantyDetail(int requestId) {
         String sql = "SELECT wr.*, c.full_name, c.email, c.phone, pp.imei, pv.variant_name, i.invoice_code, i.invoice_date " +
@@ -146,6 +105,88 @@ public class TechnicianDAO extends DBContext {
                     h.setUpdatedByName(rs.getString("updated_by_name"));
                     h.setNote(rs.getString("note"));
                     list.add(h);
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+    
+    // 1. Đếm số ca đang chờ của Chi nhánh
+    public int countPendingRequests(int branchId) {
+        String sql = "SELECT COUNT(*) FROM WarrantyRequest wr " +
+                     "LEFT JOIN [User] cs ON wr.customer_service_id = cs.user_id " +
+                     "WHERE (cs.branch_id = ? OR ? = 0) AND wr.status = 'PENDING'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, branchId);
+            ps.setInt(2, branchId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // 2. Đếm số ca Kỹ thuật viên đang ôm
+    public int countInProgressRequests(int techId) {
+        String sql = "SELECT COUNT(*) FROM WarrantyRequest WHERE technician_id = ? AND status = 'IN_PROGRESS'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, techId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // 3. SỬA LẠI hàm List: Thêm tham số keyword và JOIN bảng PhysicalProduct để tìm IMEI
+    public List<WarrantyRequest> getWarrantyRequests(int branchId, String keyword, String status, String fromDate, String toDate) {
+        List<WarrantyRequest> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT wr.request_id, wr.request_code, wr.request_date, wr.issue_description, wr.status, c.full_name AS customer_name " +
+            "FROM WarrantyRequest wr " +
+            "JOIN Customer c ON wr.customer_id = c.customer_id " +
+            "LEFT JOIN PhysicalProduct pp ON wr.physical_id = pp.physical_id " + // Cần bảng này để tìm IMEI
+            "LEFT JOIN [User] cs ON wr.customer_service_id = cs.user_id " +
+            "WHERE (cs.branch_id = ? OR ? = 0) "
+        );
+        List<Object> params = new ArrayList<>();
+        params.add(branchId);
+        params.add(branchId);
+
+        // Lọc theo từ khóa (Mã phiếu, IMEI, SĐT)
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (wr.request_code LIKE ? OR pp.imei LIKE ? OR c.phone LIKE ?) ");
+            String searchPattern = "%" + keyword.trim() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND wr.status = ? ");
+            params.add(status.trim());
+        }
+        if (fromDate != null && !fromDate.trim().isEmpty()) {
+            sql.append(" AND CAST(wr.request_date AS DATE) >= ? ");
+            params.add(fromDate.trim());
+        }
+        if (toDate != null && !toDate.trim().isEmpty()) {
+            sql.append(" AND CAST(wr.request_date AS DATE) <= ? ");
+            params.add(toDate.trim());
+        }
+        sql.append(" ORDER BY wr.request_date DESC");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    WarrantyRequest req = new WarrantyRequest();
+                    req.setRequestId(rs.getInt("request_id"));
+                    req.setRequestCode(rs.getString("request_code"));
+                    req.setRequestDate(rs.getTimestamp("request_date").toLocalDateTime());
+                    req.setIssueDescription(rs.getString("issue_description"));
+                    req.setStatus(rs.getString("status"));
+                    req.setCustomerName(rs.getString("customer_name"));
+                    list.add(req);
                 }
             }
         } catch (SQLException e) { e.printStackTrace(); }

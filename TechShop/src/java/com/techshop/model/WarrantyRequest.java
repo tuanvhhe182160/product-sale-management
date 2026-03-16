@@ -1,6 +1,7 @@
 package com.techshop.model;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public class WarrantyRequest {
     private int requestId;
@@ -263,5 +264,15 @@ public class WarrantyRequest {
                 + ", imei=" + imei + ", technicianName=" + technicianName
                 + ", customerServiceName=" + customerServiceName + ", invoiceCode=" + invoiceCode
                 + ", invoiceDate=" + invoiceDate + '}';
+    }
+    
+    public Date getLegacyRequestDate() {
+        if (this.requestDate == null) return null;
+        return java.sql.Timestamp.valueOf(this.requestDate);
+    }
+    
+    public Date getLegacyInvoiceDate() {
+        if (this.invoiceDate == null) return null;
+        return java.sql.Timestamp.valueOf(this.invoiceDate);
     }
 }
