@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpSession;
     "/invoice",
     "/invoice/*",
     "/inventory/*",
+    "/transfer/*",  // Chuyển kho (Shop Manager, Admin)
     "/warranty/*",
     "/customer/*",
     "/report",
@@ -98,10 +99,11 @@ public class AuthFilter implements Filter {
 
         // --- 2. SHOP MANAGER (UC08 -> UC16) ---
         if ("Shop Manager".equalsIgnoreCase(role)) {
-            // Được phép: Dashboard, Kho, Sản phẩm (tại cửa hàng), Báo cáo cửa hàng, Quản lý Cashier
+            // Được phép: Dashboard, Kho, Sản phẩm (tại cửa hàng), Báo cáo cửa hàng, Quản lý Cashier, Yêu cầu chuyển nhận hàng giữa các chi nhánh
             if (path.equals("/dashboard") ||
                 path.equals("/cashier-mgmt") ||  // Quản lý cashier chi nhánh
                 path.startsWith("/inventory") || // Nhập kho, chuyển kho, kiểm kê
+                path.startsWith("/transfer") ||  // Yêu cầu chuyển nhận hàng giữa các chi nhánh
                 path.startsWith("/product") ||   // Quản lý sản phẩm tại cửa hàng
                 path.startsWith("/report") ||    // Xem báo cáo cửa hàng
                 path.startsWith("/invoice")) {   // Xem hóa đơn của cửa hàng (thường Manager cần xem)

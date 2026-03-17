@@ -6,12 +6,18 @@ public class PhysicalProduct {
     private int physicalId;
     private int variantId;
     private int branchId;
-    private String branchName;
     private String imei;
     private String serialNumber;
-    private String status;
+    private String status; // IN_STOCK, SOLD, RESERVED, DEFECTIVE, IN_TRANSFER, WARRANTY
     private LocalDateTime importDate;
     private LocalDateTime saleDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    // Thông tin JOIN
+    private String variantName;
+    private String branchName;
+    private String sku;
 
     // Formatted strings dùng cho JSP (tránh dùng fmt:formatDate với LocalDateTime)
     private String importDateStr;
@@ -51,4 +57,16 @@ public class PhysicalProduct {
 
     public String getSaleDateStr() { return saleDateStr; }
     public void setSaleDateStr(String saleDateStr) { this.saleDateStr = saleDateStr; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getVariantName() { return variantName; }
+    public void setVariantName(String variantName) { this.variantName = variantName; }
+
+    public String getSku() { return sku; }
+    public void setSku(String sku) { this.sku = sku; }
 }

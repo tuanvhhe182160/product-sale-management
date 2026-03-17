@@ -39,11 +39,19 @@ public class BranchServlet extends HttpServlet {
         } else {
             switch (action) {
                 case "add":
-                    showAddPage(req, resp);
+                    showFormPage(req, resp);
                     break;
 
                 case "edit":
-                    showEditPage(req, resp);
+                    int id = Integer.parseInt(req.getParameter("id"));
+                    if (!branchDAO.isBranchIdExist(id)) {
+                        resp.sendRedirect("branch");
+                        return;
+                    }
+
+                    Branch branch = branchDAO.getById(id);
+
+                    showFormPage(req, resp, branch);
                     break;
 
                 default:
@@ -75,22 +83,21 @@ public class BranchServlet extends HttpServlet {
         req.getRequestDispatcher("/views/branch/branchManage.jsp").forward(req, resp);
     }
 
-    private void showAddPage(HttpServletRequest req, HttpServletResponse resp)
+    private void showFormPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.setAttribute("pageTitle", "Add New Branch");
-
-        req.getRequestDispatcher("/views/branch/branchCreate.jsp").forward(req, resp);
+        showFormPage(req, resp, null);
     }
 
-    private void showEditPage(HttpServletRequest req, HttpServletResponse resp)
+    private void showFormPage(HttpServletRequest req, HttpServletResponse resp, Branch branch)
             throws ServletException, IOException {
-        int id = Integer.parseInt(req.getParameter("id"));
-        Branch branch = branchDAO.getById(id);
+        if (branch != null) {
+            req.setAttribute("pageTitle", "Edit Branch");
+            req.setAttribute("branch", branch);
+        } else {
+            req.setAttribute("pageTitle", "Add New Branch");
+        }
 
-        req.setAttribute("pageTitle", "Edit Branch");
-        req.setAttribute("branch", branch);
-
-        req.getRequestDispatcher("/views/branch/branchEdit.jsp").forward(req, resp);
+        req.getRequestDispatcher("/views/branch/branchForm.jsp").forward(req, resp);
     }
 
     private void insertBranch(HttpServletRequest req, HttpServletResponse resp)
@@ -109,7 +116,7 @@ public class BranchServlet extends HttpServlet {
 
         if (!errors.isEmpty()) {
             req.setAttribute("errorsList", errors);
-            showAddPage(req, resp);
+            showFormPage(req, resp);
             return;
         }
 
@@ -143,7 +150,7 @@ public class BranchServlet extends HttpServlet {
             throws IOException, ServletException {
         int id = Integer.parseInt(req.getParameter("id"));
 
-        if(branchDAO.isBranchIdExist(id)) {
+        if (branchDAO.isBranchIdExist(id)) {
 
             String name = req.getParameter("name");
             String code = req.getParameter("code");
@@ -158,9 +165,9 @@ public class BranchServlet extends HttpServlet {
             }
 
             if (!errors.isEmpty()) {
-
+                Branch branch = branchDAO.getById(id);
                 req.setAttribute("errorsList", errors);
-                showEditPage(req, resp);
+                showFormPage(req, resp, branch);
                 return;
             }
 

@@ -95,7 +95,7 @@
                                     <i class="fas fa-building"></i> Audit Logs
                                 </a>
                             </li>
-                            
+
                         </c:if>
 
                         <!-- Shop Manager Menu -->
@@ -106,8 +106,18 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/report">
-                                    <i class="fas fa-chart-bar"></i> Reports
+                                <a class="nav-link" href="${pageContext.request.contextPath}/inventory/list">
+                                    <i class="fas fa-warehouse"></i> Inventory
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/inventory/report">
+                                    <i class="fas fa-chart-bar"></i> Inventory Report
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/transfer">
+                                    <i class="fas fa-exchange-alt"></i> Stock Transfer
                                 </a>
                             </li>
                         </c:if>
@@ -126,7 +136,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/customer">
-                                    <i class="fas fa-user-friends"></i> Customers                                
+                                    <i class="fas fa-user-friends"></i> Customers
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -139,7 +149,7 @@
                         <!-- Accounting Staff Menu -->
                         <c:if test="${sessionScope.userRole == 'Accounting Staff'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">                               
+                                <a class="nav-link" href="${pageContext.request.contextPath}/report/financial">
                                     <i class="fas fa-cash-register"></i> Financial Report
                                 </a>
                             </li>

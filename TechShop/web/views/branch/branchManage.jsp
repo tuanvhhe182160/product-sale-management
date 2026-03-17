@@ -85,7 +85,7 @@
                         <td class="text-center">
                             <a class="btn btn-sm btn-primary"
                                href="${pageContext.request.contextPath}/branch?action=edit&id=<%= branch.getBranchId() %>">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit"></i> Edit
                             </a>
                         </td>
                     </tr>

@@ -1,24 +1,23 @@
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.techshop.model.Branch" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<% 
-
-    List<String> errors = (List<String>) request.getAttribute("errorsList"); 
-   
-    Branch branch = new Branch();
-    
-if(request.getAttribute("branch") != null) {
-branch = (Branch) request.getAttribute("branch");
-    }
+<%
+    List<String> errors = (List<String>) request.getAttribute("errorsList");
+    Branch branch = (Branch) request.getAttribute("branch");
+    boolean isEdit = (branch != null && branch.getBranchId() > 0);
 %>
 
 <jsp:include page="../common/header.jsp"/>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-primary">
-        <i class="fas fa-plus-circle"></i>Branch Form
+        <% if (isEdit) { %>
+        <i class="fas fa-edit"></i> Edit Branch
+        <% } else { %>
+        <i class="fas fa-plus-circle"></i> Add New Branch
+        <% } %>
     </h2>
     <a href="${pageContext.request.contextPath}/branch"
        class="btn btn-primary">
@@ -34,8 +33,7 @@ branch = (Branch) request.getAttribute("branch");
     <%
         for (String err : errors) {
     %>
-    <div><i class="fas fa-exclamation-circle"></i> <%= err %>
-    </div>
+    <div><i class="fas fa-exclamation-circle"></i> <%= err %></div>
     <%
         }
     %>
@@ -48,7 +46,12 @@ branch = (Branch) request.getAttribute("branch");
 
 <div class="card border-primary">
     <div class="card-body">
-        <form id="addBranchForm" method="post" action="branch"<%--onsubmit="return validateForm()"--%>>
+        <form id="branchForm" method="post" action="branch">
+            <input type="hidden" name="action" value="<%= isEdit ? "update" : "insert" %>">
+            <% if (isEdit) { %>
+            <input type="hidden" name="id" value="<%= branch.getBranchId() %>">
+            <% } %>
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="name" class="form-label">Branch Name<span class="text-danger">*</span></label>
@@ -56,7 +59,7 @@ branch = (Branch) request.getAttribute("branch");
                            class="form-control"
                            id="name"
                            name="name"
-                           value="<%= branch != null ? branch.getBranchName() : "" %>"
+                           value="<%= isEdit ? branch.getBranchName() : "" %>"
                            required
                            maxlength="100"
                            placeholder="Enter branch name">
@@ -68,7 +71,7 @@ branch = (Branch) request.getAttribute("branch");
                            class="form-control"
                            id="code"
                            name="code"
-                           value="<%= branch != null ? branch.getBranchCode() : "" %>"
+                           value="<%= isEdit ? branch.getBranchCode() : "" %>"
                            required
                            maxlength="20"
                            placeholder="ABC123">
@@ -81,7 +84,7 @@ branch = (Branch) request.getAttribute("branch");
                        class="form-control"
                        id="address"
                        name="address"
-                       value="<%= branch != null ? branch.getAddress() : "" %>"
+                       value="<%= isEdit ? branch.getAddress() : "" %>"
                        required
                        maxlength="255"
                        placeholder="123 Main Street">
@@ -94,7 +97,7 @@ branch = (Branch) request.getAttribute("branch");
                            class="form-control"
                            id="phone"
                            name="phone"
-                           value="<%= branch != null ? branch.getPhone() : "" %>"
+                           value="<%= isEdit ? branch.getPhone() : "" %>"
                            required
                            pattern="[0-9]{10,11}"
                            maxlength="11"
@@ -107,18 +110,8 @@ branch = (Branch) request.getAttribute("branch");
                             id="status"
                             name="status"
                             required>
-                        <option value="ACTIVE"
-                                <%
-                                    if (branch != null && "ACTIVE".equals(branch.getStatus())) {
-                                %>
-                                selected<% } %>>ACTIVE
-                        </option>
-                        <option value="INACTIVE"
-                                <%
-                                    if (branch != null && "INACTIVE".equals(branch.getStatus())) {
-                                %>
-                                selected<% } %>>INACTIVE
-                        </option>
+                        <option value="ACTIVE" <%= isEdit && "ACTIVE".equals(branch.getStatus()) ? "selected" : (!isEdit ? "selected" : "") %>>ACTIVE</option>
+                        <option value="INACTIVE" <%= isEdit && "INACTIVE".equals(branch.getStatus()) ? "selected" : "" %>>INACTIVE</option>
                     </select>
                 </div>
             </div>
@@ -129,7 +122,7 @@ branch = (Branch) request.getAttribute("branch");
                     <i class="fas fa-times"></i> Cancel
                 </a>
                 <button type="submit" class="btn btn-primary ms-2">
-                    <i class="fas fa-save"></i> Submit
+                    <i class="fas fa-save"></i> <%= isEdit ? "Update Branch" : "Create Branch" %>
                 </button>
             </div>
         </form>
