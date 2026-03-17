@@ -33,7 +33,7 @@ import jakarta.servlet.http.HttpSession;
     "/invoice",
     "/invoice/*",
     "/inventory/*",
-        "/transfer/*",  // Chuyển kho (Shop Manager, Admin)
+    "/transfer/*",  // Chuyển kho (Shop Manager, Admin)
     "/warranty/*",
     "/customer/*",
     "/report",
