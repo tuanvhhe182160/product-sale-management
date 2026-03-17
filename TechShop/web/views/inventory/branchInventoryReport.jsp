@@ -54,12 +54,12 @@
                         <th class="text-end">Cost Price</th>
                         <th class="text-end">Warranty</th>
                         <th class="text-end">Current Stock</th>
-                        <th class="text-center">Action</th>
+                        <th style="width: 1%"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach var="item" items="${inventoryItems}">
-                        <tr class="${item.inventoryLevel == 0 ? 'table-danger' : ''}">
+                        <tr class="${item.inventoryLevel == 0 ? 'table-danger' : (item.inventoryLevel <= 5 ? 'table-warning' : '')}">
                             <td>${item.variantName}</td>
                             <td>${item.sku}</td>
                             <td>${item.categoryName}</td>
@@ -75,11 +75,19 @@
                             <td class="text-end fw-semibold ${item.inventoryLevel == 0 ? 'text-danger' : 'text-primary'}">${item.inventoryLevel}
                                 units
                             </td>
-                            <td class="text-center">
-                                <a href="${pageContext.request.contextPath}/inventory/list?variantId=${item.variantId}&status=IN_STOCK"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-list"></i> View Units
-                                </a>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" style="min-width: fit-content; white-space: nowrap;">
+                                        <li>
+                                            <a class="dropdown-item" href="${pageContext.request.contextPath}/inventory/list?variantId=${item.variantId}&status=IN_STOCK">
+                                                View Units
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
