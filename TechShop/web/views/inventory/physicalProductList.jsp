@@ -119,7 +119,19 @@
                     <c:forEach var="p" items="${physicalProducts}" varStatus="loop">
                         <tr>
                             <td>${(currentPage - 1) * pageSize + loop.count}</td>
-                            <td>${p.variantName}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <c:choose>
+                                        <c:when test="${not empty p.imageUrl}">
+                                            <img src="${p.imageUrl}" alt="${p.variantName}" style="width: 36px; height: 36px; object-fit: contain;">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i class="fas fa-image text-muted" style="font-size: 36px;"></i>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <span>${p.variantName}</span>
+                                </div>
+                            </td>
                             <td>${p.sku}</td>
                             <td>${p.imei}</td>
                             <td>${p.serialNumber}</td>
