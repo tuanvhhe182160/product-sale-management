@@ -27,47 +27,63 @@
     </div>
 </c:if>
 
-<div class="card border-primary">
-    <div class="card-header bg-primary text-white">
-        <i class="fas fa-info-circle"></i> Product Information
+<div class="row g-3">
+    <%-- Image card --%>
+    <div class="col-md-3">
+        <div class="card border-primary h-100">
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <c:choose>
+                    <c:when test="${not empty product.imageUrl}">
+                        <img src="${product.imageUrl}" alt="${product.variantName}"
+                             class="img-fluid" style="max-height: 220px; object-fit: contain;">
+                    </c:when>
+                    <c:otherwise>
+                        <i class="fas fa-image text-muted" style="font-size: 100px;"></i>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Variant</label>
-                <p class="fs-6 mb-0">${product.variantName}</p>
+
+    <%-- Information card --%>
+    <div class="col-md-9">
+        <div class="card border-primary h-100">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-info-circle"></i> Product Information
             </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">SKU</label>
-                <p class="fs-6 mb-0 font-monospace">${product.sku}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">IMEI</label>
-                <p class="fs-6 mb-0 font-monospace">${product.imei}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Serial Number</label>
-                <p class="fs-6 mb-0 font-monospace">${product.serialNumber}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Branch</label>
-                <p class="fs-6 mb-0">${product.branchName}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Status</label>
-                <p class="mb-0">
-                    <span class="badge ${product.status == 'IN_STOCK' ? 'bg-primary' : 'bg-secondary'} fs-6">
-                        ${product.status.replace('_', ' ')}
-                    </span>
-                </p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Import Date</label>
-                <p class="fs-6 mb-0">${DateTimeUtil.format(product.importDate)}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Updated At</label>
-                <p class="fs-6 mb-0">${DateTimeUtil.format(product.updatedAt)}</p>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted fw-semibold">Category</dt>
+                    <dd class="col-sm-8">${product.categoryName}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">Model</dt>
+                    <dd class="col-sm-8">${product.modelName}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">Variant</dt>
+                    <dd class="col-sm-8">${product.variantName}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">SKU</dt>
+                    <dd class="col-sm-8 font-monospace">${product.sku}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">IMEI</dt>
+                    <dd class="col-sm-8 font-monospace">${product.imei}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">Serial Number</dt>
+                    <dd class="col-sm-8 font-monospace">${product.serialNumber}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">Status</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge ${product.status == 'IN_STOCK' ? 'bg-primary' : 'bg-secondary'}">
+                            ${product.status.replace('_', ' ')}
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">Import Date</dt>
+                    <dd class="col-sm-8">${DateTimeUtil.format(product.importDate)}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold">Updated At</dt>
+                    <dd class="col-sm-8 mb-0">${DateTimeUtil.format(product.updatedAt)}</dd>
+                </dl>
             </div>
         </div>
     </div>
