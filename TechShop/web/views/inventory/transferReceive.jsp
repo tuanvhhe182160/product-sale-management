@@ -78,9 +78,7 @@
         </div>
 
         <div class="alert alert-info mb-4">
-            <i class="fas fa-info-circle"></i>
-            Confirming receipt will add these <strong>${items.size()}</strong> unit(s) to your branch inventory
-            with status <strong>IN_STOCK</strong>.
+            Confirming receipt will add these <strong>${items.size()}</strong> unit(s) to your branch inventory.
         </div>
 
         <form method="post" action="${pageContext.request.contextPath}/transfer/receive"

@@ -13,112 +13,68 @@
     </a>
 </div>
 
-<div class="card border-primary mb-3">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <span><i class="fas fa-info-circle"></i> Transfer Information</span>
-        <jsp:include page="transferStatusBadge.jsp">
-            <jsp:param name="status" value="${transfer.status}"/>
-        </jsp:include>
-    </div>
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Transfer Code</label>
-                <p class="fs-6 mb-0 font-monospace">${transfer.transferCode}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Variant</label>
-                <p class="fs-6 mb-0">${transfer.variantName} <span class="text-muted font-monospace small">(${transfer.sku})</span></p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">From Branch</label>
-                <p class="fs-6 mb-0">${transfer.fromBranchName}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">To Branch</label>
-                <p class="fs-6 mb-0">${transfer.toBranchName}</p>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold text-muted small">Requested Qty</label>
-                <p class="fs-6 mb-0">${transfer.requestedQuantity}</p>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold text-muted small">Actual Items</label>
-                <p class="fs-6 mb-0">${transfer.itemCount}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Requested By</label>
-                <p class="fs-6 mb-0">${transfer.requestedByName}</p>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-muted small">Request Date</label>
-                <p class="fs-6 mb-0">${DateTimeUtil.format(transfer.requestDate)}</p>
-            </div>
-            <c:if test="${not empty transfer.approvedByName}">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold text-muted small">Approved / Rejected By</label>
-                    <p class="fs-6 mb-0">${transfer.approvedByName}</p>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold text-muted small">Approval Date</label>
-                    <p class="fs-6 mb-0">${DateTimeUtil.format(transfer.approvalDate)}</p>
-                </div>
-            </c:if>
-            <c:if test="${transfer.status == 'COMPLETED'}">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold text-muted small">Completion Date</label>
-                    <p class="fs-6 mb-0">${DateTimeUtil.format(transfer.completionDate)}</p>
-                </div>
-            </c:if>
-            <c:if test="${not empty transfer.note}">
-                <div class="col-12">
-                    <label class="form-label fw-semibold text-muted small">Note</label>
-                    <p class="fs-6 mb-0">${transfer.note}</p>
-                </div>
-            </c:if>
-        </div>
-    </div>
-</div>
-
 <div class="card border-primary">
     <div class="card-header bg-primary text-white">
-        <i class="fas fa-boxes"></i> Transfer Items
+        <i class="fas fa-info-circle"></i> Transfer Information
     </div>
     <div class="card-body">
-        <c:choose>
-            <c:when test="${empty items}">
-                <div class="text-center text-muted py-4">
-                    <i class="fas fa-box-open fa-2x mb-2"></i>
-                    <p class="mb-0">No items have been assigned to this transfer yet.</p>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-primary">
-                        <tr>
-                            <th>No</th>
-                            <th>Variant</th>
-                            <th>SKU</th>
-                            <th>IMEI</th>
-                            <th>Serial Number</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach var="item" items="${items}" varStatus="loop">
-                            <tr>
-                                <td>${loop.count}</td>
-                                <td>${item.variantName}</td>
-                                <td class="font-monospace">${item.sku}</td>
-                                <td class="font-monospace">${item.imei}</td>
-                                <td class="font-monospace">${item.serialNumber}</td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-            </c:otherwise>
-        </c:choose>
+
+        <%-- Transfer code + status --%>
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <span class="font-monospace fs-5 fw-semibold">${transfer.transferCode}</span>
+            <jsp:include page="transferStatusBadge.jsp">
+                <jsp:param name="status" value="${transfer.status}"/>
+            </jsp:include>
+        </div>
+
+        <hr class="my-3">
+
+        <%-- Route --%>
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <span class="fw-semibold">${transfer.fromBranchName}</span>
+            <i class="fas fa-long-arrow-alt-right text-primary"></i>
+            <span class="fw-semibold">${transfer.toBranchName}</span>
+        </div>
+
+        <hr class="my-3">
+
+        <%-- Details --%>
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-muted fw-semibold">Variant</dt>
+            <dd class="col-sm-9">${transfer.variantName} <span class="text-muted font-monospace small">(${transfer.sku})</span></dd>
+
+            <dt class="col-sm-3 text-muted fw-semibold">Requested Qty</dt>
+            <dd class="col-sm-9">${transfer.requestedQuantity}</dd>
+
+            <dt class="col-sm-3 text-muted fw-semibold">Requested By</dt>
+            <dd class="col-sm-9">${transfer.requestedByName}</dd>
+
+            <dt class="col-sm-3 text-muted fw-semibold">Request Date</dt>
+            <dd class="col-sm-9">${DateTimeUtil.format(transfer.requestDate)}</dd>
+
+            <c:if test="${not empty transfer.approvedByName}">
+                <dt class="col-sm-3 text-muted fw-semibold">
+                    <c:choose>
+                        <c:when test="${transfer.status == 'REJECTED'}">Rejected By</c:when>
+                        <c:otherwise>Approved By</c:otherwise>
+                    </c:choose>
+                </dt>
+                <dd class="col-sm-9">${transfer.approvedByName}</dd>
+
+                <dt class="col-sm-3 text-muted fw-semibold">Approval Date</dt>
+                <dd class="col-sm-9">${DateTimeUtil.format(transfer.approvalDate)}</dd>
+            </c:if>
+
+            <c:if test="${transfer.status == 'COMPLETED'}">
+                <dt class="col-sm-3 text-muted fw-semibold">Completion Date</dt>
+                <dd class="col-sm-9">${DateTimeUtil.format(transfer.completionDate)}</dd>
+            </c:if>
+
+            <c:if test="${not empty transfer.note}">
+                <dt class="col-sm-3 text-muted fw-semibold">Note</dt>
+                <dd class="col-sm-9 mb-0">${transfer.note}</dd>
+            </c:if>
+        </dl>
     </div>
 </div>
 
