@@ -19,9 +19,11 @@ public class PhysicalProductDAO extends DBContext {
 
     private static final String BASE_SELECT_QUERY_STRING = "SELECT p.physical_id, p.variant_id, p.branch_id, "
             + "p.imei, p.serial_number, p.status, p.import_date, p.sale_date, p.created_at, p.updated_at, "
-            + "v.variant_name, v.sku, b.branch_name "
+            + "v.variant_name, v.sku, v.image_url, m.model_name, c.category_name, b.branch_name "
             + "FROM PhysicalProduct p "
             + "LEFT JOIN ProductVariant v ON p.variant_id = v.variant_id "
+            + "LEFT JOIN ProductModel m ON v.model_id = m.model_id "
+            + "LEFT JOIN ProductCategory c ON m.category_id = c.category_id "
             + "LEFT JOIN Branch b ON p.branch_id = b.branch_id ";
 
     public List<PhysicalProduct> getAll() {
@@ -146,7 +148,7 @@ public class PhysicalProductDAO extends DBContext {
                                                         java.time.LocalDate importDate,
                                                         int offset, int pageSize) {
         List<PhysicalProduct> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(BASE_SELECT_QUERY_STRING + "WHERE p.branch_id = ? ");
+        StringBuilder sql = new StringBuilder(BASE_SELECT_QUERY_STRING + "WHERE p.branch_id = ? AND p.status NOT IN ('SOLD', 'WARRANTY') ");
         List<Object> parameters = new ArrayList<>();
         parameters.add(branchId);
 
@@ -199,7 +201,7 @@ public class PhysicalProductDAO extends DBContext {
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(*) FROM PhysicalProduct p "
                         + "LEFT JOIN ProductVariant v ON p.variant_id = v.variant_id "
-                        + "WHERE p.branch_id = ? ");
+                        + "WHERE p.branch_id = ? AND p.status NOT IN ('SOLD', 'WARRANTY') ");
         List<Object> parameters = new ArrayList<>();
         parameters.add(branchId);
 
@@ -240,7 +242,7 @@ public class PhysicalProductDAO extends DBContext {
 
     public List<String> getDistinctStatusesByBranch(int branchId) {
         List<String> statuses = new ArrayList<>();
-        String sql = "SELECT DISTINCT status FROM PhysicalProduct WHERE branch_id = ? AND status IS NOT NULL ORDER BY status";
+        String sql = "SELECT DISTINCT status FROM PhysicalProduct WHERE branch_id = ? AND status IS NOT NULL AND status NOT IN ('SOLD', 'WARRANTY') ORDER BY status";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, branchId);
@@ -537,6 +539,9 @@ public class PhysicalProductDAO extends DBContext {
         product.setVariantName(rs.getString("variant_name"));
         product.setBranchName(rs.getString("branch_name"));
         product.setSku(rs.getString("sku"));
+        product.setImageUrl(rs.getString("image_url"));
+        product.setCategoryName(rs.getString("category_name"));
+        product.setModelName(rs.getString("model_name"));
 
         return product;
     }

@@ -18,6 +18,9 @@ public class PhysicalProduct {
     private String variantName;
     private String branchName;
     private String sku;
+    private String imageUrl;
+    private String categoryName;
+    private String modelName;
 
     // Formatted strings dùng cho JSP (tránh dùng fmt:formatDate với LocalDateTime)
     private String importDateStr;
@@ -69,4 +72,14 @@ public class PhysicalProduct {
 
     public String getSku() { return sku; }
     public void setSku(String sku) { this.sku = sku; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+
+    public String getModelName() { return modelName; }
+    public void setModelName(String modelName) { this.modelName = modelName; }
+
 }

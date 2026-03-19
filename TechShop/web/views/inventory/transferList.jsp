@@ -107,7 +107,7 @@
                                     <th class="text-center">Qty</th>
                                     <th class="text-center">Status</th>
                                     <th>Requested</th>
-                                    <th class="text-center">Action</th>
+                                    <th style="width: 1%"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -123,16 +123,28 @@
                                                 <jsp:param name="status" value="${t.status}"/>
                                             </jsp:include>
                                         </td>
+                                        <td>${DateTimeUtil.format(t.requestDate)}</td>
                                         <td>
-                                                ${DateTimeUtil.format(t.requestDate)}
-                                        </td>
-                                        <td class="text-end">
-                                            <c:if test="${t.status == 'APPROVED'}">
-                                                <a href="${pageContext.request.contextPath}/transfer/receive?id=${t.transferId}"
-                                                   class="btn btn-sm btn-success">
-                                                    <i class="fas fa-box-open"></i> Receive
-                                                </a>
-                                            </c:if>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end" style="min-width: fit-content; white-space: nowrap;">
+                                                    <li>
+                                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/transfer/detail?id=${t.transferId}">
+                                                            Details
+                                                        </a>
+                                                    </li>
+                                                    <c:if test="${t.status == 'APPROVED'}">
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-success" href="${pageContext.request.contextPath}/transfer/receive?id=${t.transferId}">
+                                                                Receive
+                                                            </a>
+                                                        </li>
+                                                    </c:if>
+                                                </ul>
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -168,7 +180,7 @@
                                     <th class="text-center">Qty</th>
                                     <th class="text-center">Status</th>
                                     <th>Requested</th>
-                                    <th class="text-center">Action</th>
+                                    <th style="width: 1%"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -185,16 +197,28 @@
                                                 <jsp:param name="status" value="${t.status}"/>
                                             </jsp:include>
                                         </td>
+                                        <td>${DateTimeUtil.format(t.requestDate)}</td>
                                         <td>
-                                                ${DateTimeUtil.format(t.requestDate)}
-                                        </td>
-                                        <td class="text-end">
-                                            <c:if test="${t.status == 'PENDING'}">
-                                                <a href="${pageContext.request.contextPath}/transfer/approve?id=${t.transferId}"
-                                                   class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-check"></i> Review
-                                                </a>
-                                            </c:if>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end" style="min-width: fit-content; white-space: nowrap;">
+                                                    <li>
+                                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/transfer/detail?id=${t.transferId}">
+                                                            Details
+                                                        </a>
+                                                    </li>
+                                                    <c:if test="${t.status == 'PENDING'}">
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-primary" href="${pageContext.request.contextPath}/transfer/approve?id=${t.transferId}">
+                                                                Review
+                                                            </a>
+                                                        </li>
+                                                    </c:if>
+                                                </ul>
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>

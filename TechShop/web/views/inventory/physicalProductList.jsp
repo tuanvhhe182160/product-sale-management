@@ -47,7 +47,7 @@
                 <select class="form-select" name="status">
                     <option value="">All status</option>
                     <c:forEach var="s" items="${statusOptions}">
-                        <option value="${s}" ${s == status ? 'selected' : ''}>${s}</option>
+                        <option value="${s}" ${s == status ? 'selected' : ''}>${s.replace('_', ' ')}</option>
                     </c:forEach>
                 </select>
             </div>
@@ -72,12 +72,12 @@
             <input type="hidden" name="sortBy" value="${sortBy}">
             <input type="hidden" name="sortDir" value="${sortDir}">
 
-            <div class="col-12 d-flex gap-2">
+            <div class="col-auto d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> Apply
+                    <i class="fas fa-search"></i>
                 </button>
                 <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/inventory/list">
-                    <i class="fas fa-times"></i> Clear
+                    <i class="fas fa-times"></i>
                 </a>
             </div>
         </form>
@@ -106,30 +106,60 @@
                     <thead class="table-primary">
                     <tr>
                         <th>No</th>
-                        <th>SKU</th>
                         <th>Variant</th>
+                        <th>SKU</th>
                         <th>IMEI</th>
                         <th>Serial Number</th>
-                        <th>Status</th>
                         <th>Import Date</th>
-                        <th>Sale Date</th>
-                        <th>Updated At</th>
+                        <th>Status</th>
+                        <th style="width: 1%"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach var="p" items="${physicalProducts}" varStatus="loop">
                         <tr>
                             <td>${(currentPage - 1) * pageSize + loop.count}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <c:choose>
+                                        <c:when test="${not empty p.imageUrl}">
+                                            <img src="${p.imageUrl}" alt="${p.variantName}" style="width: 36px; height: 36px; object-fit: contain;">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i class="fas fa-image text-muted" style="font-size: 36px;"></i>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <span>${p.variantName}</span>
+                                </div>
+                            </td>
                             <td>${p.sku}</td>
-                            <td>${p.variantName}</td>
                             <td>${p.imei}</td>
                             <td>${p.serialNumber}</td>
-                            <td>
-                                <span class="badge ${p.status == 'IN_STOCK' ? 'bg-primary' : 'bg-secondary'}">${p.status}</span>
-                            </td>
                             <td>${DateTimeUtil.format(p.importDate)}</td>
-                            <td>${DateTimeUtil.format(p.saleDate)}</td>
-                            <td>${DateTimeUtil.format(p.updatedAt)}</td>
+                            <td>
+                                <span class="badge ${p.status == 'IN_STOCK' ? 'bg-primary' : 'bg-secondary'}">${p.status.replace('_', ' ')}</span>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" style="min-width: fit-content; white-space: nowrap;">
+                                        <li>
+                                            <a class="dropdown-item" href="${pageContext.request.contextPath}/inventory/detail?id=${p.physicalId}">
+                                                Details
+                                            </a>
+                                        </li>
+                                        <c:if test="${p.status != 'IN_TRANSFER'}">
+                                            <li>
+                                                <a class="dropdown-item" href="${pageContext.request.contextPath}/inventory/edit?id=${p.physicalId}">
+                                                    Edit
+                                                </a>
+                                            </li>
+                                        </c:if>
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
                     </c:forEach>
                     </tbody>
