@@ -3,6 +3,7 @@ package com.techshop.model;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -215,6 +216,11 @@ public class Invoice {
             return null;
         }
         return Timestamp.valueOf(this.invoiceDate);
+    }
+    
+    public Date getInvoiceDateAsDate() {
+        if (this.invoiceDate == null) return null;
+        return Date.from(this.invoiceDate.atZone(ZoneId.systemDefault()).toInstant());
     }
     
 }

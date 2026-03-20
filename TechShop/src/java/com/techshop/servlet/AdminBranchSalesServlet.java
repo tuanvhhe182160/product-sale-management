@@ -3,85 +3,123 @@ package com.techshop.servlet;
 import com.techshop.dao.AdminReportDAO;
 import com.techshop.dao.BranchDAO;
 import com.techshop.model.Branch;
-import com.google.gson.Gson;
 
+import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/admin/branch-report")
+/**
+ * Báo cáo Tổng quan & Doanh số theo Chi nhánh dành cho Admin.
+ * URL: /admin/branch-report
+ * * Đã gộp từ RevenueOverviewServlet và AdminBranchSalesServlet cũ.
+ */
+@WebServlet(name = "AdminBranchSalesServlet", urlPatterns = {"/admin/branch-report"})
 public class AdminBranchSalesServlet extends HttpServlet {
 
+    private final AdminReportDAO reportDAO = new AdminReportDAO();
+    private final BranchDAO branchDAO      = new BranchDAO();
+    private final Gson gson                = new Gson();
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
+        
+        request.setCharacterEncoding("UTF-8");
 
-        String startDate = req.getParameter("startDate");
-        String endDate = req.getParameter("endDate");
-        String branchIdStr = req.getParameter("branchId");
-        String format = req.getParameter("format");
-
-        if (startDate == null || startDate.isEmpty()) {
-            startDate = LocalDate.now().minusDays(30).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        // 1. Xử lý ngày tháng (Mặc định: 30 ngày qua)
+        String startDate = request.getParameter("startDate");
+        String endDate   = request.getParameter("endDate");
+        
+        if (startDate == null || startDate.trim().isEmpty()) {
+            startDate = LocalDate.now().minusDays(30).toString();
         }
-        if (endDate == null || endDate.isEmpty()) {
-            endDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        if (endDate == null || endDate.trim().isEmpty()) {
+            endDate = LocalDate.now().toString();
         }
 
-        AdminReportDAO dao = new AdminReportDAO();
-        Integer branchId = (branchIdStr != null && !branchIdStr.isEmpty()) ? Integer.parseInt(branchIdStr) : null;
+        // 2. Lấy các tham số filter
+        Integer branchId = parseIntOrNull(request.getParameter("branchId"));
+        String action    = request.getParameter("action");
 
-        // JSON API cho biểu đồ
-        if ("json".equals(format)) {
-            resp.setContentType("application/json;charset=UTF-8");
-            PrintWriter out = resp.getWriter();
-            List<Map<String, Object>> chartData = dao.getBranchSalesChart(startDate, endDate);
-            out.print(new Gson().toJson(chartData));
+        // ==========================================
+        // 3. XỬ LÝ API JSON CHO BIỂU ĐỒ (AJAX)
+        // ==========================================
+        if ("chart".equals(action)) {
+            response.setContentType("application/json;charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            
+            // Trả về dữ liệu để vẽ biểu đồ doanh thu các chi nhánh
+            List<Map<String, Object>> chartData = reportDAO.getBranchSalesChart(startDate, endDate);
+            out.print(gson.toJson(chartData));
             out.flush();
-            return;
+            return; // Dừng tại đây, không load JSP
         }
 
-        // Thống kê tổng quan
-        Map<String, Object> overallStats = dao.getBranchOverallStats(startDate, endDate);
-        req.setAttribute("overallStats", overallStats);
+        // ==========================================
+        // 4. CHUẨN BỊ DỮ LIỆU BÁO CÁO CHO TRANG JSP
+        // ==========================================
+        
+        // 4.1. Thống kê tổng quan
+        Map<String, Object> overallStats = reportDAO.getBranchOverallStats(startDate, endDate);
+        request.setAttribute("overallStats", overallStats);
 
-        // Doanh thu theo từng chi nhánh
-        List<Map<String, Object>> branchSales = dao.getBranchSalesChart(startDate, endDate);
-        req.setAttribute("branchSales", branchSales);
+        // 4.2. Danh sách doanh thu so sánh giữa các chi nhánh
+        List<Map<String, Object>> branchSales = reportDAO.getBranchSalesChart(startDate, endDate);
+        request.setAttribute("branchSales", branchSales);
 
-        // Dropdown chi nhánh
-        List<Branch> branchList = new BranchDAO().getAllActive();
-        req.setAttribute("branchList", branchList);
-        req.setAttribute("selectedBranchId", branchId);
+        // (ĐÃ XÓA đoạn dailyRevenue ở đây)
 
-        // Nếu đã chọn chi nhánh -> lấy chi tiết nhân viên + doanh thu theo ngày
+        // 4.3 & 4.4. Xử lý khi chọn cụ thể 1 chi nhánh
+        List<Branch> branches = branchDAO.getAllActive();
         if (branchId != null) {
-            List<Map<String, Object>> employeeDetail = dao.getBranchEmployeeDetail(startDate, endDate, branchId);
-            req.setAttribute("employeeDetail", employeeDetail);
+            
+            // Lấy doanh thu theo ngày (ĐÃ CHUYỂN VÀO ĐÂY ĐỂ TRÁNH LỖI NULL)
+            List<Map<String, Object>> dailyRevenue = reportDAO.getBranchDailyRevenue(startDate, endDate, branchId);
+            request.setAttribute("dailyRevenue", dailyRevenue);
 
-            List<Map<String, Object>> dailyRevenue = dao.getBranchDailyRevenue(startDate, endDate, branchId);
-            req.setAttribute("dailyRevenue", dailyRevenue);
+            // Lấy danh sách nhân viên của chi nhánh đó
+            List<Map<String, Object>> employeeDetail = reportDAO.getBranchEmployeeDetail(startDate, endDate, branchId);
+            request.setAttribute("employeeDetail", employeeDetail);
 
-            // Tìm tên chi nhánh đã chọn
-            for (Branch b : branchList) {
-                if (b.getBranchId() == branchId) {
-                    req.setAttribute("selectedBranchName", b.getBranchName());
-                    break;
-                }
-            }
+            // Tìm và gắn tên chi nhánh để hiển thị ra UI
+            branches.stream()
+                    .filter(b -> b.getBranchId() == branchId)
+                    .findFirst()
+                    .ifPresent(b -> request.setAttribute("selectedBranchName", b.getBranchName()));
         }
 
-        req.setAttribute("startDate", startDate);
-        req.setAttribute("endDate", endDate);
-        req.setAttribute("pageTitle", "Thống kê doanh số chi nhánh - Admin");
+        // ==========================================
+        // 5. ĐẨY DỮ LIỆU RA VIEW (JSP)
+        // ==========================================
+        request.setAttribute("branches", branches);
+        
+        // Giữ trạng thái form
+        request.setAttribute("startDate", startDate);
+        request.setAttribute("endDate", endDate);
+        request.setAttribute("selectedBranchId", branchId);
+        request.setAttribute("pageTitle", "Báo cáo Doanh thu & Chi nhánh - Admin");
 
-        req.getRequestDispatcher("/views/Admin/admin_branch_sales.jsp").forward(req, resp);
+        request.getRequestDispatcher("/views/Admin/admin_branch_sales.jsp").forward(request, response);
+    }
+
+    /**
+     * Hàm tiện ích giúp parse String sang Integer an toàn
+     */
+    private static Integer parseIntOrNull(String s) {
+        if (s == null || s.trim().isEmpty()) return null;
+        try { 
+            return Integer.parseInt(s.trim()); 
+        } catch (NumberFormatException e) { 
+            return null; 
+        }
     }
 }

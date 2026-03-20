@@ -5,7 +5,7 @@
 
 package com.techshop.servlet;
 
-import com.techshop.dao.InvoiceDAOTest;
+import com.techshop.dao.InvoiceDAOForAccounting;
 import com.techshop.model.Invoice;
 import com.techshop.model.InvoiceItem;
 import com.techshop.model.User;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @WebServlet(name="InvoiceDetailServlet", urlPatterns={"/accounting/invoice-detail"})
 public class InvoiceDetailServlet extends HttpServlet {
-   private InvoiceDAOTest invoiceDAO = new InvoiceDAOTest();
+   private InvoiceDAOForAccounting invoiceDAO = new InvoiceDAOForAccounting();
    @Override
     protected void doGet(HttpServletRequest request, 
                          HttpServletResponse response)

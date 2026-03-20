@@ -5,6 +5,7 @@
 
 package com.techshop.servlet;
 
+import com.techshop.dao.AccountingDashboardDAO;
 import com.techshop.dao.UserDAO;
 import com.techshop.dao.BranchDAO;
 import com.techshop.dao.ProductCategoryDAO;
@@ -25,6 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard"})
 public class DashboardServlet extends HttpServlet {
@@ -146,37 +148,48 @@ public class DashboardServlet extends HttpServlet {
     
     //accounting
     private void loadAccountingDashboard(HttpServletRequest request, User user) {
-        try {
-            // Sử dụng ReportDAO để lấy dữ liệu 30 ngày gần nhất
-            ReportDAO reportDAO = new com.techshop.dao.ReportDAO();
-            LocalDate today = java.time.LocalDate.now();
-            LocalDate thirtyDaysAgo = today.minusDays(30);
-        
-            HttpSession session = request.getSession(false);
-            User currentUser = (User) session.getAttribute("user");
-            int branchId = currentUser.getBranchId();
-            List<FinancialReportItem> recentData = 
-                reportDAO.getFinancialReport(thirtyDaysAgo.toString(), today.toString(), branchId);
-            
-            double totalRevenue30Days = 0;
-            double totalProfit30Days = 0;
-            int totalInvoices30Days = 0;
-        
-            for (FinancialReportItem item : recentData) {
-                totalRevenue30Days += item.getTotalRevenue();
-                totalProfit30Days += item.getTotalProfit();
-                totalInvoices30Days += item.getTotalOrders();
-            }
-
-            // Đẩy dữ liệu lên JSP
-            request.setAttribute("totalRevenue30Days", totalRevenue30Days);
-            request.setAttribute("totalProfit30Days", totalProfit30Days);
-            request.setAttribute("totalInvoices30Days", totalInvoices30Days);
-        
-        } catch (Exception e) {
-            System.err.println("Error loading Accounting Dashboard: " + e.getMessage());
-        }    
-        
+        int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
+        if (branchId == 0) {
+            // Admin should not land here, but guard anyway
+            request.setAttribute("dashboardType", "accounting");
+            return;
+        }
+ 
+        AccountingDashboardDAO dao = new AccountingDashboardDAO();
+ 
+        // This month KPI: [revenue, profit, invoiceCount]
+        java.math.BigDecimal[] monthKpi = dao.getThisMonthKpi(branchId);
+        request.setAttribute("monthRevenue",  monthKpi[0]);
+        request.setAttribute("monthProfit",   monthKpi[1]);
+        request.setAttribute("monthInvoices", monthKpi[2].intValue());
+ 
+        // Today KPI: [revenue, count]
+        java.math.BigDecimal[] todayKpi = dao.getTodayKpi(branchId);
+        request.setAttribute("todayRevenue",  todayKpi[0]);
+        request.setAttribute("todayInvoices", todayKpi[1].intValue());
+ 
+        // Pending reconciliation count (TRANSFER/MIXED awaiting confirmation)
+        int pendingRecon = dao.getPendingReconciliationCount(branchId);
+        request.setAttribute("pendingRecon", pendingRecon);
+ 
+        // Last closed period [month, year]
+        int[] lastPeriod = dao.getLastClosedPeriod(branchId);
+        if (lastPeriod != null) {
+            request.setAttribute("lastClosedMonth", lastPeriod[0]);
+            request.setAttribute("lastClosedYear",  lastPeriod[1]);
+        }
+ 
+        // 7-day revenue trend for sparkline chart
+        List<Object[]> trend = dao.getLast7DaysRevenue(branchId);
+        request.setAttribute("revenueTrend", trend);
+ 
+        // Payment method breakdown this month
+        Map<String, java.math.BigDecimal> payBreakdown =
+            dao.getPaymentMethodBreakdown(branchId);
+        request.setAttribute("payBreakdown", payBreakdown);
+ 
+        // Top 5 invoices today
+        request.setAttribute("topInvoices", dao.getTodayTopInvoices(branchId));
         request.setAttribute("dashboardType", "accounting");
     }
 

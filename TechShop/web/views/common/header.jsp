@@ -69,14 +69,17 @@
                                     <i class="fas fa-chart-line"></i> Reports
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/report">
-                                        <i class="fas fa-tags"></i> General
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/branch-report">
+                                        <i class="fas fa-building"></i> Revenue By Branch
                                     </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch">
-                                        <i class="fas fa-building"></i> By Branch
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/product-report">
+                                        <i class="fas fa-cubes"></i> Revenue By Product
                                     </a></li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/sales-report?reportType=product">
-                                        <i class="fas fa-cubes"></i> By Product
+                                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/analytics/warranty">
+                                        <i class="fas fa-building"></i> Warranty Metric
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/audit-logs">
+                                        <i class="fas fa-building"></i> Audit Logs
                                     </a></li>
                                 </ul>
                             </li>
@@ -85,17 +88,6 @@
                                     <i class="fas fa-building"></i> Cashiers
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/analytics/warranty">
-                                    <i class="fas fa-building"></i> Warranty
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/audit-logs">
-                                    <i class="fas fa-building"></i> Audit Logs
-                                </a>
-                            </li>
-
                         </c:if>
 
                         <!-- Shop Manager Menu -->
@@ -156,6 +148,16 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/accounting/invoices">
                                     <i class="fas fa-user-friends"></i> Check Invoice
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/accounting/reconciliation">
+                                    <i class="fas fa-check-double"></i> Reconciliation
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/accounting/close-period">
+                                    <i class="fas fa-shield-alt"></i> Close Period
                                 </a>
                             </li>
                         </c:if>

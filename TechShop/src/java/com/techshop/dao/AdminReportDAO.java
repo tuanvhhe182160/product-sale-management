@@ -20,7 +20,7 @@ public class AdminReportDAO extends DBContext {
             Integer categoryId, Integer modelId, Integer variantId) {
         StringBuilder sql = new StringBuilder(
             "SELECT c.category_name, pm.model_name, pv.variant_name, " +
-            "SUM(ii.quantity) as total_qty, SUM(ii.subtotal) as total_sales " +
+            "SUM(ii.quantity) as total_qty, SUM(i.final_amount) as total_sales " +
             "FROM Invoice i " +
             "JOIN InvoiceItem ii ON i.invoice_id = ii.invoice_id " +
             "JOIN ProductVariant pv ON ii.variant_id = pv.variant_id " +

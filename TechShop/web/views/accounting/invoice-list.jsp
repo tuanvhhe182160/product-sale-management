@@ -6,36 +6,64 @@
 <c:set var="pageTitle" value="Danh sách Hóa Đơn - TechShop" />
 <%@ include file="../common/header.jsp" %>
 
-<div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 text-gray-800">
-            <i class="fas fa-receipt text-info me-2"></i> Đối Soát Hóa Đơn
-        </h2>
-        <a href="${pageContext.request.contextPath}/accounting/invoices?startDate=${startDate}&endDate=${endDate}&action=export" 
-           class="btn btn-success shadow-sm">
-            <i class="fas fa-file-excel fa-sm text-white-50 me-1"></i> Xuất Dữ Liệu
-        </a>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 text-gray-800">
+        <i class="fas fa-receipt text-info me-2"></i> Đối Soát Hóa Đơn
+    </h2>
+    <a href="${pageContext.request.contextPath}/accounting/invoices?startDate=${startDate}&endDate=${endDate}&status=${status}&payment_method=${pm}&searchKeyword=${searchKeyword}&action=export" 
+       class="btn btn-success shadow-sm">
+        <i class="fas fa-file-excel fa-sm text-white-50 me-1"></i> Xuất Dữ Liệu
+    </a>
+</div>
 
-    <div class="card shadow-sm mb-4 border-0">
-        <div class="card-body bg-light rounded">
-            <form action="${pageContext.request.contextPath}/accounting/invoices" method="GET" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold text-muted small">Từ ngày</label>
-                    <input type="date" name="startDate" class="form-control" value="${startDate}" max="${today}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold text-muted small">Đến ngày</label>
-                    <input type="date" name="endDate" class="form-control" value="${endDate}" max="${today}" required>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-info px-4 w-100 text-white">
-                        <i class="fas fa-search me-2"></i>Tìm Kiếm
-                    </button>
-                </div>
-            </form>
-        </div>
+<div class="card shadow-sm mb-4 border-0">
+    <div class="card-body bg-light rounded">
+        <form action="${pageContext.request.contextPath}/accounting/invoices" method="GET" class="row g-3 align-items-end">
+            
+            <div class="col-md-2">
+                <label class="form-label fw-bold text-muted small">Từ ngày</label>
+                <input type="date" name="startDate" class="form-control" value="${startDate}" max="${today}" required>
+            </div>
+            
+            <div class="col-md-2">
+                <label class="form-label fw-bold text-muted small">Đến ngày</label>
+                <input type="date" name="endDate" class="form-control" value="${endDate}" max="${today}" required>
+            </div>
+            
+            <div class="col-md-2">
+                <label class="form-label fw-bold text-muted small">Trạng thái</label>
+                <select name="status" class="form-select">
+                    <option value="ALL" ${status == 'ALL' ? 'selected' : ''}>Tất cả</option>
+                    <option value="COMPLETED" ${status == 'COMPLETED' ? 'selected' : ''}>Hoàn thành</option>
+                    <option value="CANCELLED" ${status == 'CANCELLED' ? 'selected' : ''}>Đã hủy</option>
+                    <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>Chờ xử lý</option>
+                </select>
+            </div>
+                
+            <div class="col-md-2">
+                <label class="form-label fw-bold text-muted small">Phương thức</label>
+                <select name="payment_method" class="form-select">
+                    <option value="ALL" ${pm == 'ALL' ? 'selected' : ''}>All</option>
+                    <option value="CASH" ${pm == 'CASH' ? 'selected' : ''}>CASH</option>
+                    <option value="CARD" ${pm == 'CARD' ? 'selected' : ''}>CARD</option>
+                    <option value="TRANSFER" ${pm == 'TRANSFER' ? 'selected' : ''}>TRANSFER</option>
+                    <option value="MIXED" ${pm == 'MIXED' ? 'selected' : ''}>MIXED</option>
+                </select>
+            </div>
+            
+            <div class="col-md-4">
+                <label class="form-label fw-bold text-muted small">Từ khóa</label>
+                <input type="text" name="searchKeyword" class="form-control" value="${searchKeyword}" placeholder="Tên KH, SĐT, Email, Mã HĐ...">
+            </div>
+            
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-info px-4 w-100 text-white">
+                    <i class="fas fa-search me-2"></i>Tìm
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
     <div class="card shadow-sm border-0">
         <div class="card-body">

@@ -118,25 +118,22 @@
                 <div class="card-body">
                     <div class="list-group list-group-flush mb-3">
                         <a href="${pageContext.request.contextPath}/user" class="list-group-item list-group-item-action border-0 px-0">
-                                <i class="fas fa-chart-pie text-info me-2"></i>Quản lý User
+                                <i class="fas fa-users text-info me-2"></i>Quản lý User
                                 
                         </a>
                         <a href="${pageContext.request.contextPath}/admin/cashier-mgmt" class="list-group-item list-group-item-action border-0 px-0">
-                                <i class="fas fa-chart-pie text-info me-2"></i>Quản lý Cashier
+                                <i class="fas fa-file-invoice-dollar text-info me-2"></i>Quản lý Cashier
                                 
                         </a>
                         <a href="${pageContext.request.contextPath}/category" class="list-group-item list-group-item-action border-0 px-0">
-                                <i class="fas fa-chart-pie text-info me-2"></i>Quản lý sản phẩm
+                                <i class="fas fa-toolbox text-info me-2"></i>Quản lý sản phẩm
                                 
                         </a>               
-                        <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=product" class="list-group-item list-group-item-action border-0 px-0">
+                        <a href="${pageContext.request.contextPath}/admin/product-report" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số Sản phẩm
                         </a>
-                        <a href="${pageContext.request.contextPath}/admin/sales-report?reportType=branch" class="list-group-item list-group-item-action border-0 px-0">
+                        <a href="${pageContext.request.contextPath}/admin/branch-report" class="list-group-item list-group-item-action border-0 px-0">
                             <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/report" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số
                         </a>
                     </div>
                     <hr>
@@ -355,103 +352,381 @@
 
 <!-- Accounting Dashboard -->
 <c:if test="${dashboardType == 'accounting'}">
+    <%-- ── ROW 1: KPI CARDS ── --%>
     <div class="row g-3 mb-4">
-        <div class="col-md-6 col-lg-4">
+
+        <%-- Doanh thu hôm nay --%>
+        <div class="col-sm-6 col-xl-3">
             <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh Thu (30 Ngày)</p>
-                            <h3 class="mb-0 fw-bold text-success">
-                                <fmt:formatNumber value="${totalRevenue30Days}" type="number" pattern="#,##0"/> ₫
-                            </h3>
-                        </div>
-                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-money-bill-wave fa-2x text-success"></i>
-                        </div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh thu hôm nay</p>
+                        <h3 class="mb-0 fw-bold text-success">
+                            <fmt:formatNumber value="${todayRevenue}" type="number" pattern="#,##0"/> &#x20AB;
+                        </h3>
+                        <small class="text-muted">${todayInvoices} hóa đơn hoàn thành</small>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-calendar-day fa-2x text-success"></i>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-6 col-lg-4">
+
+        <%-- Doanh thu tháng này --%>
+        <div class="col-sm-6 col-xl-3">
             <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi Nhuận (30 Ngày)</p>
-                            <h3 class="mb-0 fw-bold text-primary">
-                                <fmt:formatNumber value="${totalProfit30Days}" type="number" pattern="#,##0"/> ₫
-                            </h3>
-                        </div>
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-chart-line fa-2x text-primary"></i>
-                        </div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh thu tháng này</p>
+                        <h3 class="mb-0 fw-bold text-primary">
+                            <fmt:formatNumber value="${monthRevenue}" type="number" pattern="#,##0"/> &#x20AB;
+                        </h3>
+                        <small class="text-muted">${monthInvoices} hóa đơn hoàn thành</small>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-money-bill-wave fa-2x text-primary"></i>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
+
+        <%-- Lợi nhuận tháng này --%>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi nhuận tháng này</p>
+                        <h3 class="mb-0 fw-bold text-info">
+                            <fmt:formatNumber value="${monthProfit}" type="number" pattern="#,##0"/> &#x20AB;
+                        </h3>
+                        <small class="text-muted">
+                            <c:choose>
+                                <c:when test="${monthRevenue > 0}">
+                                    Biên lợi nhuận:
+                                    <fmt:formatNumber value="${monthProfit / monthRevenue * 100}"
+                                                      maxFractionDigits="1"/>%
+                                </c:when>
+                                <c:otherwise>Chưa có doanh thu</c:otherwise>
+                            </c:choose>
+                        </small>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-chart-line fa-2x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%-- Chờ đối soát (cảnh báo đỏ nếu > 0) --%>
+        <div class="col-sm-6 col-xl-3">
+            <a href="${pageContext.request.contextPath}/accounting/reconciliation"
+               class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 border-start border-4
+                    ${pendingRecon > 0 ? 'border-danger' : 'border-secondary'}">
+                    <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small fw-bold text-uppercase">Hóa Đơn (30 Ngày)</p>
-                            <h3 class="mb-0 fw-bold text-warning">${totalInvoices30Days}</h3>
+                            <p class="text-muted mb-1 small fw-bold text-uppercase">Chờ đối soát CK</p>
+                            <h3 class="mb-0 fw-bold ${pendingRecon > 0 ? 'text-danger' : 'text-secondary'}">
+                                ${pendingRecon} hóa đơn
+                            </h3>
+                            <small class="${pendingRecon > 0 ? 'text-danger' : 'text-muted'}">
+                                <c:choose>
+                                    <c:when test="${pendingRecon > 0}">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Cần xác nhận
+                                    </c:when>
+                                    <c:otherwise>Đã đối soát hết</c:otherwise>
+                                </c:choose>
+                            </small>
                         </div>
-                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
+                        <div class="bg-${pendingRecon > 0 ? 'danger' : 'secondary'} bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-university fa-2x text-${pendingRecon > 0 ? 'danger' : 'secondary'}"></i>
                         </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div><%-- /row 1 --%>
+
+    <%-- ── ROW 2: CHART + PAYMENT BREAKDOWN + QUICK ACTIONS ── --%>
+    <div class="row g-3 mb-4">
+
+        <%-- Biểu đồ 7 ngày --%>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-area text-primary me-2"></i>Doanh thu 7 ngày gần nhất
+                    </h6>
+                    <a href="${pageContext.request.contextPath}/report/financial"
+                       class="btn btn-sm btn-outline-primary">Chi tiết</a>
+                </div>
+                <div class="card-body pb-2">
+                    <canvas id="revenueChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <%-- Phân bổ phương thức thanh toán --%>
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-credit-card text-info me-2"></i>Phương thức TT tháng này
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <c:choose>
+                        <c:when test="${empty payBreakdown}">
+                            <p class="text-muted text-center py-4 small">Chưa có giao dịch tháng này.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="entry" items="${payBreakdown}">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="fw-semibold">
+                                            <c:choose>
+                                                <c:when test="${entry.key == 'CASH'}">
+                                                    <i class="fas fa-money-bill text-success me-1"></i>Tiền mặt
+                                                </c:when>
+                                                <c:when test="${entry.key == 'CARD'}">
+                                                    <i class="fas fa-credit-card text-primary me-1"></i>Thẻ
+                                                </c:when>
+                                                <c:when test="${entry.key == 'TRANSFER'}">
+                                                    <i class="fas fa-university text-info me-1"></i>Chuyển khoản
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="fas fa-layer-group text-secondary me-1"></i>Hỗn hợp
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                        <span class="text-muted">
+                                            <fmt:formatNumber value="${entry.value}" type="number" pattern="#,##0"/> &#x20AB;
+                                        </span>
+                                    </div>
+                                    <div class="progress" style="height:6px;">
+                                        <div class="progress-bar
+                                            ${entry.key == 'CASH' ? 'bg-success' :
+                                              entry.key == 'CARD' ? 'bg-primary' :
+                                              entry.key == 'TRANSFER' ? 'bg-info' : 'bg-secondary'}"
+                                             style="width:
+                                                ${monthRevenue > 0 ? entry.value / monthRevenue * 100 : 0}%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
+
+        <%-- Quick Actions --%>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-bolt text-warning me-2"></i>Thao tác nhanh
+                    </h6>
+                </div>
+                <div class="card-body d-flex flex-column gap-2">
+
+                    <a href="${pageContext.request.contextPath}/report/financial"
+                       class="btn btn-outline-primary text-start">
+                        <i class="fas fa-chart-pie me-2"></i>Báo cáo tài chính
+                    </a>
+
+                    <a href="${pageContext.request.contextPath}/accounting/invoices"
+                       class="btn btn-outline-info text-start">
+                        <i class="fas fa-receipt me-2"></i>Danh sách hóa đơn
+                    </a>
+
+                    <a href="${pageContext.request.contextPath}/accounting/reconciliation"
+                       class="btn text-start ${pendingRecon > 0 ? 'btn-danger' : 'btn-outline-secondary'}">
+                        <i class="fas fa-university me-2"></i>Đối soát chuyển khoản
+                        <c:if test="${pendingRecon > 0}">
+                            <span class="badge bg-white text-danger ms-1">${pendingRecon}</span>
+                        </c:if>
+                    </a>
+
+                    <a href="${pageContext.request.contextPath}/accounting/close-period"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="fas fa-lock me-2"></i>Chốt kỳ kế toán
+                        <c:choose>
+                            <c:when test="${not empty lastClosedMonth}">
+                                <small class="text-muted ms-1">
+                                    (Kỳ cuối: ${lastClosedMonth}/${lastClosedYear})
+                                </small>
+                            </c:when>
+                            <c:otherwise>
+                                <small class="text-muted ms-1">(Chưa có kỳ nào)</small>
+                            </c:otherwise>
+                        </c:choose>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    </div><%-- /row 2 --%>
+
+    <%-- ── ROW 3: TOP INVOICES TODAY ── --%>
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-file-invoice-dollar text-warning me-2"></i>
+                        Hóa đơn lớn nhất hôm nay (Top 5)
+                    </h6>
+                    <a href="${pageContext.request.contextPath}/accounting/invoices"
+                       class="btn btn-sm btn-outline-warning">Xem tất cả</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-3">Mã hóa đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th class="text-center">Thanh toán</th>
+                                    <th class="text-end">Giá trị</th>
+                                    <th class="text-center">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:choose>
+                                    <c:when test="${empty topInvoices}">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">
+                                                <i class="fas fa-sun me-2"></i>Chưa có hóa đơn nào hôm nay.
+                                            </td>
+                                        </tr>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="inv" items="${topInvoices}">
+                                            <tr>
+                                                <td class="px-3 fw-bold">${inv.invoiceCode}</td>
+                                                <td class="text-muted">
+                                                    ${empty inv.customerName ? 'Khách lẻ' : inv.customerName}
+                                                </td>
+                                                <td class="text-center">
+                                                    <c:choose>
+                                                        <c:when test="${inv.paymentMethod == 'CASH'}">
+                                                            <span class="badge bg-success">Tiền mặt</span>
+                                                        </c:when>
+                                                        <c:when test="${inv.paymentMethod == 'CARD'}">
+                                                            <span class="badge bg-primary">Thẻ</span>
+                                                        </c:when>
+                                                        <c:when test="${inv.paymentMethod == 'TRANSFER'}">
+                                                            <span class="badge bg-info text-dark">CK</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge bg-secondary">Hỗn hợp</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td class="text-end fw-bold text-success">
+                                                    <fmt:formatNumber value="${inv.finalAmount}"
+                                                                      type="number" pattern="#,##0"/> &#x20AB;
+                                                </td>
+                                                <td class="text-center">
+                                                    <c:choose>
+                                                        <c:when test="${inv.status == 'COMPLETED'}">
+                                                            <span class="badge bg-success">Hoàn thành</span>
+                                                        </c:when>
+                                                        <c:when test="${inv.status == 'PENDING'}">
+                                                            <span class="badge bg-warning text-dark">
+                                                                <i class="fas fa-hourglass-half me-1"></i>Chờ đối soát
+                                                            </span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge bg-secondary">${inv.status}</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-toolbox text-secondary me-2"></i>Công cụ Tài chính</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 text-center">
-                        <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/report" class="text-decoration-none">
-                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
-                                    <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
-                                    <h6 class="text-dark fw-bold">Báo Cáo Tài Chính</h6>
-                                    <p class="small text-muted mb-0">Xem và xuất file (CSV/Excel) doanh thu, lợi nhuận.</p>
-                                </div>
-                            </a>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/invoice" class="text-decoration-none">
-                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
-                                    <i class="fas fa-receipt fa-3x text-info mb-3"></i>
-                                    <h6 class="text-dark fw-bold">Tra Cứu Hóa Đơn</h6>
-                                    <p class="small text-muted mb-0">Xem chi tiết và đối soát các giao dịch bán hàng.</p>
-                                </div>
-                            </a>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/accounting/close-period?branchId=${sessionScope.branchId}" class="text-decoration-none">
-                                <div class="p-4 border rounded bg-light hover-shadow transition-all">
-                                    <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
-                                    <h6 class="text-dark fw-bold">Chốt Kỳ Kế Toán</h6>
-                                    <p class="small text-muted mb-0">Khóa sổ dữ liệu giao dịch theo tháng/quý.</p>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <%-- Chart.js script for 7-day revenue sparkline --%>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    (function () {
+        // Build labels and data from server-side revenueTrend
+        const trendRaw = [
+            <c:forEach var="d" items="${revenueTrend}" varStatus="s">
+                { date: '${d[0]}', rev: ${d[1]} }<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        // Fill missing days (last 7)
+        const labels = [];
+        const values = [];
+        const trendMap = {};
+        trendRaw.forEach(function(r) { trendMap[r.date] = r.rev; });
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().slice(0, 10);
+            labels.push(key.slice(5));   // MM-DD
+            values.push(trendMap[key] || 0);
+        }
+
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (₫)',
+                    data: values,
+                    backgroundColor: 'rgba(13,110,253,0.15)',
+                    borderColor:     'rgba(13,110,253,0.8)',
+                    borderWidth: 2,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return new Intl.NumberFormat('vi-VN').format(ctx.parsed.y) + ' ₫';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(v) {
+                                if (v >= 1e9) return (v/1e9).toFixed(1) + ' tỷ';
+                                if (v >= 1e6) return (v/1e6).toFixed(0) + ' tr';
+                                return v;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }());
+    </script>
+
 </c:if>
+
 
 <!-- CS Dashboard -->
 <c:if test="${dashboardType == 'customer_service'}">

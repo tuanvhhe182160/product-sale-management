@@ -1,6 +1,6 @@
 package com.techshop.servlet;
 
-import com.techshop.dao.InvoiceDAOTest;
+import com.techshop.dao.InvoiceDAOForAccounting;
 import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.EntityType;
 import com.techshop.model.Invoice;
@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "AccountingInvoiceServlet", urlPatterns = {"/accounting/invoices"})
 public class AccountingInvoiceServlet extends HttpServlet {
 
-    private InvoiceDAOTest invoiceDAO = new InvoiceDAOTest();
+    private InvoiceDAOForAccounting invoiceDAO = new InvoiceDAOForAccounting();
     private SystemLogDAO systemLogDAO = new SystemLogDAO();
 
     @Override
@@ -31,6 +31,9 @@ public class AccountingInvoiceServlet extends HttpServlet {
         // 1. Lấy tham số ngày (mặc định là tháng hiện tại)
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
+        String status = request.getParameter("status");
+        String pm = request.getParameter("payment_method");
+        String searchKeyword = request.getParameter("searchKeyword");
         
         if (startDate == null || startDate.isEmpty()) {
             startDate = LocalDate.now().withDayOfMonth(1).toString(); // Ngày đầu tháng
@@ -38,12 +41,21 @@ public class AccountingInvoiceServlet extends HttpServlet {
         if (endDate == null || endDate.isEmpty()) {
             endDate = LocalDate.now().toString(); // Hôm nay
         }
+        
+        if (status == null) {
+            status = "ALL";
+        }
+        
+        if (pm == null) {
+            pm = "ALL";
+        }
 
         // 2. Lấy dữ liệu
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("user");
-        int branchId = user.getBranchId();
-        List<Invoice> invoices = invoiceDAO.getInvoicesForAccounting(startDate, endDate, branchId);
+        // Fix: Admin có branchId = null → 0 = tất cả chi nhánh
+        int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
+        List<Invoice> invoices = invoiceDAO.getInvoicesForAccounting(startDate, endDate, branchId, status, pm, searchKeyword);
 
         // 3. Xử lý Export CSV
         String action = request.getParameter("action");
@@ -65,6 +77,9 @@ public class AccountingInvoiceServlet extends HttpServlet {
         // 4. Đẩy sang JSP
         request.setAttribute("startDate", startDate);
         request.setAttribute("endDate", endDate);
+        request.setAttribute("searchKeyword", searchKeyword);
+        request.setAttribute("status", status);
+        request.setAttribute("pm", pm);
         request.setAttribute("invoices", invoices);
         request.getRequestDispatcher("/views/accounting/invoice-list.jsp").forward(request, response);
     }

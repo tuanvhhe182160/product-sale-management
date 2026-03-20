@@ -41,7 +41,8 @@ public class FinancialReportServlet extends HttpServlet {
         // Lấy dữ liệu từ DAO
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("user");
-        int branchId = user.getBranchId();
+        // Fix: Admin có branchId = null → 0 = tất cả chi nhánh
+        int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
         List<FinancialReportItem> reportData = reportDAO.getFinancialReport(startDate, endDate, branchId);
 
         // 2. KIỂM TRA NẾU NGƯỜI DÙNG BẤM NÚT "EXPORT CSV"

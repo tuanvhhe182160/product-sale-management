@@ -22,18 +22,16 @@
 
 <div class="container-fluid py-4">
 
-<!-- Tiêu đề + Nút quay lại -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="mb-0">
         <i class="fas fa-building text-primary me-2"></i>
         Thống kê doanh số theo chi nhánh
     </h3>
-    <a href="${pageContext.request.contextPath}/admin/sales-report" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Quay lại báo cáo chung
+    <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Về Dashboard
     </a>
 </div>
 
-<!-- Bộ lọc -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <form method="GET" action="${pageContext.request.contextPath}/admin/branch-report">
@@ -50,7 +48,7 @@
                     <label class="form-label fw-bold">Chi nhánh</label>
                     <select name="branchId" class="form-select">
                         <option value="">-- Tất cả chi nhánh --</option>
-                        <c:forEach var="b" items="${branchList}">
+                        <c:forEach var="b" items="${branches}">
                             <option value="${b.branchId}" ${selectedBranchId == b.branchId ? 'selected' : ''}>
                                 ${b.branchName}
                             </option>
@@ -67,19 +65,18 @@
     </div>
 </div>
 
-<!-- Thống kê tổng quan -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="stat-card bg-gradient-blue">
             <div class="stat-icon"><i class="fas fa-building"></i></div>
-            <div class="stat-value">${overallStats.total_branches}</div>
+            <div class="stat-value">${empty overallStats.total_branches ? 0 : overallStats.total_branches}</div>
             <div class="stat-label">Chi nhánh có doanh thu</div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="stat-card bg-gradient-green">
             <div class="stat-icon"><i class="fas fa-receipt"></i></div>
-            <div class="stat-value">${overallStats.total_orders}</div>
+            <div class="stat-value">${empty overallStats.total_orders ? 0 : overallStats.total_orders}</div>
             <div class="stat-label">Tổng số đơn hàng</div>
         </div>
     </div>
@@ -87,164 +84,153 @@
         <div class="stat-card bg-gradient-orange">
             <div class="stat-icon"><i class="fas fa-coins"></i></div>
             <div class="stat-value">
-                <fmt:formatNumber value="${overallStats.total_revenue}" type="number" groupingUsed="true"/>đ
+                <fmt:formatNumber value="${empty overallStats.total_revenue ? 0 : overallStats.total_revenue}" type="number" groupingUsed="true"/>đ
             </div>
             <div class="stat-label">Tổng doanh thu</div>
         </div>
     </div>
 </div>
 
-<!-- Biểu đồ so sánh chi nhánh -->
 <c:if test="${empty selectedBranchId}">
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3">
-        <span class="fw-bold"><i class="fas fa-chart-bar me-2 text-primary"></i>Biểu đồ doanh thu theo chi nhánh</span>
-    </div>
-    <div class="card-body">
-        <div class="chart-container">
-            <canvas id="branchChart"></canvas>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <span class="fw-bold"><i class="fas fa-chart-bar me-2 text-primary"></i>Biểu đồ doanh thu theo chi nhánh</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="branchChart"></canvas>
+            </div>
         </div>
     </div>
-</div>
-</c:if>
 
-<!-- Bảng doanh thu chi nhánh -->
-<c:if test="${empty selectedBranchId}">
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <span class="fw-bold"><i class="fas fa-table me-2 text-primary"></i>Doanh thu từng chi nhánh</span>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">#</th>
-                        <th>Chi nhánh</th>
-                        <th class="text-center">Số đơn hàng</th>
-                        <th class="text-end">Doanh thu</th>
-                        <th class="text-end pe-4">Tỷ lệ</th>
-                        <th class="text-center">Chi tiết</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:if test="${empty branchSales}">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="fas fa-table me-2 text-primary"></i>Doanh thu từng chi nhánh</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
-                                <i class="fas fa-folder-open fa-2x mb-3 d-block"></i>
-                                Không có dữ liệu trong khoảng thời gian này
-                            </td>
+                            <th class="ps-4">#</th>
+                            <th>Chi nhánh</th>
+                            <th class="text-center">Số đơn hàng</th>
+                            <th class="text-end">Doanh thu</th>
+                            <th class="text-end pe-4">Tỷ lệ</th>
+                            <th class="text-center">Chi tiết</th>
                         </tr>
-                    </c:if>
-                    <c:set var="idx" value="0" />
-                    <c:forEach var="item" items="${branchSales}">
-                        <c:set var="idx" value="${idx + 1}" />
-                        <tr>
-                            <td class="ps-4">${idx}</td>
-                            <td class="fw-bold">${item.branch_name}</td>
-                            <td class="text-center">
-                                <span class="badge bg-info bg-opacity-25 text-info px-3 py-2">
-                                    ${item.total_orders}
-                                </span>
-                            </td>
-                            <td class="text-end fw-bold text-primary">
-                                <fmt:formatNumber value="${item.total_sales}" type="number" groupingUsed="true"/>đ
-                            </td>
-                            <td class="text-end pe-4">
-                                <c:if test="${overallStats.total_revenue > 0}">
-                                    <fmt:formatNumber value="${item.total_sales / overallStats.total_revenue * 100}" 
-                                                      type="number" maxFractionDigits="1"/>%
-                                </c:if>
-                                <c:if test="${overallStats.total_revenue == 0}">0%</c:if>
-                            </td>
-                            <td class="text-center">
-                                <a href="${pageContext.request.contextPath}/admin/branch-report?startDate=${startDate}&endDate=${endDate}&branchId=${item.branch_id}" 
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i> Xem
-                                </a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:if test="${empty branchSales}">
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fas fa-folder-open fa-2x mb-3 d-block"></i>
+                                    Không có dữ liệu trong khoảng thời gian này
+                                </td>
+                            </tr>
+                        </c:if>
+                        
+                        <c:set var="totalRev" value="${empty overallStats.total_revenue ? 0 : overallStats.total_revenue}" />
+                        
+                        <c:forEach var="item" items="${branchSales}" varStatus="loop">
+                            <tr>
+                                <td class="ps-4">${loop.index + 1}</td>
+                                <td class="fw-bold">${item.branch_name}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-info bg-opacity-25 text-info px-3 py-2">
+                                        ${item.total_orders}
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold text-primary">
+                                    <fmt:formatNumber value="${item.total_sales}" type="number" groupingUsed="true"/>đ
+                                </td>
+                                <td class="text-end pe-4">
+                                    <c:choose>
+                                        <c:when test="${totalRev > 0}">
+                                            <fmt:formatNumber value="${(item.total_sales / totalRev) * 100}" type="number" maxFractionDigits="1"/>%
+                                        </c:when>
+                                        <c:otherwise>0%</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-center">
+                                    <a href="${pageContext.request.contextPath}/admin/branch-report?startDate=${startDate}&endDate=${endDate}&branchId=${item.branch_id}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 </c:if>
 
-<!-- Chi tiết chi nhánh đã chọn -->
 <c:if test="${not empty selectedBranchId}">
-
-<!-- Biểu đồ doanh thu theo ngày -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3">
-        <span class="fw-bold">
-            <i class="fas fa-chart-line me-2 text-success"></i>
-            Doanh thu theo ngày - ${selectedBranchName}
-        </span>
-    </div>
-    <div class="card-body">
-        <div class="chart-container">
-            <canvas id="dailyChart"></canvas>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <span class="fw-bold">
+                <i class="fas fa-chart-line me-2 text-success"></i>
+                Doanh thu theo ngày - ${selectedBranchName}
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="dailyChart"></canvas>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Bảng nhân viên -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3">
-        <span class="fw-bold">
-            <i class="fas fa-users me-2 text-primary"></i>
-            Doanh số nhân viên - ${selectedBranchName}
-        </span>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">#</th>
-                        <th>Nhân viên</th>
-                        <th class="text-center">Số đơn hàng</th>
-                        <th class="text-end pe-4">Doanh thu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:if test="${empty employeeDetail}">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <span class="fw-bold">
+                <i class="fas fa-users me-2 text-primary"></i>
+                Doanh số nhân viên - ${selectedBranchName}
+            </span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td colspan="4" class="text-center py-5 text-muted">
-                                Không có dữ liệu nhân viên
-                            </td>
+                            <th class="ps-4">#</th>
+                            <th>Nhân viên</th>
+                            <th class="text-center">Số đơn hàng</th>
+                            <th class="text-end pe-4">Doanh thu</th>
                         </tr>
-                    </c:if>
-                    <c:set var="empIdx" value="0" />
-                    <c:forEach var="emp" items="${employeeDetail}">
-                        <c:set var="empIdx" value="${empIdx + 1}" />
-                        <tr>
-                            <td class="ps-4">${empIdx}</td>
-                            <td class="fw-bold">${emp.employee_name}</td>
-                            <td class="text-center">
-                                <span class="badge bg-info bg-opacity-25 text-info px-3 py-2">
-                                    ${emp.total_orders}
-                                </span>
-                            </td>
-                            <td class="text-end pe-4 fw-bold text-primary">
-                                <fmt:formatNumber value="${emp.total_sales}" type="number" groupingUsed="true"/>đ
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:if test="${empty employeeDetail}">
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="fas fa-user-slash fa-2x mb-3 d-block"></i>
+                                    Không có dữ liệu nhân viên
+                                </td>
+                            </tr>
+                        </c:if>
+                        <c:forEach var="emp" items="${employeeDetail}" varStatus="loop">
+                            <tr>
+                                <td class="ps-4">${loop.index + 1}</td>
+                                <td class="fw-bold">${emp.employee_name}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-info bg-opacity-25 text-info px-3 py-2">
+                                        ${emp.total_orders}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4 fw-bold text-primary">
+                                    <fmt:formatNumber value="${emp.total_sales}" type="number" groupingUsed="true"/>đ
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
-
 </c:if>
 
-</div> <!-- end container-fluid -->
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</div> <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
 const COLORS = ['#667eea','#11998e','#f2994a','#e44d26','#764ba2','#38ef7d','#f2c94c','#3498db','#e74c3c','#2ecc71'];
@@ -254,11 +240,10 @@ const COLORS = ['#667eea','#11998e','#f2994a','#e44d26','#764ba2','#38ef7d','#f2
 (function() {
     const labels = [];
     const salesData = [];
-    const ordersData = [];
+    
     <c:forEach var="item" items="${branchSales}">
         labels.push('${item.branch_name}');
         salesData.push(${item.total_sales});
-        ordersData.push(${item.total_orders});
     </c:forEach>
 
     if (labels.length > 0) {
@@ -306,6 +291,7 @@ const COLORS = ['#667eea','#11998e','#f2994a','#e44d26','#764ba2','#38ef7d','#f2
 (function() {
     const dailyLabels = [];
     const dailySales = [];
+    
     <c:forEach var="d" items="${dailyRevenue}">
         dailyLabels.push('${d.sale_date}');
         dailySales.push(${d.total_sales});

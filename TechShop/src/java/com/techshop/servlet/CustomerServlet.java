@@ -1,7 +1,7 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.CustomerDAO;
-import com.techshop.dao.InvoiceDAOTest;
+import com.techshop.dao.InvoiceDAOForAccounting;
 import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.Customer;
 import com.techshop.model.EntityType;
@@ -16,8 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -27,7 +25,7 @@ public class CustomerServlet extends HttpServlet {
 
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final SystemLogDAO logDAO = new SystemLogDAO();
-    private final InvoiceDAOTest invoiceDAO = new InvoiceDAOTest();
+    private final InvoiceDAOForAccounting invoiceDAO = new InvoiceDAOForAccounting();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -100,6 +98,17 @@ public class CustomerServlet extends HttpServlet {
         c.setFullName(fullName != null ? fullName.trim() : "");
         c.setEmail(email != null ? email.trim() : "");
         c.setAddress(address != null ? address.trim() : "");
+        
+        // Validate: phone bắt buộc
+        if (c.getPhone().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/customer?error=Số điện thoại là bắt buộc!");
+            return;
+        }
+        // Validate: phone format (10-11 chữ số)
+        if (!c.getPhone().matches("\\d{10,11}")) {
+            response.sendRedirect(request.getContextPath() + "/customer?error=Số điện thoại phải là 10-11 chữ số!");
+            return;
+        }
         
         try {
             if (dobRaw != null && !dobRaw.trim().isEmpty()) {

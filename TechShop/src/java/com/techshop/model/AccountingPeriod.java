@@ -6,6 +6,8 @@ package com.techshop.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class AccountingPeriod {
 
@@ -22,6 +24,9 @@ public class AccountingPeriod {
     private LocalDateTime closedAt;
 
     private String status;
+
+    // JOIN field — tên người chốt kỳ
+    private String closedByName;
 
     public AccountingPeriod() {
     }
@@ -119,5 +124,20 @@ public class AccountingPeriod {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getClosedByName() {
+        return closedByName;
+    }
+
+    public void setClosedByName(String closedByName) {
+        this.closedByName = closedByName;
+    }
+
+    /** Helper for JSP fmt:formatDate which requires java.util.Date */
+    public Date getClosedAtAsDate() {
+        if (closedAt == null) return null;
+        return java.util.Date.from(
+            closedAt.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

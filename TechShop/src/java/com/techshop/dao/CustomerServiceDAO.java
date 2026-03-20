@@ -31,7 +31,7 @@ public class CustomerServiceDAO extends DBContext {
                      "JOIN Invoice i ON ii.invoice_id = i.invoice_id " +
                      "JOIN ProductVariant pv ON pp.variant_id = pv.variant_id " +
                      "JOIN Customer c ON i.customer_id = c.customer_id " +
-                     "WHERE pp.imei = ? AND i.status = 'COMPLETED'";
+                     "WHERE pp.imei = ? AND i.status IN ('COMPLETED', 'PENDING')";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, imei.trim());

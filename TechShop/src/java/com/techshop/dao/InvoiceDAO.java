@@ -6,8 +6,10 @@ import com.techshop.model.InvoiceCustomerForm;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 /**
  * DAO xử lý nghiệp vụ tạo hóa đơn bán hàng.
@@ -172,13 +174,17 @@ public class InvoiceDAO extends DBContext {
                               BigDecimal discountAmount, BigDecimal finalAmount,
                               String paymentMethod, String note)
             throws SQLException {
+        // TRANSFER và MIXED cần kế toán đối soát trước khi xác nhận doanh thu
+        String status = ("TRANSFER".equalsIgnoreCase(paymentMethod) ||
+                         "MIXED".equalsIgnoreCase(paymentMethod))
+                        ? "PENDING" : "COMPLETED";
         String sql =
             "INSERT INTO Invoice " +
             "  (invoice_code, customer_id, branch_id, cashier_id, " +
             "   total_amount, discount_amount, final_amount, " +
             "   payment_method, status, note) " +
             "OUTPUT INSERTED.invoice_id " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'COMPLETED', ?)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, invoiceCode);
             ps.setInt(2, customerId);
@@ -188,7 +194,8 @@ public class InvoiceDAO extends DBContext {
             ps.setBigDecimal(6, discountAmount);
             ps.setBigDecimal(7, finalAmount);
             ps.setString(8, paymentMethod != null ? paymentMethod : "CASH");
-            ps.setString(9, (note != null && !note.trim().isEmpty()) ? note.trim() : null);
+            ps.setString(9, status);
+            ps.setString(10, (note != null && !note.trim().isEmpty()) ? note.trim() : null);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt(1);
             }
@@ -251,8 +258,8 @@ public class InvoiceDAO extends DBContext {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             int count = rs.next() ? rs.getInt(1) : 0;
-            String datePart = new java.text.SimpleDateFormat("yyyyMMdd")
-                    .format(new java.util.Date());
+            String datePart = new SimpleDateFormat("yyyyMMdd")
+                    .format(new Date());
             return String.format("INV-%s-%06d", datePart, count + 1);
         }
     }

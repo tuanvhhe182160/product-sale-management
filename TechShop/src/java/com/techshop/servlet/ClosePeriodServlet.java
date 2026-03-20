@@ -1,156 +1,208 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.techshop.servlet;
 
+import com.google.gson.Gson;
 import com.techshop.dao.AccountingPeriodDAO;
 import com.techshop.dao.SystemLogDAO;
 import com.techshop.model.AccountingPeriod;
 import com.techshop.model.EntityType;
 import com.techshop.model.LogAction;
+import com.techshop.model.User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-@WebServlet(name = "AccountingPeriodServlet", urlPatterns = {"/accounting/close-period"})
+/**
+ * Chốt kỳ kế toán theo tháng/năm cho chi nhánh của Kế toán viên.
+ *
+ * URL: /accounting/close-period
+ *
+ * GET  (no action)          → trang chính: form chọn kỳ + lịch sử
+ * GET  ?action=preview-json → AJAX: trả JSON dữ liệu preview kỳ được chọn
+ * POST ?action=close        → chốt kỳ
+ *
+ * branchId LUÔN lấy từ session, KHÔNG lấy từ URL param (bảo mật).
+ */
+@WebServlet(name = "ClosePeriodServlet", urlPatterns = {"/accounting/close-period"})
 public class ClosePeriodServlet extends HttpServlet {
 
     private AccountingPeriodDAO periodDAO;
-    private SystemLogDAO logDAO;
+    private SystemLogDAO        logDAO;
+    private final Gson          gson = new Gson();
 
     @Override
     public void init() {
         periodDAO = new AccountingPeriodDAO();
-        logDAO = new SystemLogDAO();
+        logDAO    = new SystemLogDAO();
     }
 
-    // ==================
-    // GET → list hoặc preview
-    // ==================
+    // ───────────────────────────────────────────────────────
+    //  GET
+    // ───────────────────────────────────────────────────────
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+        User user = currentUser(req);
+        if (user == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
 
-        if (action == null) {
-            action = "list";
+        // branchId từ session — không bao giờ lấy từ URL
+        Integer branchIdObj = user.getBranchId();
+        if (branchIdObj == null) {
+            // Admin không có chi nhánh → không dùng chức năng này
+            resp.sendRedirect(req.getContextPath() +
+                "/dashboard?error=close-period-not-for-admin");
+            return;
         }
+        int branchId = branchIdObj;
 
-        switch (action) {
+        String action = emptyToNull(req.getParameter("action"));
 
-            case "preview":
-                previewPeriod(request, response);
-                break;
-
-            case "list":
-            default:
-                listClosedPeriods(request, response);
-                break;
-        }
-    }
-
-    // ==================
-    // POST → close kỳ
-    // ==================
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        String action = request.getParameter("action");
-
-        if ("close".equals(action)) {
-            closePeriod(request, response);
-        } else {
-            response.sendRedirect("accounting/close-period");
-        }
-    }
-
-    // ===============================
-    // 1️⃣ Xem trước dữ liệu chốt kỳ
-    // ===============================
-    private void previewPeriod(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        int branchId = Integer.parseInt(request.getParameter("branchId"));
-        int month = Integer.parseInt(request.getParameter("month"));
-        int year = Integer.parseInt(request.getParameter("year"));
-
-        AccountingPeriod period = periodDAO.calculatePeriod(branchId, month, year);
-
-        request.setAttribute("previewPeriod", period);
-        request.getRequestDispatcher("/views/accounting/preview.jsp")
-               .forward(request, response);
-    }
-
-    // ===============================
-    // 2️⃣ Chốt kỳ
-    // ===============================
-    private void closePeriod(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-
-        int branchId = Integer.parseInt(request.getParameter("branchId"));
-        int month = Integer.parseInt(request.getParameter("month"));
-        int year = Integer.parseInt(request.getParameter("year"));
-
-        // 1. Kiểm tra đã chốt chưa
-        if (periodDAO.isPeriodClosed(branchId, month, year)) {
-            response.sendRedirect("accounting/close-period?error=already_closed");
+        // ── AJAX: trả JSON preview ──────────────────────────────────────
+        if ("preview-json".equals(action)) {
+            handlePreviewJson(req, resp, branchId);
             return;
         }
 
-        // 2. Tính dữ liệu
+        // ── Trang chính ─────────────────────────────────────────────────
+        List<AccountingPeriod> history = periodDAO.getClosedPeriods(branchId);
+
+        // Default: tháng trước
+        LocalDate prev = LocalDate.now().minusMonths(1);
+
+        req.setAttribute("history",      history);
+        req.setAttribute("branchName",   user.getBranchName());
+        req.setAttribute("defaultMonth", prev.getMonthValue());
+        req.setAttribute("defaultYear",  prev.getYear());
+        req.setAttribute("currentMonth", LocalDate.now().getMonthValue());
+        req.setAttribute("currentYear",  LocalDate.now().getYear());
+
+        req.getRequestDispatcher("/views/accounting/close-period.jsp")
+           .forward(req, resp);
+    }
+
+    // ── AJAX preview-json ──────────────────────────────────────────────
+    private void handlePreviewJson(HttpServletRequest req, HttpServletResponse resp,
+                                   int branchId) throws IOException {
+        resp.setContentType("application/json;charset=UTF-8");
+
+        int month, year;
+        try {
+            month = Integer.parseInt(req.getParameter("month"));
+            year  = Integer.parseInt(req.getParameter("year"));
+        } catch (NumberFormatException e) {
+            resp.getWriter().print("{\"error\":\"Tháng hoặc năm không hợp lệ\"}");
+            return;
+        }
+
+        // Validation: không cho chốt tháng hiện tại hoặc tương lai
+        LocalDate now   = LocalDate.now();
+        LocalDate chosen = LocalDate.of(year, month, 1);
+        if (!chosen.isBefore(LocalDate.of(now.getYear(), now.getMonthValue(), 1))) {
+            resp.getWriter().print(
+                "{\"error\":\"Chỉ được chốt các tháng đã qua, không chốt tháng hiện tại hoặc tương lai.\"}");
+            return;
+        }
+
+        boolean alreadyClosed = periodDAO.isPeriodClosed(branchId, month, year);
+        AccountingPeriod preview = periodDAO.calculatePeriod(branchId, month, year);
+
+        Map<String, Object> json = new LinkedHashMap<>();
+        json.put("alreadyClosed",  alreadyClosed);
+        json.put("month",          month);
+        json.put("year",           year);
+        json.put("totalInvoices",  preview.getTotalInvoices());
+        json.put("totalRevenue",   preview.getTotalRevenue());
+        json.put("totalProfit",    preview.getTotalProfit());
+
+        resp.getWriter().print(gson.toJson(json));
+    }
+
+    // ───────────────────────────────────────────────────────
+    //  POST: chốt kỳ
+    // ───────────────────────────────────────────────────────
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+
+        User user = currentUser(req);
+        if (user == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
+
+        Integer branchIdObj = user.getBranchId();
+        if (branchIdObj == null) {
+            resp.sendRedirect(req.getContextPath() + "/accounting/close-period?error=no_branch");
+            return;
+        }
+        int branchId = branchIdObj;
+
+        if (!"close".equals(req.getParameter("action"))) {
+            resp.sendRedirect(req.getContextPath() + "/accounting/close-period");
+            return;
+        }
+
+        int month, year;
+        try {
+            month = Integer.parseInt(req.getParameter("month"));
+            year  = Integer.parseInt(req.getParameter("year"));
+        } catch (NumberFormatException e) {
+            resp.sendRedirect(req.getContextPath() +
+                "/accounting/close-period?error=invalid_params");
+            return;
+        }
+
+        // Validate: chỉ tháng đã qua
+        LocalDate now    = LocalDate.now();
+        LocalDate chosen = LocalDate.of(year, month, 1);
+        if (!chosen.isBefore(LocalDate.of(now.getYear(), now.getMonthValue(), 1))) {
+            resp.sendRedirect(req.getContextPath() +
+                "/accounting/close-period?error=future_month");
+            return;
+        }
+
+        // Kiểm tra đã chốt chưa
+        if (periodDAO.isPeriodClosed(branchId, month, year)) {
+            resp.sendRedirect(req.getContextPath() +
+                "/accounting/close-period?error=already_closed&month=" + month + "&year=" + year);
+            return;
+        }
+
+        // Tính + lưu
         AccountingPeriod period = periodDAO.calculatePeriod(branchId, month, year);
+        period.setClosedBy(user.getUserId());
 
-        // 3. Lấy user từ session (filter đã đảm bảo có login)
-        HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId");
+        boolean ok = periodDAO.closePeriod(period);
 
-        period.setClosedBy(userId);
-
-        // 4. Insert
-        boolean success = periodDAO.closePeriod(period);
-
-        if (success) {
-            // --- GHI LOG ---
+        if (ok) {
             logDAO.logAction(
-                userId, 
-                LogAction.CLOSE_ACCOUNTING_PERIOD, 
-                EntityType.ACCOUNTING, 
-                null, 
-                request.getRemoteAddr(), 
-                "Chốt sổ kế toán tháng " + month + "/" + year + " (Chi nhánh ID: " + branchId + ")"
+                user.getUserId(),
+                LogAction.CLOSE_ACCOUNTING_PERIOD,
+                EntityType.ACCOUNTING,
+                null,
+                req.getRemoteAddr(),
+                "Chốt sổ kế toán tháng " + month + "/" + year +
+                " (Chi nhánh: " + user.getBranchName() + ")"
             );
-            // ---------------------------------------------------------------
-            response.sendRedirect(
-                request.getContextPath() +
-                "/accounting/close-period?branchId=" + branchId + "&success=closed"
-            );
+            resp.sendRedirect(req.getContextPath() +
+                "/accounting/close-period?success=closed&month=" + month + "&year=" + year);
         } else {
-            response.sendRedirect(
-                request.getContextPath() +
-                "/accounting/close-period?branchId=" + branchId + "&error=failed"
-                );
+            resp.sendRedirect(req.getContextPath() +
+                "/accounting/close-period?error=db_failed");
         }
     }
 
-    // ===============================
-    // 3️⃣ Danh sách kỳ đã chốt
-    // ===============================
-    private void listClosedPeriods(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    // ── Helpers ──────────────────────────────────────────────────────────
+    private User currentUser(HttpServletRequest req) {
+        HttpSession s = req.getSession(false);
+        return (s != null) ? (User) s.getAttribute("user") : null;
+    }
 
-        int branchId = Integer.parseInt(request.getParameter("branchId"));
-
-        List<AccountingPeriod> list = periodDAO.getClosedPeriods(branchId);
-
-        request.setAttribute("periodList", list);
-        request.getRequestDispatcher("/views/accounting/list.jsp")
-               .forward(request, response);
+    private String emptyToNull(String s) {
+        return (s == null || s.trim().isEmpty()) ? null : s.trim();
     }
 }

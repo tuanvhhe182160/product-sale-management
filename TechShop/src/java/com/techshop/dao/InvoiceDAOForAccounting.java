@@ -14,11 +14,11 @@ import java.sql.*;
  *
  * @author justi
  */
-public class InvoiceDAOTest extends DBContext{
-    public List<Invoice> getInvoicesForAccounting(String startDate, String endDate, Integer currentBranchId) {
+public class InvoiceDAOForAccounting extends DBContext{
+    public List<Invoice> getInvoicesForAccounting(String startDate, String endDate, Integer currentBranchId, String status, String paymentMethod, String searchKeyword) {
         List<Invoice> list = new ArrayList<>();
-        // JOIN để lấy tên thu ngân, tên khách hàng và tên chi nhánh
-        String sql = "SELECT i.*, u.full_name AS cashier_name, c.full_name AS customer_name, b.branch_name " +
+        // JOIN để lấy thêm thông tin khách hàng phục vụ tìm kiếm
+        String sql = "SELECT i.*, u.full_name AS cashier_name, c.full_name AS customer_name, c.phone, c.email, b.branch_name " +
                  "FROM Invoice i " +
                  "LEFT JOIN [User] u ON i.cashier_id = u.user_id " +
                  "LEFT JOIN Customer c ON i.customer_id = c.customer_id " +
@@ -27,17 +27,37 @@ public class InvoiceDAOTest extends DBContext{
 
         boolean hasStart = (startDate != null && !startDate.trim().isEmpty());
         boolean hasEnd = (endDate != null && !endDate.trim().isEmpty());
+        boolean hasStatus = (status != null && !status.trim().isEmpty() && !status.equals("ALL"));
+        boolean hasPM = (paymentMethod != null && !paymentMethod.trim().isEmpty() && !paymentMethod.equals("ALL"));
+        boolean hasSearch = (searchKeyword != null && !searchKeyword.trim().isEmpty());
 
         if (hasStart) sql += " AND CAST(i.invoice_date AS DATE) >= ? ";
         if (hasEnd) sql += " AND CAST(i.invoice_date AS DATE) <= ? ";
+        if (hasStatus) sql += " AND i.status = ? ";
+        if (hasPM) sql += " AND i.payment_method = ? ";
+        
+        if (hasSearch) {
+            sql += " AND (i.invoice_code LIKE ? OR c.full_name LIKE ? OR c.phone LIKE ? OR c.email LIKE ?) ";
+        }
 
         sql += " ORDER BY i.invoice_date DESC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int paramIndex = 1;
             ps.setInt(paramIndex++, currentBranchId);
+            
             if (hasStart) ps.setString(paramIndex++, startDate);
-            if (hasEnd) ps.setString(paramIndex, endDate);
+            if (hasEnd) ps.setString(paramIndex++, endDate);
+            if (hasStatus) ps.setString(paramIndex++, status);
+            if (hasPM) ps.setString(paramIndex++, paymentMethod);
+            
+            if (hasSearch) {
+                String keyword = "%" + searchKeyword.trim() + "%";
+                ps.setString(paramIndex++, keyword); // cho invoice_code
+                ps.setString(paramIndex++, keyword); // cho customer_name
+                ps.setString(paramIndex++, keyword); // cho phone
+                ps.setString(paramIndex++, keyword); // cho email
+            }
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -48,7 +68,6 @@ public class InvoiceDAOTest extends DBContext{
                     inv.setBranchId(rs.getInt("branch_id"));
                     inv.setCashierId(rs.getInt("cashier_id"));
                 
-                    // Sử dụng getBigDecimal cho độ chính xác tuyệt đối
                     inv.setTotalAmount(rs.getBigDecimal("total_amount"));
                     inv.setDiscountAmount(rs.getBigDecimal("discount_amount"));
                     inv.setFinalAmount(rs.getBigDecimal("final_amount"));
@@ -57,13 +76,12 @@ public class InvoiceDAOTest extends DBContext{
                     inv.setStatus(rs.getString("status"));
                     inv.setNote(rs.getString("note"));
 
-                    java.sql.Timestamp invDate = rs.getTimestamp("invoice_date");
+                    Timestamp invDate = rs.getTimestamp("invoice_date");
                     if (invDate != null) inv.setInvoiceDate(invDate.toLocalDateTime());
 
-                    java.sql.Timestamp createdAt = rs.getTimestamp("created_at");
+                    Timestamp createdAt = rs.getTimestamp("created_at");
                     if (createdAt != null) inv.setCreatedAt(createdAt.toLocalDateTime());
 
-                    // Thông tin JOIN
                     inv.setCustomerName(rs.getString("customer_name"));
                     inv.setCashierName(rs.getString("cashier_name"));
                     inv.setBranchName(rs.getString("branch_name"));
