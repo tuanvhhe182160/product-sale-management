@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-@WebServlet(name = "InventoryServlet", urlPatterns = {"/inventory/import"})
-public class InventoryServlet extends HttpServlet {
+@WebServlet(name = "InventoryImportServlet", urlPatterns = {"/inventory/import"})
+public class InventoryImportServlet extends HttpServlet {
 
     private VariantDAO variantDAO;
 

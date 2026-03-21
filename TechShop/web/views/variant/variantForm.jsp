@@ -15,12 +15,12 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="page-title">
                 <i class="fas ${isEdit ? 'fa-edit' : 'fa-plus-circle'}"></i>
-                ${isEdit ? 'Chỉnh sửa Product Variant' : 'Tạo Product Variant mới'}
+                ${isEdit ? 'Edit Product Variant' : 'New Product Variant'}
             </h2>
 
             <a href="${pageContext.request.contextPath}/variant"
                class="btn btn-outline-primary">
-                <i class="fas fa-arrow-left"></i> Quay lại
+                <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
 
@@ -54,7 +54,7 @@
                                     name="modelId"
                                     required>
 
-                                <option value="">-- Chọn Model --</option>
+                                <option value="">-- Select Model --</option>
 
                                 <c:forEach var="model" items="${models}">
                                     <option value="${model.modelId}"
@@ -78,10 +78,10 @@
                                    class="form-control sku-input"
                                    name="sku"
                                    value="${isEdit ? variant.sku : ''}"
-                                   placeholder="VD: IP15PM-256-BLK"
+                                   placeholder="E.g. IP15PM-256-BLK"
                                    required
                                    pattern="[A-Z0-9\-]+"
-                                   title="SKU chỉ chứa chữ in hoa, số và dấu gạch ngang">
+                                   title="SKU must contain only uppercase letters, numbers, and hyphens">
                         </div>
 
                     </div>
@@ -89,14 +89,14 @@
                     <!-- VARIANT NAME -->
                     <div class="mb-3">
                         <label class="form-label">
-                            Tên Variant <span class="text-danger">*</span>
+                            Variant Name <span class="text-danger">*</span>
                         </label>
 
                         <input type="text"
                                class="form-control"
                                name="variantName"
                                value="${isEdit ? variant.variantName : ''}"
-                               placeholder="VD: iPhone 15 Pro Max 256GB Black"
+                               placeholder="E.g. iPhone 15 Pro Max 256GB Black"
                                required>
                     </div>
                                
@@ -168,7 +168,7 @@
                             <input type="text"
                                    class="form-control"
                                    name="attributeName[]"
-                                   placeholder="VD: Storage"
+                                   placeholder="E.g. Storage"
                                    required>
                         </td>
 
@@ -176,7 +176,7 @@
                             <input type="text"
                                    class="form-control"
                                    name="attributeValue[]"
-                                   placeholder="VD: 256GB"
+                                   placeholder="E.g. 256GB"
                                    required>
                         </td>
 
@@ -203,7 +203,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                Giá bán (VNĐ) <span class="text-danger">*</span>
+                                Sale Price (VND) <span class="text-danger">*</span>
                             </label>
 
                             <input type="number"
@@ -217,7 +217,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                Giá vốn (VNĐ)
+                                Cost Price (VND)
                             </label>
 
                             <input type="number"
@@ -235,7 +235,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                Bảo hành (tháng) <span class="text-danger">*</span>
+                                Warranty Duration (months) <span class="text-danger">*</span>
                             </label>
 
                             <input type="number"
@@ -248,7 +248,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                Trạng thái <span class="text-danger">*</span>
+                                Status <span class="text-danger">*</span>
                             </label>
 
                             <select class="form-select"
@@ -273,7 +273,7 @@
                     <!-- IMAGE -->
                     <div class="mb-3">
                         <label class="form-label">
-                            URL Hình ảnh
+                            Image URL
                         </label>
 
                         <input type="url"
@@ -288,8 +288,8 @@
                         <div class="mb-3">
                             <small class="text-muted">
                                 <i class="fas fa-info-circle"></i>
-                                Ngày tạo: ${variant.createdAt} |
-                                Cập nhật lần cuối: ${variant.updatedAt}
+                                Created: ${variant.createdAt} |
+                                Last updated: ${variant.updatedAt}
                             </small>
                         </div>
                     </c:if>
@@ -299,14 +299,14 @@
 
                         <a href="${pageContext.request.contextPath}/variant"
                            class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Hủy
+                            <i class="fas fa-times"></i> Cancel
                         </a>
 
                         <button type="submit"
                                 class="btn btn-primary ms-2">
 
                             <i class="fas fa-save"></i>
-                            ${isEdit ? 'Cập nhật Variant' : 'Lưu Variant'}
+                            ${isEdit ? 'Update Variant' : 'Save Variant'}
 
                         </button>
 
@@ -383,7 +383,7 @@ function addAttributeRow(){
             <input type="text"
                    class="form-control"
                    name="attributeName[]"
-                   placeholder="VD: Color"
+                   placeholder="E.g. Color"
                    required>
         </td>
 
@@ -391,7 +391,7 @@ function addAttributeRow(){
             <input type="text"
                    class="form-control"
                    name="attributeValue[]"
-                   placeholder="VD: Black"
+                   placeholder="E.g. Black"
                    required>
         </td>
 
