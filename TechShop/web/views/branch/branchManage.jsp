@@ -28,6 +28,18 @@
     </a>
 </div>
 
+<div class="d-flex justify-content-end mb-3">
+    <form action="${pageContext.request.contextPath}/branch" method="get" class="d-flex align-items-center gap-2">
+        <input type="hidden" name="page" value="1" />
+        <label for="pageSizeSelect" class="form-label mb-0 fw-semibold text-primary small">Branches per page</label>
+        <select id="pageSizeSelect" name="pageSize" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+            <option value="10" ${pageSize == 10 ? 'selected' : ''}>10</option>
+            <option value="20" ${pageSize == 20 ? 'selected' : ''}>20</option>
+            <option value="0"  ${pageSize == 0  ? 'selected' : ''}>All</option>
+        </select>
+    </form>
+</div>
+
 <div class="card border-primary">
     <div class="card-body">
         <div class="table-responsive">
@@ -103,6 +115,28 @@
             </table>
         </div>
     </div>
+
+    <c:if test="${totalPages > 1}">
+        <nav>
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="?page=${currentPage - 1}&pageSize=${pageSize}">&laquo;</a>
+                </li>
+
+                <c:forEach begin="1" end="${totalPages}" var="p">
+                    <c:if test="${p >= currentPage - 2 && p <= currentPage + 2}">
+                        <li class="page-item ${p == currentPage ? 'active' : ''}">
+                            <a class="page-link" href="?page=${p}&pageSize=${pageSize}">${p}</a>
+                        </li>
+                    </c:if>
+                </c:forEach>
+
+                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="?page=${currentPage + 1}&pageSize=${pageSize}">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </c:if>
 </div>
 
 <jsp:include page="../common/footer.jsp"/>

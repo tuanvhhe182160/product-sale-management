@@ -15,8 +15,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.techshop.util.NumberUtil.parseIntOrDefault;
 
 @WebServlet("/branch")
 public class BranchServlet extends HttpServlet {
@@ -77,7 +80,34 @@ public class BranchServlet extends HttpServlet {
 
     private void listBranches(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.setAttribute("branchList", branchDAO.getAll());
+        int PAGE_SIZE = parseIntOrDefault(req.getParameter("pageSize"), 10);
+        List<Branch> branchList;
+
+        if(PAGE_SIZE > 0) {
+
+            int page = parseIntOrDefault(req.getParameter("page"), 1);
+
+            if (page < 1) {
+                page = 1;
+            }
+
+            int totalBranchesCount = branchDAO.countAllBranches();
+            int totalPages = (int) Math.ceil((double) totalBranchesCount / PAGE_SIZE);
+            if (page > totalPages && totalPages > 0) page = totalPages;
+
+            int offset = (page - 1) * PAGE_SIZE;
+
+            branchList = branchDAO.getAllWithPagination(offset, PAGE_SIZE);
+
+            req.setAttribute("currentPage", page);
+            req.setAttribute("totalPages", totalPages);
+            req.setAttribute("pageSize", PAGE_SIZE);
+        } else {
+            branchList = branchDAO.getAll();
+            req.setAttribute("pageSize", 0);
+        }
+
+        req.setAttribute("branchList", branchList);
         req.setAttribute("pageTitle", "Branch Management");
 
         req.getRequestDispatcher("/views/branch/branchManage.jsp").forward(req, resp);
@@ -112,6 +142,10 @@ public class BranchServlet extends HttpServlet {
 
         if (errors.isEmpty() && branchDAO.isBranchCodeExist(code)) {
             errors.add("Branch code already exists!");
+        }
+
+        if (errors.isEmpty() && branchDAO.isPhoneNumberUsedInBranch(phone)) {
+            errors.add("Phone number is already in use!");
         }
 
         if (!errors.isEmpty()) {
@@ -162,6 +196,10 @@ public class BranchServlet extends HttpServlet {
 
             if (errors.isEmpty() && branchDAO.isBranchCodeExistExcludeId(code, id)) {
                 errors.add("New branch code already exists!");
+            }
+
+            if (errors.isEmpty() && branchDAO.isPhoneNumberUsedInBranch(phone)) {
+                errors.add("Phone number is already in use!");
             }
 
             if (!errors.isEmpty()) {

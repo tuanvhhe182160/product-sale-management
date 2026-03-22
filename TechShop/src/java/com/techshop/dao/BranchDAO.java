@@ -36,7 +36,150 @@ public class BranchDAO extends DBContext {
         
         return list;
     }
+
+    public List<Branch> getAllWithPagination(int offset, int pageSize) {
+        List<Branch> list = new ArrayList<>();
+        String sql = "SELECT branch_id, branch_code, branch_name, address, phone, status, created_at, updated_at "
+                + "FROM Branch "
+                + "ORDER BY branch_id "
+                + "OFFSET " + offset + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Branch branch = extractBranchFromResultSet(rs);
+                list.add(branch);
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.err.println("BranchDAO.getAll() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countAllBranches() {
+        String sql = "SELECT COUNT(*) FROM Branch";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.err.println("BranchDAO.getAll() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
+    }
     
+    /**
+     * Search/filter branches with optional keyword (name, code, address, phone) and status.
+     * Pass offset=0, pageSize=0 to return all matching rows without pagination.
+     */
+    public List<Branch> search(String keyword, String status, int offset, int pageSize) {
+        List<Branch> list = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT branch_id, branch_code, branch_name, address, phone, status, created_at, updated_at " +
+            "FROM Branch WHERE 1=1 "
+        );
+
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasStatus  = status  != null && !status.isBlank();
+
+        if (hasKeyword) sql.append("AND (branch_name LIKE ? OR branch_code LIKE ? OR address LIKE ? OR phone LIKE ?) ");
+        if (hasStatus)  sql.append("AND status = ? ");
+
+        sql.append("ORDER BY branch_id ");
+
+        if (pageSize > 0) sql.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql.toString());
+            int idx = 1;
+
+            if (hasKeyword) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+            }
+            if (hasStatus)  ps.setString(idx++, status.trim());
+            if (pageSize > 0) {
+                ps.setInt(idx++, offset);
+                ps.setInt(idx,   pageSize);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(extractBranchFromResultSet(rs));
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.err.println("BranchDAO.search() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    /**
+     * Count branches matching the same keyword/status filters as search().
+     */
+    public int countSearch(String keyword, String status) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Branch WHERE 1=1 ");
+
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasStatus  = status  != null && !status.isBlank();
+
+        if (hasKeyword) sql.append("AND (branch_name LIKE ? OR branch_code LIKE ? OR address LIKE ? OR phone LIKE ?) ");
+        if (hasStatus)  sql.append("AND status = ? ");
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql.toString());
+            int idx = 1;
+
+            if (hasKeyword) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+            }
+            if (hasStatus) ps.setString(idx, status.trim());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                rs.close();
+                ps.close();
+                return count;
+            }
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.err.println("BranchDAO.countSearch() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     /**
      * Get a single branch by ID
      */
@@ -217,6 +360,32 @@ public class BranchDAO extends DBContext {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, branchId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                rs.close();
+                ps.close();
+                return count > 0;
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.err.println("BranchDAO.isBranchIdExist() Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean isPhoneNumberUsedInBranch(String phone) {
+        String sql = "SELECT COUNT(*) FROM Branch WHERE phone = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, phone);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
