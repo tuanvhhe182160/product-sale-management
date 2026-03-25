@@ -19,7 +19,7 @@ public class AdminAnalyticsDAO extends DBContext {
                      "  SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) AS total_pending, " +
                      "  SUM(CASE WHEN status = 'IN_PROGRESS' THEN 1 ELSE 0 END) AS total_in_progress, " +
                      "  SUM(CASE WHEN status = 'REJECTED' THEN 1 ELSE 0 END) AS total_rejected, " +
-                     "  AVG(CASE WHEN status = 'COMPLETED' THEN DATEDIFF(HOUR, request_date, completion_date) ELSE NULL END) AS avg_repair_hours " +
+                     "  AVG(CASE WHEN status = 'COMPLETED' THEN DATEDIFF(SECOND, request_date, completion_date) / 3600.0 ELSE NULL END) AS avg_repair_hours " +
                      "FROM WarrantyRequest";
                      
         try (PreparedStatement ps = connection.prepareStatement(sql);
@@ -31,8 +31,13 @@ public class AdminAnalyticsDAO extends DBContext {
                 stats.put("totalInProgress", rs.getInt("total_in_progress"));
                 stats.put("totalRejected", rs.getInt("total_rejected"));
                 
-                int avgHours = rs.getInt("avg_repair_hours");
-                stats.put("avgRepairTime", avgHours > 0 ? avgHours + " giờ" : "Chưa có data");
+                double avgHours = rs.getDouble("avg_repair_hours");
+
+                if (rs.wasNull()) {
+                    stats.put("avgRepairTime", "Chưa có data");
+                } else {
+                    stats.put("avgRepairTime", String.format("%.2f giờ", avgHours));
+                }
                 
                 int total = rs.getInt("total_requests");
                 int completed = rs.getInt("total_completed");
@@ -55,7 +60,7 @@ public class AdminAnalyticsDAO extends DBContext {
                      "  ISNULL(u.full_name, 'Chưa phân công') AS full_name, " +
                      "  COUNT(wr.request_id) AS handled_requests, " +
                      "  SUM(CASE WHEN wr.status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_requests, " +
-                     "  AVG(CASE WHEN wr.status = 'COMPLETED' THEN DATEDIFF(HOUR, wr.request_date, wr.completion_date) ELSE NULL END) AS avg_hours " +
+                     "  AVG(CASE WHEN wr.status = 'COMPLETED' THEN DATEDIFF(SECOND, wr.request_date, wr.completion_date) / 3600.0 ELSE NULL END) AS avg_hours " +
                      "FROM WarrantyRequest wr " +
                      "LEFT JOIN [User] u ON wr.technician_id = u.user_id " +
                      "WHERE wr.technician_id IS NOT NULL " +
@@ -69,7 +74,7 @@ public class AdminAnalyticsDAO extends DBContext {
                 row.put("technicianName", rs.getString("full_name"));
                 row.put("handledRequests", rs.getInt("handled_requests"));
                 row.put("completedRequests", rs.getInt("completed_requests"));
-                row.put("avgTime", rs.getInt("avg_hours"));
+                row.put("avgTime", rs.getDouble("avg_hours"));
                 list.add(row);
             }
         } catch (SQLException e) { e.printStackTrace(); }

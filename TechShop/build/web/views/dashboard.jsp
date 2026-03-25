@@ -25,136 +25,381 @@
 
                     <!-- Admin Dashboard -->
 <c:if test="${dashboardType == 'admin'}">
-    <div class="row g-3">
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Total Users</p>
-                            <h3 class="mb-0 fw-bold">${totalUsers}</h3>
-                        </div>
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-users fa-2x text-primary"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Branches</p>
-                            <h3 class="mb-0 fw-bold">${totalBranches}</h3>
-                            <small class="text-success">
-                                <i class="fas fa-check-circle"></i> ${activeBranches} Active
-                            </small>
-                        </div>
-                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-building fa-2x text-success"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Product Catalog</p>
-                            <h3 class="mb-0 fw-bold">${totalVariants}</h3>
-                            <small class="text-muted">
-                                ${totalCategories} categories, ${totalModels} models
-                            </small>
-                        </div>
-                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-box fa-2x text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Inventory</p>
-                            <h3 class="mb-0 fw-bold">-</h3>
-                        </div>
-                        <div class="bg-info bg-opacity-10 p-3 rounded-circle">
-                            <i class="fas fa-warehouse fa-2x text-info"></i>
-                        </div>
-                    </div>
-                    <small class="text-muted">Stock Transfer Ready</small>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-4">
+    <%-- ── ROW 1: SYSTEM ALERT BANNER (shown only when issues exist) ── --%>
+    
+
+    <%-- ── ROW 2: 4 REVENUE KPI CARDS ── --%>
+    <div class="row g-3 mb-4">
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh thu hôm nay</p>
+                        <h3 class="mb-0 fw-bold text-success">
+                            <fmt:formatNumber value="${todayRevenue}" type="number" pattern="#,##0"/> &#x20AB;
+                        </h3>
+                        <small class="text-muted">${todayInvoices} hóa đơn</small>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-calendar-day fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Doanh thu tháng này</p>
+                        <h3 class="mb-0 fw-bold text-primary">
+                            <fmt:formatNumber value="${monthRevenue}" type="number" pattern="#,##0"/> &#x20AB;
+                        </h3>
+                        <small class="text-muted">${monthInvoices} hóa đơn</small>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-chart-line fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Lợi nhuận tháng này</p>
+                        <h3 class="mb-0 fw-bold text-info">
+                            <fmt:formatNumber value="${monthProfit}" type="number" pattern="#,##0"/> &#x20AB;
+                        </h3>
+                        <small class="text-muted">
+                            <c:if test="${monthRevenue > 0}">
+                                Biên: <fmt:formatNumber value="${monthProfit/monthRevenue*100}" maxFractionDigits="1"/>%
+                            </c:if>
+                        </small>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-coins fa-2x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small fw-bold text-uppercase">Sản phẩm tồn kho</p>
+                        <h3 class="mb-0 fw-bold text-warning">${totalInStock}</h3>
+                        <small class="text-muted">${activeVariants} biến thể đang bán</small>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-warehouse fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><%-- /row 2 --%>
+
+    <%-- ── ROW 3: 30-DAY TREND (wide) + BRANCH REVENUE (narrow) ── --%>
+    <div class="row g-3 mb-4">
+
+        <%-- 30-day line chart --%>
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Top 5 Sản phẩm bán chạy nhất trong 30 ngày qua</h5>
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-area text-primary me-2"></i>
+                        Doanh thu 30 ngày gần nhất (toàn hệ thống)
+                    </h6>
                 </div>
-                <div class="card-body">
-                    <canvas id="adminProductSalesChart" style="min-height: 300px; width: 100%;"></canvas>
+                <div class="card-body pb-2">
+                    <div style="height:240px; position:relative;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-        
+
+        <%-- Branch revenue bar --%>
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Thao tác nhanh</h5>
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-building text-success me-2"></i>
+                        Doanh thu theo chi nhánh (tháng này)
+                    </h6>
                 </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush mb-3">
-                        <a href="${pageContext.request.contextPath}/user" class="list-group-item list-group-item-action border-0 px-0">
-                                <i class="fas fa-users text-info me-2"></i>Quản lý User
-                                
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/cashier-mgmt" class="list-group-item list-group-item-action border-0 px-0">
-                                <i class="fas fa-file-invoice-dollar text-info me-2"></i>Quản lý Cashier
-                                
-                        </a>
-                        <a href="${pageContext.request.contextPath}/category" class="list-group-item list-group-item-action border-0 px-0">
-                                <i class="fas fa-toolbox text-info me-2"></i>Quản lý sản phẩm
-                                
-                        </a>               
-                        <a href="${pageContext.request.contextPath}/admin/product-report" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-chart-pie text-info me-2"></i> Báo cáo doanh số Sản phẩm
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/branch-report" class="list-group-item list-group-item-action border-0 px-0">
-                            <i class="fas fa-map-marked-alt text-success me-2"></i> Báo cáo doanh số Chi nhánh
-                        </a>
-                    </div>
-                    <hr>
-                    <div class="product-stats small">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fas fa-tags me-1"></i> Categories:</span>
-                            <strong>${totalCategories}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fas fa-cubes me-1"></i> Models:</span>
-                            <strong>${totalModels}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span><i class="fas fa-cube me-1"></i> Active Variants:</span>
-                            <span class="badge bg-success">${activeVariants}</span>
-                        </div>
+                <div class="card-body pb-2">
+                    <div style="height:240px; position:relative;">
+                        <canvas id="branchChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>      
+
+    </div><%-- /row 3 --%>
+
+    <%-- ── ROW 4: TOP 5 PRODUCTS + SYSTEM STATS + QUICK ACTIONS ── --%>
+    <div class="row g-3">
+
+        <%-- Top 5 products doughnut --%>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-fire text-danger me-2"></i>Top 5 sản phẩm tháng này
+                    </h6>
+                    <a href="${pageContext.request.contextPath}/admin/product-report"
+                       class="btn btn-sm btn-outline-danger">Xem thêm</a>
+                </div>
+                <div class="card-body">
+                    <c:choose>
+                        <c:when test="${empty top5Products}">
+                            <p class="text-muted text-center py-4 small">Chưa có dữ liệu tháng này.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <div style="height:180px; position:relative;">
+                                <canvas id="donutChart"></canvas>
+                            </div>
+                            <div class="mt-3">
+                                <c:forEach var="p" items="${top5Products}" varStatus="st">
+                                    <div class="d-flex justify-content-between align-items-center
+                                                mb-1 small">
+                                        <span class="text-truncate me-2" style="max-width:60%">
+                                            <span class="badge rounded-circle me-1"
+                                                  style="background:${st.index==0?'#0d6efd':
+                                                         st.index==1?'#198754':
+                                                         st.index==2?'#ffc107':
+                                                         st.index==3?'#dc3545':'#6c757d'}">
+                                                &nbsp;</span>
+                                            ${p[0]}
+                                        </span>
+                                        <span class="fw-bold">${p[1]} cái</span>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
+
+        <%-- System stats --%>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-server text-secondary me-2"></i>Tổng quan hệ thống
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <%-- Branch stats --%>
+                    <p class="small fw-bold text-muted text-uppercase mb-2">Chi nhánh & Nhân sự</p>
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span><i class="fas fa-building text-success me-2"></i>Chi nhánh đang hoạt động</span>
+                        <strong>${activeBranches} / ${totalBranches}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small">
+                        <span><i class="fas fa-users text-primary me-2"></i>Tổng nhân sự</span>
+                        <strong>${totalUsers}</strong>
+                    </div>
+                    <%-- User by role --%>
+                    <c:forEach var="ur" items="${userByRole}">
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span class="ms-3">${ur[0]}</span>
+                            <span>${ur[1]} người</span>
+                        </div>
+                    </c:forEach>
+
+                    <hr class="my-3">
+
+                    <%-- Catalog --%>
+                    <p class="small fw-bold text-muted text-uppercase mb-2">Danh mục sản phẩm</p>
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span><i class="fas fa-tags text-info me-2"></i>Danh mục</span>
+                        <strong>${totalCategories}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span><i class="fas fa-cubes text-warning me-2"></i>Model</span>
+                        <strong>${totalModels}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span><i class="fas fa-cube text-primary me-2"></i>Biến thể đang bán</span>
+                        <span class="badge bg-success">${activeVariants}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%-- Quick actions --%>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-bolt text-warning me-2"></i>Thao tác nhanh
+                    </h6>
+                </div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <a href="${pageContext.request.contextPath}/user"
+                       class="btn btn-outline-primary text-start">
+                        <i class="fas fa-users me-2"></i>Quản lý nhân sự
+                    </a>
+                    <a href="${pageContext.request.contextPath}/branch"
+                       class="btn btn-outline-success text-start">
+                        <i class="fas fa-building me-2"></i>Quản lý chi nhánh
+                    </a>
+                    <a href="${pageContext.request.contextPath}/category"
+                       class="btn btn-outline-warning text-start">
+                        <i class="fas fa-box me-2"></i>Quản lý sản phẩm
+                    </a>
+                    <hr class="my-1">
+                    <a href="${pageContext.request.contextPath}/admin/product-report"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="fas fa-cubes me-2"></i>Doanh số sản phẩm
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/branch-report"
+                       class="btn btn-outline-secondary text-start">
+                        <i class="fas fa-map-marked-alt me-2"></i>Doanh số chi nhánh
+                    </a>
+                    <hr class="my-1">
+                    <a href="${pageContext.request.contextPath}/admin/analytics/warranty"
+                       class="btn btn-outline-danger text-start">
+                        <i class="fas fa-tools me-2"></i>Thống kê bảo hành
+                        <c:if test="${pendingWarranty > 0}">
+                            <span class="badge bg-danger ms-1">${pendingWarranty}</span>
+                        </c:if>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div><%-- /row 4 --%>
+
+    <%-- ── CHARTS SCRIPT ── --%>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    (function () {
+        const vnd = v => new Intl.NumberFormat('vi-VN').format(Math.round(v)) + ' ₫';
+        const yTick = v => {
+            if (v >= 1e9) return (v/1e9).toFixed(1)+' tỷ';
+            if (v >= 1e6) return (v/1e6).toFixed(0)+' tr';
+            if (v >= 1e3) return (v/1e3).toFixed(0)+'k';
+            return v;
+        };
+
+        // ── 30-day trend (line) ─────────────────────────────────────────
+        const trendRaw = {};
+        <c:forEach items="${trend30}" var="d">
+        trendRaw['${d[0]}'] = ${d[1]};
+        </c:forEach>
+
+        const trendLabels = [], trendVals = [];
+        for (let i = 29; i >= 0; i--) {
+            const dt = new Date();
+            dt.setDate(dt.getDate() - i);
+            const key = dt.toISOString().slice(0,10);
+            trendLabels.push(key.slice(5));
+            trendVals.push(trendRaw[key] || 0);
+        }
+
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: trendVals,
+                    borderColor: 'rgba(13,110,253,0.9)',
+                    backgroundColor: 'rgba(13,110,253,0.1)',
+                    fill: true, borderWidth: 2, tension: 0.35, pointRadius: 2
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => vnd(ctx.parsed.y) } }
+                },
+                scales: { y: { beginAtZero: true, ticks: { callback: yTick } } }
+            }
+        });
+
+        // ── Branch revenue (horizontal bar) ────────────────────────────
+        const branchLabels = [], branchVals = [];
+        <c:forEach items="${branchRevenue}" var="b">
+        branchLabels.push('${b[0]}');
+        branchVals.push(${b[1]});
+        </c:forEach>
+
+        new Chart(document.getElementById('branchChart'), {
+            type: 'bar',
+            data: {
+                labels: branchLabels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: branchVals,
+                    backgroundColor: [
+                        'rgba(25,135,84,0.7)', 'rgba(13,110,253,0.7)',
+                        'rgba(255,193,7,0.8)', 'rgba(220,53,69,0.7)',
+                        'rgba(108,117,125,0.7)'
+                    ],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => vnd(ctx.parsed.x) } }
+                },
+                scales: { x: { beginAtZero: true, ticks: { callback: yTick } } }
+            }
+        });
+
+        // ── Top 5 products (doughnut) ───────────────────────────────────
+        const donutCanvas = document.getElementById('donutChart');
+        if (donutCanvas) {
+            const donutLabels = [], donutVals = [];
+            <c:forEach items="${top5Products}" var="p">
+            donutLabels.push('${p[0].replace("'", "\'")}');
+            donutVals.push(${p[1]});
+            </c:forEach>
+
+            new Chart(donutCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: donutLabels,
+                    datasets: [{
+                        data: donutVals,
+                        backgroundColor: [
+                            '#0d6efd','#198754','#ffc107','#dc3545','#6c757d'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ctx.label + ': ' + ctx.parsed + ' cái'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+    }());
+    </script>
+
 </c:if>
 
 <!-- Manager Dashboard -->
@@ -352,6 +597,7 @@
 
 <!-- Accounting Dashboard -->
 <c:if test="${dashboardType == 'accounting'}">
+
     <%-- ── ROW 1: KPI CARDS ── --%>
     <div class="row g-3 mb-4">
 
@@ -726,7 +972,6 @@
     </script>
 
 </c:if>
-
 
 <!-- CS Dashboard -->
 <c:if test="${dashboardType == 'customer_service'}">

@@ -6,15 +6,14 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.AccountingDashboardDAO;
+import com.techshop.dao.AdminDashboardDAO;
 import com.techshop.dao.UserDAO;
 import com.techshop.dao.BranchDAO;
 import com.techshop.dao.ProductCategoryDAO;
 import com.techshop.dao.ProductModelDAO;
-import com.techshop.dao.ReportDAO;
 import com.techshop.dao.VariantDAO;
 import com.techshop.dao.SalesHistoryDAO;
 import com.techshop.dao.TechnicianDAO;
-import com.techshop.model.FinancialReportItem;
 import com.techshop.model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -24,7 +23,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -86,29 +84,44 @@ public class DashboardServlet extends HttpServlet {
 
     private void loadAdminDashboard(HttpServletRequest request) {
         UserDAO userDAO = new UserDAO();
-        int totalUsers = userDAO.getAll().size();
-        
         BranchDAO branchDAO = new BranchDAO();
-        int totalBranches = branchDAO.getAll().size();
-        int activeBranches = branchDAO.getAllActive().size();
-        
         ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
-        int totalCategories = categoryDAO.getAllCategories().size();
-        
         ProductModelDAO modelDAO = new ProductModelDAO();
-        int totalModels = modelDAO.getAll().size();
-        
         VariantDAO variantDAO = new VariantDAO();
-        int totalVariants = variantDAO.getAllVariants().size();
-        int activeVariants = variantDAO.getAllActive().size();
-        
-        request.setAttribute("totalUsers", totalUsers);
-        request.setAttribute("totalBranches", totalBranches);
-        request.setAttribute("activeBranches", activeBranches);
-        request.setAttribute("totalCategories", totalCategories);
-        request.setAttribute("totalModels", totalModels);
-        request.setAttribute("totalVariants", totalVariants);
-        request.setAttribute("activeVariants", activeVariants);
+ 
+        request.setAttribute("totalUsers",      userDAO.getAll().size());
+        request.setAttribute("totalBranches",   branchDAO.getAll().size());
+        request.setAttribute("activeBranches",  branchDAO.getAllActive().size());
+        request.setAttribute("totalCategories", categoryDAO.getAllCategories().size());
+        request.setAttribute("totalModels",     modelDAO.getAll().size());
+        request.setAttribute("totalVariants",   variantDAO.getAllVariants().size());
+        request.setAttribute("activeVariants",  variantDAO.getAllActive().size());
+ 
+        // ── Live business data (from AdminDashboardDAO) ──────────────────
+        AdminDashboardDAO dao = new AdminDashboardDAO();
+ 
+        // Today KPI: [revenue, invoiceCount]
+        BigDecimal[] today = dao.getTodayStats();
+        request.setAttribute("todayRevenue",  today[0]);
+        request.setAttribute("todayInvoices", today[1].intValue());
+ 
+        // This month KPI: [revenue, invoiceCount, profit]
+        BigDecimal[] month = dao.getThisMonthStats();
+        request.setAttribute("monthRevenue",  month[0]);
+        request.setAttribute("monthInvoices", month[1].intValue());
+        request.setAttribute("monthProfit",   month[2]);
+ 
+        // Alerts
+        request.setAttribute("totalInStock",      dao.getTotalInStock());
+        request.setAttribute("pendingInvoices",   dao.getTotalPendingInvoices());
+        request.setAttribute("pendingWarranty",   dao.getTotalPendingWarranty());
+ 
+        // Chart data
+        request.setAttribute("branchRevenue",  dao.getRevenuByBranchThisMonth());
+        request.setAttribute("trend30",        dao.getLast30DaysRevenue());
+        request.setAttribute("top5Products",   dao.getTop5ProductsThisMonth());
+        request.setAttribute("userByRole",     dao.getUserCountByRole());
+ 
         request.setAttribute("dashboardType", "admin");
     }
     
@@ -158,13 +171,13 @@ public class DashboardServlet extends HttpServlet {
         AccountingDashboardDAO dao = new AccountingDashboardDAO();
  
         // This month KPI: [revenue, profit, invoiceCount]
-        java.math.BigDecimal[] monthKpi = dao.getThisMonthKpi(branchId);
+        BigDecimal[] monthKpi = dao.getThisMonthKpi(branchId);
         request.setAttribute("monthRevenue",  monthKpi[0]);
         request.setAttribute("monthProfit",   monthKpi[1]);
         request.setAttribute("monthInvoices", monthKpi[2].intValue());
  
         // Today KPI: [revenue, count]
-        java.math.BigDecimal[] todayKpi = dao.getTodayKpi(branchId);
+        BigDecimal[] todayKpi = dao.getTodayKpi(branchId);
         request.setAttribute("todayRevenue",  todayKpi[0]);
         request.setAttribute("todayInvoices", todayKpi[1].intValue());
  
@@ -184,7 +197,7 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("revenueTrend", trend);
  
         // Payment method breakdown this month
-        Map<String, java.math.BigDecimal> payBreakdown =
+        Map<String, BigDecimal> payBreakdown =
             dao.getPaymentMethodBreakdown(branchId);
         request.setAttribute("payBreakdown", payBreakdown);
  

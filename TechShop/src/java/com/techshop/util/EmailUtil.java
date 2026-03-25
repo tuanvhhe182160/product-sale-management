@@ -1,5 +1,6 @@
 package com.techshop.util;
 
+import com.techshop.model.WarrantyStatus;
 import java.util.Properties;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
@@ -73,12 +74,13 @@ public class EmailUtil {
                 Message message = new MimeMessage(session);
                 message.setFrom(new InternetAddress(config.getProperty("mail.smtp.user"), "TechShop Warranty Center"));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+                message.setHeader("Content-Type", "text/html; charset=UTF-8");
                 message.setSubject("[TechShop] Cập nhật trạng thái bảo hành #" + requestCode);
 
                 // Dịch trạng thái sang tiếng Việt
                 String statusVN = "Đang xử lý"; // Mặc định
                 try {
-                    com.techshop.model.WarrantyStatus statusEnum = com.techshop.model.WarrantyStatus.valueOf(newStatus);
+                    WarrantyStatus statusEnum = WarrantyStatus.valueOf(newStatus);
                     switch (statusEnum) {
                         case PENDING: statusVN = "Chờ tiếp nhận"; break;
                         case IN_PROGRESS: statusVN = "Đang xử lý / Sửa chữa"; break;
@@ -127,6 +129,7 @@ public class EmailUtil {
                 Message message = new MimeMessage(session);
                 message.setFrom(new InternetAddress(config.getProperty("mail.smtp.user"), "TechShop Warranty Center"));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+                message.setHeader("Content-Type", "text/html; charset=UTF-8");
                 message.setSubject("[TechShop] Tiếp nhận yêu cầu bảo hành máy " + productName);
 
                 StringBuilder html = new StringBuilder();
@@ -134,14 +137,13 @@ public class EmailUtil {
                 html.append("<p>Hệ thống TechShop đã ghi nhận yêu cầu bảo hành của bạn với thông tin như sau:</p>");
                 html.append("<ul>");
                 html.append("<li><strong>Mã phiếu:</strong> <span style='color:blue; font-size:16px;'>").append(requestCode).append("</span></li>");
-                html.append("<li><strong>Sản phẩm:</strong> ").append(productName).append("</li>");
                 html.append("<li><strong>Sản phẩm:</strong> ").append(productName).append(" <br><small><strong>(IMEI/Serial:</strong> ").append(imei).append(")</small></li>");
                 html.append("<li><strong>Tình trạng lỗi (Ghi nhận sơ bộ):</strong> ").append(issueDescription).append("</li>");
                 html.append("</ul>");
                 html.append("<p>Hiện tại, sản phẩm đang ở trạng thái: <strong style='color:#ffc107;'>CHỜ KỸ THUẬT TIẾP NHẬN</strong>.</p>");
                 html.append("<p>Hệ thống sẽ tự động gửi email thông báo cho bạn ngay khi có cập nhật mới về tiến độ sửa chữa từ bộ phận Kỹ thuật.</p>");
                 html.append("<p>Cảm ơn bạn đã tin tưởng dịch vụ của TechShop!</p>");
-                
+                               
                 message.setContent(html.toString(), "text/html; charset=UTF-8");
                 Transport.send(message);
                 System.out.println("Email TẠO MỚI bảo hành đã gửi tới: " + toEmail);

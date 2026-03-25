@@ -27,7 +27,7 @@
         <i class="fas fa-building text-primary me-2"></i>
         Thống kê doanh số theo chi nhánh
     </h3>
-    <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-outline-secondary">
+    <a href="${pageContext.request.contextPath}/dashboard" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left me-1"></i> Về Dashboard
     </a>
 </div>

@@ -83,6 +83,7 @@ public class TechnicianDAO extends DBContext {
                     req.setVariantId(rs.getInt("variant_id"));
                     
                     req.setInvoiceCode(rs.getString("invoice_code"));
+                    req.setImageUrl(rs.getString("image_url"));
                     
                     if (rs.getTimestamp("invoice_date") != null) {
                         req.setInvoiceDate(rs.getTimestamp("invoice_date").toLocalDateTime());

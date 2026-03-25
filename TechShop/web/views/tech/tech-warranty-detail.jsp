@@ -55,6 +55,27 @@
                             ${reqDetail.issueDescription}
                         </div>
                     </div>
+
+                    <%-- Ảnh minh họa lỗi do CS chụp khi tiếp nhận --%>
+                    <c:if test="${not empty reqDetail.imageUrl}">
+                        <div class="row mt-3">
+                            <div class="col-sm-12 text-muted mb-1 fw-bold">
+                                <i class="fas fa-image me-1"></i>Ảnh minh họa lỗi:
+                            </div>
+                            <div class="col-sm-12">
+                                <a href="${pageContext.request.contextPath}/${reqDetail.imageUrl}"
+                                   target="_blank">
+                                    <img src="${pageContext.request.contextPath}/${reqDetail.imageUrl}"
+                                         alt="Ảnh lỗi"
+                                         class="img-fluid rounded border"
+                                         style="max-height:300px;object-fit:contain;cursor:zoom-in;">
+                                </a>
+                                <div class="text-muted small mt-1">
+                                    Nhấn vào ảnh để xem toàn màn hình
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
                 </div>
             </div>
 

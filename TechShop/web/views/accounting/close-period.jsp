@@ -37,6 +37,18 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     </c:if>
+    <c:if test="${param.error == 'has_pending'}">
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <strong>Không thể chốt kỳ tháng ${param.month}/${param.year}!</strong>
+            Còn <strong>${param.pending} hóa đơn chuyển khoản chưa được đối soát</strong>.
+            Vui lòng vào
+            <a href="${pageContext.request.contextPath}/accounting/reconciliation"
+               class="alert-link">Đối Soát Chuyển Khoản</a>
+            để xác nhận trước khi chốt kỳ.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </c:if>
     <c:if test="${param.error == 'db_failed'}">
         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
             <i class="fas fa-times-circle me-2"></i>
@@ -96,6 +108,20 @@
                              class="alert alert-warning d-none mb-3">
                             <i class="fas fa-lock me-2"></i>
                             Kỳ này <strong>đã được chốt</strong> trước đó.
+                        </div>
+
+                        <%-- Pending reconciliation warning --%>
+                        <div id="pendingAlert"
+                             class="alert alert-danger d-none mb-3">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Còn <strong id="pendingCount"></strong> hóa đơn chuyển khoản
+                            <strong>chưa được đối soát</strong> trong kỳ này.
+                            Phải đối soát hết trước khi chốt kỳ.
+                            <br>
+                            <a href="${pageContext.request.contextPath}/accounting/reconciliation"
+                               class="alert-link fw-bold">
+                                <i class="fas fa-arrow-right me-1"></i>Đi đến trang Đối Soát
+                            </a>
                         </div>
 
                         <%-- Validation error from servlet --%>
@@ -256,6 +282,8 @@
     const previewSpinner  = document.getElementById('previewSpinner');
     const previewCards    = document.getElementById('previewCards');
     const alreadyAlert    = document.getElementById('alreadyClosedAlert');
+    const pendingAlert    = document.getElementById('pendingAlert');
+    const pendingCountEl  = document.getElementById('pendingCount');
     const validationAlert = document.getElementById('validationAlert');
     const previewLabel    = document.getElementById('previewLabel');
 
@@ -294,6 +322,7 @@
         previewSpinner.classList.remove('d-none');
         previewCards.classList.add('d-none');
         alreadyAlert.classList.add('d-none');
+        pendingAlert.classList.add('d-none');
         validationAlert.classList.add('d-none');
 
         fetch(ctx + '/accounting/close-period?action=preview-json&month=' + month + '&year=' + year)
@@ -319,17 +348,28 @@
 
                 previewCards.classList.remove('d-none');
 
+                const submitBtn = document.getElementById('closeForm')
+                                         .querySelector('button[type="submit"]');
+
+                // Already closed → warn + disable
                 if (data.alreadyClosed) {
                     alreadyAlert.classList.remove('d-none');
-                    // Hide confirm button
-                    document.getElementById('closeForm')
-                             .querySelector('button[type="submit"]')
-                             .setAttribute('disabled', 'disabled');
+                    submitBtn.setAttribute('disabled', 'disabled');
                 } else {
                     alreadyAlert.classList.add('d-none');
-                    document.getElementById('closeForm')
-                             .querySelector('button[type="submit"]')
-                             .removeAttribute('disabled');
+                }
+
+                // Pending reconciliation → error + disable
+                if (data.pendingCount > 0) {
+                    pendingCountEl.textContent = data.pendingCount;
+                    pendingAlert.classList.remove('d-none');
+                    submitBtn.setAttribute('disabled', 'disabled');
+                } else {
+                    pendingAlert.classList.add('d-none');
+                    // Only re-enable if also not already-closed
+                    if (!data.alreadyClosed) {
+                        submitBtn.removeAttribute('disabled');
+                    }
                 }
             })
             .catch(function () {

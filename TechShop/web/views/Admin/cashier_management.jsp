@@ -87,7 +87,7 @@
 <!-- Bộ lọc -->
 <div class="card mb-4">
     <div class="card-body py-3">
-        <form method="get" action="${pageContext.request.contextPath}/cashier-mgmt" class="row g-2 align-items-end">
+        <form method="get" action="${pageContext.request.contextPath}/admin/cashier-mgmt" class="row g-2 align-items-end">
             <c:if test="${userRole == 'Admin'}">
             <div class="col-md-3">
                 <label class="form-label small fw-bold">Chi nhánh</label>

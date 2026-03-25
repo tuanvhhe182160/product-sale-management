@@ -52,7 +52,7 @@ public class ClosePeriodServlet extends HttpServlet {
         User user = currentUser(req);
         if (user == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
 
-        // branchId từ session — không bao giờ lấy từ URL
+        // branchId từ session
         Integer branchIdObj = user.getBranchId();
         if (branchIdObj == null) {
             // Admin không có chi nhánh → không dùng chức năng này
@@ -111,10 +111,12 @@ public class ClosePeriodServlet extends HttpServlet {
         }
 
         boolean alreadyClosed = periodDAO.isPeriodClosed(branchId, month, year);
+        int pendingCount = periodDAO.countPendingInPeriod(branchId, month, year);
         AccountingPeriod preview = periodDAO.calculatePeriod(branchId, month, year);
 
         Map<String, Object> json = new LinkedHashMap<>();
         json.put("alreadyClosed",  alreadyClosed);
+        json.put("pendingCount",   pendingCount);
         json.put("month",          month);
         json.put("year",           year);
         json.put("totalInvoices",  preview.getTotalInvoices());
@@ -169,6 +171,15 @@ public class ClosePeriodServlet extends HttpServlet {
         if (periodDAO.isPeriodClosed(branchId, month, year)) {
             resp.sendRedirect(req.getContextPath() +
                 "/accounting/close-period?error=already_closed&month=" + month + "&year=" + year);
+            return;
+        }
+
+        // BLOCK: còn hóa đơn chuyển khoản chưa đối soát trong kỳ này
+        int pending = periodDAO.countPendingInPeriod(branchId, month, year);
+        if (pending > 0) {
+            resp.sendRedirect(req.getContextPath() +
+                "/accounting/close-period?error=has_pending&pending=" + pending +
+                "&month=" + month + "&year=" + year);
             return;
         }
 

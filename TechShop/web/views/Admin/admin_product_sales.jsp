@@ -145,6 +145,7 @@
                             <th>Model</th>
                             <th>Biến thể</th>
                             <th class="text-center" style="width:130px">Số lượng bán</th>
+                            <th>Giá Biến Thể</th>
                             <th class="text-end" style="width:160px">Doanh thu</th>
                         </tr>
                     </thead>
@@ -174,6 +175,10 @@
                                                 <fmt:formatNumber value="${row.total_qty}"
                                                                   type="number" pattern="#,##0"/>
                                             </span>
+                                        </td>
+                                        <td>
+                                            <fmt:formatNumber value="${row.base_price}"
+                                                              type="number" pattern="#,##0"/> &#x20AB;
                                         </td>
                                         <td class="text-end fw-bold text-success">
                                             <fmt:formatNumber value="${row.total_sales}"

@@ -89,7 +89,7 @@
                                     <td class="text-center">${tech.handledRequests}</td>
                                     <td class="text-center text-success fw-bold">${tech.completedRequests}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-secondary">${tech.avgTime > 0 ? tech.avgTime : '--'}</span>
+                                        <span class="badge bg-secondary">${tech.avgTime > 0 ? tech.avgTime : '1'}</span>
                                     </td>
                                 </tr>
                             </c:forEach>

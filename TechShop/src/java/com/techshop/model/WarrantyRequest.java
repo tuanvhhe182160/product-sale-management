@@ -31,11 +31,12 @@ public class WarrantyRequest {
     private String invoiceCode;
     private LocalDateTime invoiceDate;
     private int variantId;
+    private String imageUrl;
 
     public WarrantyRequest() {
     }
 
-    public WarrantyRequest(int requestId, String requestCode, int invoiceId, int physicalId, int customerId, String issueDescription, String status, Integer technicianId, int customerServiceId, String resolution, LocalDateTime requestDate, LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt, String customerName, String customerPhone, String customerEmail, String variantName, String imei, String technicianName, String customerServiceName, String invoiceCode, LocalDateTime invoiceDate, int variantId) {
+    public WarrantyRequest(int requestId, String requestCode, int invoiceId, int physicalId, int customerId, String issueDescription, String status, Integer technicianId, int customerServiceId, String resolution, LocalDateTime requestDate, LocalDateTime completionDate, LocalDateTime createdAt, LocalDateTime updatedAt, String customerName, String customerPhone, String customerEmail, String variantName, String imei, String technicianName, String customerServiceName, String invoiceCode, LocalDateTime invoiceDate, int variantId, String imageUrl) {
         this.requestId = requestId;
         this.requestCode = requestCode;
         this.invoiceId = invoiceId;
@@ -60,9 +61,13 @@ public class WarrantyRequest {
         this.invoiceCode = invoiceCode;
         this.invoiceDate = invoiceDate;
         this.variantId = variantId;
+        this.imageUrl = imageUrl;
     }
 
     
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public int getRequestId() {
         return requestId;
@@ -258,8 +263,10 @@ public class WarrantyRequest {
 
     @Override
     public String toString() {
-        return "WarrantyRequest{" + "requestId=" + requestId + ", requestCode=" + requestCode + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", customerId=" + customerId + ", issueDescription=" + issueDescription + ", status=" + status + ", technicianId=" + technicianId + ", customerServiceId=" + customerServiceId + ", resolution=" + resolution + ", requestDate=" + requestDate + ", completionDate=" + completionDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", customerEmail=" + customerEmail + ", variantName=" + variantName + ", imei=" + imei + ", technicianName=" + technicianName + ", customerServiceName=" + customerServiceName + ", invoiceCode=" + invoiceCode + ", invoiceDate=" + invoiceDate + ", variantId=" + variantId + '}';
+        return "WarrantyRequest{" + "requestId=" + requestId + ", requestCode=" + requestCode + ", invoiceId=" + invoiceId + ", physicalId=" + physicalId + ", customerId=" + customerId + ", issueDescription=" + issueDescription + ", status=" + status + ", technicianId=" + technicianId + ", customerServiceId=" + customerServiceId + ", resolution=" + resolution + ", requestDate=" + requestDate + ", completionDate=" + completionDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", customerEmail=" + customerEmail + ", variantName=" + variantName + ", imei=" + imei + ", technicianName=" + technicianName + ", customerServiceName=" + customerServiceName + ", invoiceCode=" + invoiceCode + ", invoiceDate=" + invoiceDate + ", variantId=" + variantId + ", imageUrl=" + imageUrl + '}';
     }
+
+    
     
     
     public Date getLegacyRequestDate() {

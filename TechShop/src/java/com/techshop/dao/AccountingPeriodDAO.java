@@ -10,8 +10,33 @@ import java.util.List;
 
 public class AccountingPeriodDAO extends DBContext {
 
+    /**
+     * Đếm số hóa đơn TRANSFER/MIXED chưa đối soát (PENDING) trong kỳ cần chốt.
+     * Nếu > 0 thì không được phép chốt kỳ.
+     */
+    public int countPendingInPeriod(int branchId, int month, int year) {
+        String sql =
+            "SELECT COUNT(*) FROM Invoice " +
+            "WHERE branch_id = ? " +
+            "  AND status = 'PENDING' " +
+            "  AND payment_method IN ('TRANSFER', 'MIXED') " +
+            "  AND MONTH(invoice_date) = ? " +
+            "  AND YEAR(invoice_date)  = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, branchId);
+            ps.setInt(2, month);
+            ps.setInt(3, year);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("AccountingPeriodDAO.countPendingInPeriod: " + e.getMessage());
+        }
+        return 0;
+    }
+
     /** Kiểm tra kỳ đã chốt chưa. */
-    public boolean isPeriodClosed(int branchId, int month, int year) {
+    public boolean isPeriodClosed(int branchId, int month, int year) {        
         String sql = "SELECT COUNT(*) FROM AccountingPeriod " +
                      "WHERE branch_id = ? AND period_month = ? AND period_year = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

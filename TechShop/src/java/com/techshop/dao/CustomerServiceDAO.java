@@ -62,59 +62,61 @@ public class CustomerServiceDAO extends DBContext {
 
     // 3. TẠO YÊU CẦU BẢO HÀNH (Transaction)
     // Yêu cầu: "Create Warranty Request"
-    public boolean createWarrantyRequest(int invoiceId, int physicalId, int customerId, 
-                                         int csUserId, String issueDescription) {
-        String sqlRequest = "INSERT INTO WarrantyRequest (request_code, invoice_id, physical_id, customer_id, " +
-                            "issue_description, status, customer_service_id, request_date, created_at) " +
-                            "VALUES (?, ?, ?, ?, ?, '" + WarrantyStatus.PENDING.name() + "', ?, GETDATE(), GETDATE())";
-                        
-        String sqlHistory = "INSERT INTO WarrantyHistory (request_id, status, note, updated_by, updated_at) " +
-                            "VALUES (?, '" + WarrantyStatus.PENDING.name() + "', 'Khởi tạo yêu cầu bảo hành', ?, GETDATE())";
+    public boolean createWarrantyRequest(int invoiceId, int physicalId, int customerId,
+                                     int csUserId, String issueDescription, String imageUrl) {
 
-        try {
-            connection.setAutoCommit(false); // Bắt đầu Transaction
+    String sqlRequest = "INSERT INTO WarrantyRequest " +
+            "(request_code, invoice_id, physical_id, customer_id, image_url, issue_description, status, customer_service_id, request_date, created_at) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
 
-            // 1. Insert Request
-            int newRequestId = 0;
-            String requestCode = "WR-" + System.currentTimeMillis(); // Generate code
-            
-            try (PreparedStatement psReq = connection.prepareStatement(sqlRequest, Statement.RETURN_GENERATED_KEYS)) {
-                psReq.setString(1, requestCode);
-                psReq.setInt(2, invoiceId);
-                psReq.setInt(3, physicalId);
-                psReq.setInt(4, customerId);
-                psReq.setString(5, issueDescription);
-                psReq.setInt(6, csUserId);
-                psReq.executeUpdate();
+    String sqlHistory = "INSERT INTO WarrantyHistory (request_id, status, note, updated_by, updated_at) " +
+            "VALUES (?, ?, 'Khởi tạo yêu cầu bảo hành', ?, GETDATE())";
 
-                try (ResultSet rs = psReq.getGeneratedKeys()) {
-                    if (rs.next()) newRequestId = rs.getInt(1);
-                }
-            }
+    try {
+        connection.setAutoCommit(false);
 
-            // 2. Insert History
-            if (newRequestId > 0) {
-                try (PreparedStatement psHist = connection.prepareStatement(sqlHistory)) {
-                    psHist.setInt(1, newRequestId);
-                    psHist.setInt(2, csUserId);
-                    psHist.executeUpdate();
-                }
-            } else {
-                connection.rollback();
-                return false;
-            }
+        int newRequestId = 0;
+        String requestCode = "WR-" + System.currentTimeMillis();
 
-            connection.commit(); // Thành công cả 2
-            return true;
+        try (PreparedStatement ps = connection.prepareStatement(sqlRequest, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, requestCode);
+            ps.setInt(2, invoiceId);
+            ps.setInt(3, physicalId);
+            ps.setInt(4, customerId);
+            ps.setString(5, imageUrl);              // ✅ image
+            ps.setString(6, issueDescription);      // ✅ desc
+            ps.setString(7, "PENDING");
+            ps.setInt(8, csUserId);
 
-        } catch (SQLException e) {
-            try { connection.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
-            e.printStackTrace();
-            return false;
-        } finally {
-            try { connection.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+            ps.executeUpdate();
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) newRequestId = rs.getInt(1);
         }
+
+        if (newRequestId > 0) {
+            try (PreparedStatement ps = connection.prepareStatement(sqlHistory)) {
+                ps.setInt(1, newRequestId);
+                ps.setString(2, "PENDING");
+                ps.setInt(3, csUserId);
+                ps.executeUpdate();
+            }
+        } else {
+            connection.rollback();
+            return false;
+        }
+
+        connection.commit();
+        return true;
+
+    } catch (Exception e) {
+        try { connection.rollback(); } catch (Exception ex) {}
+        e.printStackTrace();
+        return false;
+    } finally {
+        try { connection.setAutoCommit(true); } catch (Exception e) {}
     }
+}
 
     // 4. CẬP NHẬT TRẠNG THÁI BẢO HÀNH VÀ GHI LOG (Transaction)
     // Yêu cầu: "Update Request Status"

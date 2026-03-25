@@ -16,13 +16,16 @@ import java.sql.ResultSetMetaData;
  */
 public class AdminReportDAO extends DBContext {
     // Lấy doanh thu theo Sản phẩm (Sales by Product)
-    public List<Map<String, Object>> getSalesByProduct(String from, String to, 
+    public List<Map<String, Object>> getSalesByProduct(String from, String to,
             Integer categoryId, Integer modelId, Integer variantId) {
+        // FIX: SUM(i.final_amount) with direct JOIN multiplies revenue by item count.
+        // Revenue must come from a per-invoice subquery, joined once per invoice.
         StringBuilder sql = new StringBuilder(
-            "SELECT c.category_name, pm.model_name, pv.variant_name, " +
-            "SUM(ii.quantity) as total_qty, SUM(i.final_amount) as total_sales " +
-            "FROM Invoice i " +
-            "JOIN InvoiceItem ii ON i.invoice_id = ii.invoice_id " +
+            "SELECT c.category_name, pm.model_name, pv.variant_name, pv.base_price, " +
+            "SUM(ii.quantity) as total_qty, " +
+            "SUM(ii.subtotal) as total_sales " +
+            "FROM InvoiceItem ii " +
+            "JOIN Invoice i ON ii.invoice_id = i.invoice_id " +
             "JOIN ProductVariant pv ON ii.variant_id = pv.variant_id " +
             "JOIN ProductModel pm ON pv.model_id = pm.model_id " +
             "JOIN ProductCategory c ON pm.category_id = c.category_id " +
@@ -50,7 +53,7 @@ public class AdminReportDAO extends DBContext {
             params.add(variantId);
         }
 
-        sql.append(" GROUP BY c.category_name, pm.model_name, pv.variant_name ");
+        sql.append(" GROUP BY c.category_name, pm.model_name, pv.variant_name, pv.base_price ");
         sql.append(" ORDER BY total_sales DESC ");
     
         return executeDynamicQuery(sql.toString(), params);
