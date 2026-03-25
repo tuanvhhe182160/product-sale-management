@@ -93,7 +93,7 @@
                         <!-- Shop Manager Menu -->
                         <c:if test="${sessionScope.userRole == 'Shop Manager'}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier-mgmt">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/cashier-mgmt">
                                     <i class="fas fa-users-cog"></i> Cashiers
                                 </a>
                             </li>
@@ -129,11 +129,6 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/customer">
                                     <i class="fas fa-user-friends"></i> Customers
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/cashier">
-                                    <i class="fas fa-shopping-cart"></i> POS
                                 </a>
                             </li>
                         </c:if>

@@ -31,6 +31,7 @@ import jakarta.servlet.http.HttpSession;
     "/warranty/*",
     "/customer", "/customer/*",
     "/report", "/report/*",
+    "/profile",
     "/admin/*",
     "/accounting/*"            // Corrected: single star is valid servlet wildcard
 })
@@ -74,18 +75,22 @@ public class AuthFilter implements Filter {
     private boolean checkPermission(String path, String role) {
         if (role == null) return false;
 
+        // Profile accessible to all logged-in users
+        if (path.equals("/profile")) return true;
+
         // ── ADMIN: full access ────────────────────────────────────────────
         if ("Admin".equalsIgnoreCase(role)) return true;
 
         // ── SHOP MANAGER ─────────────────────────────────────────────────
         if ("Shop Manager".equalsIgnoreCase(role)) {
             return path.equals("/dashboard")
-                || path.startsWith("/admin/cashier-mgmt")   // fixed: match actual servlet URL
+                || path.startsWith("/admin/cashier-mgmt")
                 || path.startsWith("/inventory")
                 || path.startsWith("/transfer")
                 || path.startsWith("/product")
                 || path.startsWith("/report")
-                || path.startsWith("/invoice");
+                || path.startsWith("/invoice")
+                || path.startsWith("/variant");
         }
 
         // ── CASHIER ───────────────────────────────────────────────────────
