@@ -98,10 +98,12 @@ public class CashierServlet extends HttpServlet {
             cartItemCount += ci.getQuantity();
         }
 
-        // Lấy discountAmount từ customerForm đang lưu trong session (nếu có)
+        // Tính discount từ redeemPoints (không dùng discountAmount từ form để tránh tính đúp)
         InvoiceCustomerForm tempForm = getCustomerFormMap(session).get(activeInvoiceId);
-        java.math.BigDecimal discountAmount = (tempForm != null && tempForm.getDiscountAmount() != null)
-                ? tempForm.getDiscountAmount() : java.math.BigDecimal.ZERO;
+        int redeemPoints = (tempForm != null) ? tempForm.getRedeemPoints() : 0;
+        java.math.BigDecimal discountAmount = (redeemPoints > 0)
+                ? com.techshop.dao.LoyaltyDAO.calculateRedeemDiscount(redeemPoints)
+                : java.math.BigDecimal.ZERO;
         java.math.BigDecimal finalAmount = cartTotal.subtract(discountAmount).max(java.math.BigDecimal.ZERO);
 
         // Gom variantId từ TẤT CẢ hóa đơn để check "đã thêm" trong JSP
@@ -161,6 +163,18 @@ public class CashierServlet extends HttpServlet {
         InvoiceCustomerForm activeCustomerForm = getCustomerFormMap(session).get(activeInvoiceId);
         if (activeCustomerForm == null) activeCustomerForm = new InvoiceCustomerForm();
         request.setAttribute("activeCustomerForm", activeCustomerForm);
+
+        // Truyền redeemPoints và loyaltyPoints để JSP hiển thị loyalty section khi reload
+        request.setAttribute("redeemPoints", redeemPoints);
+        int loyaltyPoints = 0;
+        if (activeCustomerForm.getCustomerId() != null && !activeCustomerForm.getCustomerId().trim().isEmpty()) {
+            try {
+                int custId = Integer.parseInt(activeCustomerForm.getCustomerId().trim());
+                com.techshop.dao.LoyaltyDAO loyaltyDAO = new com.techshop.dao.LoyaltyDAO();
+                loyaltyPoints = loyaltyDAO.getCustomerPoints(custId);
+            } catch (NumberFormatException ignored) {}
+        }
+        request.setAttribute("loyaltyPoints", loyaltyPoints);
 
         request.getRequestDispatcher("/views/cashier/cashier.jsp")
                 .forward(request, response);

@@ -303,6 +303,12 @@ public class CashierCartServlet extends HttpServlet {
                         form.setDiscountAmount(new java.math.BigDecimal(disc.trim()));
                     }
                 } catch (NumberFormatException ignored) {}
+                try {
+                    String rp = request.getParameter("redeemPoints");
+                    if (rp != null && !rp.trim().isEmpty()) {
+                        form.setRedeemPoints(Integer.parseInt(rp.trim()));
+                    }
+                } catch (NumberFormatException ignored) {}
 
                 getCustomerFormMap(session).put(invoiceId, form);
             }

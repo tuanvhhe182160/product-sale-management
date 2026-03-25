@@ -356,7 +356,7 @@
         </div>
         <c:if test="${inv.discountAmount > 0}">
             <div class="total-row discount">
-                <span>Giảm giá:</span>
+                <span>Đổi điểm giảm:</span>
                 <span>- <fmt:formatNumber value="${inv.discountAmount}" type="number" groupingUsed="true"/>đ</span>
             </div>
         </c:if>

@@ -151,14 +151,6 @@
     font-weight: 600;
     display: inline-block;
 }
-.badge-imei-sm {
-    font-family: monospace;
-    font-size: .68rem;
-    background: #e8f0fe;
-    color: #1a56db;
-    padding: 1px 6px;
-    border-radius: 3px;
-}
 .product-price {
     font-size: .95rem;
     font-weight: 700;
@@ -412,16 +404,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.cart-item-imei {
-    font-family: monospace;
-    font-size: .7rem;
-    color: #1a56db;
-    background: #e8f0fe;
-    padding: 1px 5px;
-    border-radius: 3px;
-    display: inline-block;
-    margin-top: 2px;
-}
 .cart-item-price {
     font-size: .85rem;
     font-weight: 700;
@@ -468,11 +450,6 @@
     content: " *";
     color: #dc3545;
 }
-.error-text {
-    font-size: .72rem;
-    color: #dc3545;
-}
-
 /* Khu vực tổng tiền và nút thanh toán */
 .pos-footer {
     border-top: 1.5px solid #e9ecef;
@@ -971,15 +948,9 @@
                     <span>Tổng tiền hàng:</span>
                     <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
                 </div>
-                <c:if test="${discountAmount > 0}">
-                <div class="total-line">
-                    <span>Giảm giá:</span>
-                    <span>- <fmt:formatNumber value="${discountAmount}" type="number" groupingUsed="true"/>đ</span>
-                </div>
-                </c:if>
                 <div class="total-line grand">
                     <span>Khách cần trả:</span>
-                    <span><fmt:formatNumber value="${finalAmount}" type="number" groupingUsed="true"/>đ</span>
+                    <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
                 </div>
 
                 <c:choose>
@@ -1126,25 +1097,41 @@
                         </c:choose>
                     </div>
 
-                    <!-- Giảm giá — nằm trong form để gửi lên InvoiceCreateServlet -->
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                        <label style="font-size:.78rem;font-weight:600;color:#4a5568;">Giảm giá (đ):</label>
-                        <input type="number" name="discountAmount" id="discountAmount"
-                               min="0" step="1000"
-                               value="${discountAmount}"
-                               placeholder="0"
-                               style="width:120px;font-size:.82rem;text-align:right;border:1px solid #dee2e6;border-radius:6px;padding:4px 8px;"
-                               onchange="saveDiscount(this.value)" />
+                    <!-- Điểm thưởng khách hàng -->
+                    <div id="loyaltySection" style="${loyaltyPoints > 0 || redeemPoints > 0 ? '' : 'display:none;'}background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+                        <div style="font-size:.75rem;font-weight:600;color:#92400e;margin-bottom:8px;">
+                            <i class="fas fa-star text-warning me-1"></i>Điểm thưởng
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-size:.78rem;color:#78350f;">Điểm hiện có:</span>
+                            <span id="loyaltyPointsDisplay" style="font-size:.95rem;font-weight:700;color:#d97706;">${loyaltyPoints > 0 ? loyaltyPoints : 0}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-size:.78rem;color:#78350f;">Giá trị quy đổi:</span>
+                            <span id="loyaltyValueDisplay" style="font-size:.78rem;color:#92400e;"><fmt:formatNumber value="${loyaltyPoints * 1000}" type="number" groupingUsed="true"/>đ</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <label style="font-size:.78rem;font-weight:600;color:#78350f;white-space:nowrap;">Đổi điểm:</label>
+                            <input type="number" name="redeemPoints" id="redeemPoints"
+                                   min="0" max="${loyaltyPoints > 0 ? loyaltyPoints : 0}" step="1" value="${redeemPoints > 0 ? redeemPoints : 0}"
+                                   style="width:80px;font-size:.82rem;text-align:right;border:1px solid #fbbf24;border-radius:6px;padding:4px 8px;" />
+                            <span id="redeemDiscountLabel" style="font-size:.75rem;color:#d97706;font-weight:600;">= <fmt:formatNumber value="${redeemPoints * 1000}" type="number" groupingUsed="true"/>đ giảm</span>
+                        </div>
+                        <div style="font-size:.68rem;color:#a16207;margin-top:6px;">
+                            <i class="fas fa-info-circle me-1"></i>Nhập số điểm muốn đổi rồi bấm Enter. 1 điểm = 1,000đ giảm giá.
+                        </div>
                     </div>
 
-                    <!-- Footer checkout từ panel khách — tổng tính từ CashierServlet -->
-                    <c:if test="${discountAmount > 0}">
+                    <input type="hidden" name="discountAmount" id="discountAmount" value="0" />
+
+                    <!-- Footer checkout — tổng tiền -->
                     <div class="total-line" style="display:flex;justify-content:space-between;font-size:.82rem;color:#555;margin-bottom:4px;">
-                        <span>Tổng hàng:</span>
+                        <span>Tổng tiền hàng:</span>
                         <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>đ</span>
                     </div>
-                    <div class="total-line" style="display:flex;justify-content:space-between;font-size:.82rem;color:#e53e3e;margin-bottom:4px;">
-                        <span>Giảm giá:</span>
+                    <c:if test="${discountAmount > 0}">
+                    <div style="display:flex;justify-content:space-between;font-size:.82rem;color:#d97706;margin-bottom:4px;">
+                        <span><i class="fas fa-star me-1"></i>Đổi điểm giảm:</span>
                         <span>- <fmt:formatNumber value="${discountAmount}" type="number" groupingUsed="true"/>đ</span>
                     </div>
                     </c:if>
@@ -1248,47 +1235,6 @@
     </div>
 </div>
 
-<!-- ===== Modal xác nhận thêm khách hàng mới ===== -->
-<div class="modal fade" id="newCustomerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header py-3" style="background:#eff6ff;border-bottom:1px solid #bfdbfe;">
-                <h6 class="modal-title fw-bold mb-0" style="color:#1e40af;">
-                    <i class="fas fa-user-plus me-2"></i>Thêm khách hàng mới vào hệ thống?
-                </h6>
-            </div>
-            <div class="modal-body">
-                <!-- Thông tin khách sẽ được điền bởi JS trước khi hiện modal -->
-                <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted">Họ tên:</span>
-                        <strong id="confirmNewCustName"></strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted">Số điện thoại:</span>
-                        <strong id="confirmNewCustPhone"></strong>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="text-muted">Email:</span>
-                        <span id="confirmNewCustEmail" class="text-muted"></span>
-                    </div>
-                </div>
-                <p style="font-size:.8rem;color:#4a5568;margin:0;">
-                    Nếu chọn <strong>Có</strong>, khách hàng này sẽ được lưu vào cơ sở dữ liệu
-                    và có thể tra cứu lại trong lần mua tiếp theo.
-                </p>
-            </div>
-            <div class="modal-footer py-2 gap-2">
-                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnSkipSave">
-                    <i class="fas fa-times me-1"></i>Không, thanh toán luôn
-                </button>
-                <button type="button" class="btn btn-primary btn-sm" id="btnSaveAndCheckout">
-                    <i class="fas fa-user-plus me-1"></i>Có, lưu và thanh toán
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- ===== Modal Xác nhận thanh toán ===== -->
 <div class="modal fade" id="checkoutConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
@@ -1411,24 +1357,9 @@ function collectCustomerForm() {
         address:        val('address'),
         paymentMethod:  pm ? pm.value : 'CASH',
         discountAmount: val('discountAmount') || '0',
+        redeemPoints:   val('redeemPoints') || '0',
         note:           val('orderNote')
     };
-}
-
-// Tổng tiền được tính trong CashierServlet, không tính ở JSP
-
-// Lưu discount vào session rồi reload để servlet tính lại finalAmount
-function saveDiscount(value) {
-    var form = collectCustomerForm();
-    form.discountAmount = value || '0';
-    form.invoiceId = document.getElementById('currentInvoiceId').value;
-    fetch('${pageContext.request.contextPath}/cart?action=saveCustomerForm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(form)
-    }).then(function() {
-        window.location.reload();
-    });
 }
 
 // Xác nhận đóng hóa đơn — hỏi khác nhau tùy có hàng hay không
@@ -1542,9 +1473,13 @@ if (flashMsg) {
                     emailFld.value       = data.email     || '';
                     addressFld.value = data.address || '';
 
+                    // Hiển thị điểm thưởng
+                    showLoyaltyPoints(data.loyaltyPoints || 0);
+
                     showStatus('success',
                         '<i class="fas fa-user-check me-1"></i>' +
                         'Khách hàng cũ: <strong>' + escapeHtml(data.fullName || phone) + '</strong>' +
+                        (data.loyaltyPoints > 0 ? ' — <i class="fas fa-star text-warning"></i> ' + data.loyaltyPoints + ' điểm' : '') +
                         ' — thông tin đã được điền tự động.');
                 } else {
                     // Chưa có trong hệ thống — nhân viên nhập thêm, sẽ tạo mới khi thanh toán
@@ -1552,6 +1487,9 @@ if (flashMsg) {
                     fullNameFld.value   = '';
                     emailFld.value      = '';
                     addressFld.value    = '';
+
+                    // Ẩn điểm thưởng cho khách mới
+                    hideLoyaltyPoints();
 
                     showStatus('new',
                         '<i class="fas fa-user-plus me-1"></i>' +
@@ -1655,23 +1593,6 @@ if (flashMsg) {
             checkoutForm.submit();
         });
 
-        // Nút "Không, thanh toán luôn" → đặt flag, set saveCustomer=false rồi submit thật
-        document.getElementById('btnSkipSave').addEventListener('click', function() {
-            document.getElementById('saveCustomer').value = 'false';
-            modalConfirmed = true;
-            console.log('[Checkout] btnSkipSave clicked');
-
-            // Ẩn modal ngay lập tức (không đợi animation)
-            var modalEl = document.getElementById('newCustomerModal');
-            modalEl.classList.remove('show');
-            modalEl.style.display = 'none';
-            document.body.classList.remove('modal-open');
-            var backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) backdrop.remove();
-
-            // Submit form
-            checkoutForm.submit();
-        });
         // Nút "Quay lại" và nút X → đóng modal, quay về tab giỏ hàng để thêm sản phẩm
         function closeCheckoutModal() {
             var modalEl = document.getElementById('checkoutConfirmModal');
@@ -1706,6 +1627,63 @@ if (flashMsg) {
         if (!str) return '';
         return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+})();
+
+// ── Loyalty Points ──────────────────────────────────────────────────────
+function showLoyaltyPoints(points) {
+    var section = document.getElementById('loyaltySection');
+    var display = document.getElementById('loyaltyPointsDisplay');
+    var valueDisplay = document.getElementById('loyaltyValueDisplay');
+    var redeemInput = document.getElementById('redeemPoints');
+    var label = document.getElementById('redeemDiscountLabel');
+
+    section.style.display = 'block';
+    if (points > 0) {
+        display.textContent = points.toLocaleString('vi-VN');
+        valueDisplay.textContent = (points * 1000).toLocaleString('vi-VN') + 'đ';
+        redeemInput.max = points;
+        // Tự động đổi hết điểm
+        redeemInput.value = points;
+        label.textContent = '= ' + (points * 1000).toLocaleString('vi-VN') + 'đ giảm';
+    } else {
+        display.textContent = '0';
+        valueDisplay.textContent = '0đ';
+        redeemInput.max = 0;
+        redeemInput.value = 0;
+        label.textContent = '= 0đ giảm';
+    }
+}
+
+function hideLoyaltyPoints() {
+    document.getElementById('loyaltySection').style.display = 'none';
+    document.getElementById('redeemPoints').value = 0;
+}
+
+// Bấm Enter trong ô đổi điểm → lưu form + reload để server tính lại tổng
+(function() {
+    var redeemInput = document.getElementById('redeemPoints');
+    if (!redeemInput) return;
+    redeemInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            var points = parseInt(redeemInput.value) || 0;
+            var max = parseInt(redeemInput.max) || 0;
+            if (points > max) points = max;
+            if (points < 0) points = 0;
+            redeemInput.value = points;
+            // Lưu form + reload để server tính lại tổng từ redeemPoints
+            document.getElementById('discountAmount').value = '0';
+            var form = collectCustomerForm();
+            form.invoiceId = document.getElementById('currentInvoiceId').value;
+            fetch('${pageContext.request.contextPath}/cart?action=saveCustomerForm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(form)
+            }).then(function() {
+                window.location.reload();
+            });
+        }
+    });
 })();
 </script>
 
