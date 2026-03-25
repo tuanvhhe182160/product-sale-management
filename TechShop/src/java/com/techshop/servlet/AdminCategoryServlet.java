@@ -98,7 +98,7 @@ public class AdminCategoryServlet extends HttpServlet {
         request.setAttribute("totalItems", totalItems);
         request.setAttribute("totalPages", totalPages);
 
-        request.getRequestDispatcher("/views/Admin/adminListCategory.jsp")
+        request.getRequestDispatcher("/views/Admin/category-list.jsp")
                 .forward(request, response);
     }
 

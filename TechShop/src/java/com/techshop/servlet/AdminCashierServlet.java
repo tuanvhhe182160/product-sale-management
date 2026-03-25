@@ -112,7 +112,7 @@ public class AdminCashierServlet extends HttpServlet {
         req.setAttribute("userRole", role);
         req.setAttribute("pageTitle", "Quản lý Cashier - TechShop");
 
-        req.getRequestDispatcher("/views/Admin/cashier_management.jsp").forward(req, resp);
+        req.getRequestDispatcher("/views/Admin/cashier-management.jsp").forward(req, resp);
     }
 
     // ── Thêm cashier ────────────────────────────────────────────────────

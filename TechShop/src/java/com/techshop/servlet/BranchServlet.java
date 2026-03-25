@@ -80,7 +80,7 @@ public class BranchServlet extends HttpServlet {
         req.setAttribute("branchList", branchDAO.getAll());
         req.setAttribute("pageTitle", "Branch Management");
 
-        req.getRequestDispatcher("/views/branch/branchManage.jsp").forward(req, resp);
+        req.getRequestDispatcher("/views/branch/branch-list.jsp").forward(req, resp);
     }
 
     private void showFormPage(HttpServletRequest req, HttpServletResponse resp)
@@ -97,7 +97,7 @@ public class BranchServlet extends HttpServlet {
             req.setAttribute("pageTitle", "Add New Branch");
         }
 
-        req.getRequestDispatcher("/views/branch/branchForm.jsp").forward(req, resp);
+        req.getRequestDispatcher("/views/branch/branch-form.jsp").forward(req, resp);
     }
 
     private void insertBranch(HttpServletRequest req, HttpServletResponse resp)

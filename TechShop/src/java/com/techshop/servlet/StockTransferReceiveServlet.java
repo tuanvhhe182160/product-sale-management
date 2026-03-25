@@ -72,7 +72,7 @@ public class StockTransferReceiveServlet extends HttpServlet {
         request.setAttribute("transfer", transfer);
         request.setAttribute("items", items);
         request.setAttribute("pageTitle", "Receive Transfer");
-        request.getRequestDispatcher("/views/inventory/transferReceive.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-receive.jsp").forward(request, response);
     }
 
     @Override

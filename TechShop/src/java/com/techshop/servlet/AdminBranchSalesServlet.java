@@ -108,7 +108,7 @@ public class AdminBranchSalesServlet extends HttpServlet {
         request.setAttribute("selectedBranchId", branchId);
         request.setAttribute("pageTitle", "Báo cáo Doanh thu & Chi nhánh - Admin");
 
-        request.getRequestDispatcher("/views/Admin/admin_branch_sales.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/Admin/admin-branch-sales.jsp").forward(request, response);
     }
 
     /**

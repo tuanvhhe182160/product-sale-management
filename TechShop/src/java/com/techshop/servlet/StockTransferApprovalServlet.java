@@ -75,7 +75,7 @@ public class StockTransferApprovalServlet extends HttpServlet {
         request.setAttribute("transfer", transfer);
         request.setAttribute("availableItems", availableItems);
         request.setAttribute("pageTitle", "Approve Transfer Request");
-        request.getRequestDispatcher("/views/inventory/transferApprove.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-approve.jsp").forward(request, response);
     }
 
     @Override
@@ -193,6 +193,6 @@ public class StockTransferApprovalServlet extends HttpServlet {
         request.setAttribute("availableItems", availableItems);
         request.setAttribute("error", error);
         request.setAttribute("pageTitle", "Approve Transfer Request");
-        request.getRequestDispatcher("/views/inventory/transferApprove.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-approve.jsp").forward(request, response);
     }
 }

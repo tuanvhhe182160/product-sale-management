@@ -91,7 +91,7 @@ public class ManageVariantServlet extends HttpServlet {
 
             request.setAttribute("pageTitle", "Quản lý Variant");
 
-            request.getRequestDispatcher("/views/variant/ManageVariant.jsp")
+            request.getRequestDispatcher("/views/variant/variant-list.jsp")
                     .forward(request, response);
 
         } catch (Exception e) {
@@ -101,7 +101,7 @@ public class ManageVariantServlet extends HttpServlet {
             request.setAttribute("error",
                     "Có lỗi xảy ra: " + e.getMessage());
 
-            request.getRequestDispatcher("/views/variant/ManageVariant.jsp")
+            request.getRequestDispatcher("/views/variant/variant-list.jsp")
                     .forward(request, response);
         }
     }

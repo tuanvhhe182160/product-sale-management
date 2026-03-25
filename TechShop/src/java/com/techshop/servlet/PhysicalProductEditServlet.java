@@ -40,7 +40,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
         request.setAttribute("variants", variants);
         request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
         request.setAttribute("pageTitle", "Edit Physical Product");
-        request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
             request.setAttribute("variants", variants);
             request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
             request.setAttribute("pageTitle", "Edit Physical Product");
-            request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
             return;
         }
 
@@ -72,7 +72,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
             request.setAttribute("variants", variants);
             request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
             request.setAttribute("pageTitle", "Edit Physical Product");
-            request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
             return;
         }
 
@@ -82,7 +82,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
             request.setAttribute("variants", variants);
             request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
             request.setAttribute("pageTitle", "Edit Physical Product");
-            request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
             return;
         }
 
@@ -95,7 +95,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
             request.setAttribute("variants", variants);
             request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
             request.setAttribute("pageTitle", "Edit Physical Product");
-            request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
             return;
         }
 
@@ -106,7 +106,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
             request.setAttribute("variants", variants);
             request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
             request.setAttribute("pageTitle", "Edit Physical Product");
-            request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
             return;
         }
 
@@ -117,7 +117,7 @@ public class PhysicalProductEditServlet extends HttpServlet {
             request.setAttribute("variants", variants);
             request.setAttribute("allowedStatuses", ALLOWED_STATUSES);
             request.setAttribute("pageTitle", "Edit Physical Product");
-            request.getRequestDispatcher("/views/inventory/physicalProductEdit.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/physical-product-edit.jsp").forward(request, response);
             return;
         }
 

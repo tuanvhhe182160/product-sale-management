@@ -38,7 +38,7 @@ public class InventoryServlet extends HttpServlet {
         }
 
         request.setAttribute("pageTitle", "Import Products");
-        request.getRequestDispatcher("/views/inventory/importStep1.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/import-step1.jsp").forward(request, response);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class InventoryServlet extends HttpServlet {
             request.setAttribute("error", "Please select a valid product variant.");
             request.setAttribute("variants", variantDAO.getAllActive());
             request.setAttribute("pageTitle", "Import Products");
-            request.getRequestDispatcher("/views/inventory/importStep1.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/import-step1.jsp").forward(request, response);
             return;
         }
 
@@ -77,7 +77,7 @@ public class InventoryServlet extends HttpServlet {
             request.setAttribute("variants", variantDAO.getAllActive());
             request.setAttribute("selectedVariantId", variantId);
             request.setAttribute("pageTitle", "Import Products");
-            request.getRequestDispatcher("/views/inventory/importStep1.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/import-step1.jsp").forward(request, response);
             return;
         }
 
@@ -87,7 +87,7 @@ public class InventoryServlet extends HttpServlet {
             request.setAttribute("error", "Selected variant is not valid.");
             request.setAttribute("variants", variantDAO.getAllActive());
             request.setAttribute("pageTitle", "Import Products");
-            request.getRequestDispatcher("/views/inventory/importStep1.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/import-step1.jsp").forward(request, response);
             return;
         }
 

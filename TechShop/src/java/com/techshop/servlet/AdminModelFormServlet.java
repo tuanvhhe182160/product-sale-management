@@ -64,7 +64,7 @@ public class AdminModelFormServlet extends HttpServlet {
         request.setAttribute("model", model);
         request.setAttribute("categoryId", categoryId);
 
-        request.getRequestDispatcher("/views/Admin/adminModelForm.jsp")
+        request.getRequestDispatcher("/views/Admin/model-form.jsp")
                .forward(request, response);
     }
 

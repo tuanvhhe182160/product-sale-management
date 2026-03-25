@@ -96,7 +96,7 @@ public class SalesHistoryServlet extends HttpServlet {
         request.setAttribute("monthRevenue", stats[2]);
         request.setAttribute("pageTitle", "Lịch sử bán hàng");
 
-        request.getRequestDispatcher("/views/cashier/sales_history.jsp")
+        request.getRequestDispatcher("/views/cashier/sales-history.jsp")
                 .forward(request, response);
     }
 

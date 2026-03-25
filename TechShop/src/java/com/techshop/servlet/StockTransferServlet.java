@@ -43,6 +43,6 @@ public class StockTransferServlet extends HttpServlet {
         }
 
         request.setAttribute("pageTitle", "Stock Transfers");
-        request.getRequestDispatcher("/views/inventory/transferList.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-list.jsp").forward(request, response);
     }
 }

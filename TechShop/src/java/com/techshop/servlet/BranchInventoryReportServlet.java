@@ -46,7 +46,7 @@ public class BranchInventoryReportServlet extends HttpServlet {
         }
 
         request.setAttribute("pageTitle", "Branch Inventory Report");
-        request.getRequestDispatcher("/views/inventory/branchInventoryReport.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/branch-inventory-report.jsp").forward(request, response);
     }
 
     @Override

@@ -119,7 +119,7 @@
                                         <td>${t.sku}</td>
                                         <td class="text-center">${t.requestedQuantity}</td>
                                         <td class="text-center">
-                                            <jsp:include page="transferStatusBadge.jsp">
+                                            <jsp:include page="transfer-status-badge.jsp">
                                                 <jsp:param name="status" value="${t.status}"/>
                                             </jsp:include>
                                         </td>
@@ -193,7 +193,7 @@
                                         <td>${t.sku}</td>
                                         <td class="text-center">${t.requestedQuantity}</td>
                                         <td class="text-center">
-                                            <jsp:include page="transferStatusBadge.jsp">
+                                            <jsp:include page="transfer-status-badge.jsp">
                                                 <jsp:param name="status" value="${t.status}"/>
                                             </jsp:include>
                                         </td>
