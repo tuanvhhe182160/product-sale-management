@@ -42,7 +42,7 @@ public class AdminVariantEditServlet extends HttpServlet {
             request.setAttribute("variant", variant);
             request.setAttribute("models", models);
             request.setAttribute("pageTitle", "Chỉnh sửa Variant");
-            request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             request.setAttribute("error", "ID không hợp lệ!");
             response.sendRedirect(request.getContextPath() + "/variant");
@@ -82,7 +82,7 @@ public class AdminVariantEditServlet extends HttpServlet {
                 request.setAttribute("variant", variant);
                 request.setAttribute("models", models);
                 request.setAttribute("pageTitle", "Chỉnh sửa Variant");
-                request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
                 return;
             }
 
@@ -108,7 +108,7 @@ public class AdminVariantEditServlet extends HttpServlet {
                 request.setAttribute("variant", existingVariant);
                 request.setAttribute("models", models);
                 request.setAttribute("pageTitle", "Chỉnh sửa Variant");
-                request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Dữ liệu không hợp lệ: " + e.getMessage());
@@ -119,7 +119,7 @@ public class AdminVariantEditServlet extends HttpServlet {
                 request.setAttribute("variant", variant);
                 request.setAttribute("models", models);
                 request.setAttribute("pageTitle", "Chỉnh sửa Variant");
-                request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
             } catch (Exception ex) {
                 response.sendRedirect(request.getContextPath() + "/variant");
             }
@@ -133,7 +133,7 @@ public class AdminVariantEditServlet extends HttpServlet {
                 request.setAttribute("variant", variant);
                 request.setAttribute("models", models);
                 request.setAttribute("pageTitle", "Chỉnh sửa Variant");
-                request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
             } catch (Exception ex) {
                 response.sendRedirect(request.getContextPath() + "/variant");
             }

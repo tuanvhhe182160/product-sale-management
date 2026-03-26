@@ -54,7 +54,7 @@ public class StockTransferRequestServlet extends HttpServlet {
         request.setAttribute("branches", otherBranches);
         request.setAttribute("variants", variants);
         request.setAttribute("pageTitle", "Request Stock Transfer");
-        request.getRequestDispatcher("/views/inventory/transferRequest.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-request.jsp").forward(request, response);
     }
 
     @Override
@@ -159,6 +159,6 @@ public class StockTransferRequestServlet extends HttpServlet {
         request.setAttribute("quantity", request.getParameter("quantity"));
         request.setAttribute("note", request.getParameter("note"));
         request.setAttribute("pageTitle", "Request Stock Transfer");
-        request.getRequestDispatcher("/views/inventory/transferRequest.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-request.jsp").forward(request, response);
     }
 }

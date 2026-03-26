@@ -33,7 +33,7 @@ public class UserManageServlet extends HttpServlet {
         request.setAttribute("userList", userDAO.getAll());
         request.setAttribute("branchList", branchDAO.getAll());
         request.setAttribute("roleList", roleDAO.getAll());
-        request.getRequestDispatcher("/views/user/user.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/user/user-management.jsp").forward(request, response);
     } 
 
     @Override

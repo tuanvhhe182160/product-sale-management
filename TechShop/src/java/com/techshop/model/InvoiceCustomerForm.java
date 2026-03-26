@@ -26,11 +26,13 @@ public class InvoiceCustomerForm implements java.io.Serializable {
 
     // ── Runtime flag ──
     private boolean saveCustomer; // true = lưu khách mới vào DB khi thanh toán
+    private int redeemPoints;     // số điểm khách muốn đổi
 
     public InvoiceCustomerForm() {
         this.paymentMethod  = "CASH";
         this.discountAmount = BigDecimal.ZERO;
         this.saveCustomer   = false;
+        this.redeemPoints   = 0;
     }
 
     // ── Getters ──
@@ -43,6 +45,7 @@ public class InvoiceCustomerForm implements java.io.Serializable {
     public BigDecimal getDiscountAmount() { return discountAmount; }
     public String     getNote()           { return note;           }
     public boolean    isSaveCustomer()    { return saveCustomer;   }
+    public int        getRedeemPoints()   { return redeemPoints;   }
 
     // ── Setters ──
     public void setCustomerId(String customerId)       { this.customerId     = customerId;     }
@@ -54,4 +57,5 @@ public class InvoiceCustomerForm implements java.io.Serializable {
     public void setDiscountAmount(BigDecimal d)        { this.discountAmount = d;              }
     public void setNote(String note)                   { this.note           = note;           }
     public void setSaveCustomer(boolean saveCustomer)  { this.saveCustomer   = saveCustomer;   }
+    public void setRedeemPoints(int redeemPoints)      { this.redeemPoints   = redeemPoints;   }
 }

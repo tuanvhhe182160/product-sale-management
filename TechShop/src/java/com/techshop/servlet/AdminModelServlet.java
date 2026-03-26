@@ -101,7 +101,7 @@ public class AdminModelServlet extends HttpServlet {
         request.setAttribute("totalItems", totalItems);
         request.setAttribute("totalPages", totalPages);
 
-        request.getRequestDispatcher("/views/Admin/adminListModel.jsp")
+        request.getRequestDispatcher("/views/Admin/model-list.jsp")
                 .forward(request, response);
     }
 

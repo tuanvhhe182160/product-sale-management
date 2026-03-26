@@ -17,7 +17,7 @@
     <div class="card-header bg-primary text-white fw-semibold">
         <i class="fas fa-exchange-alt"></i> ${transfer.transferCode}
         &nbsp;
-        <jsp:include page="transferStatusBadge.jsp"><jsp:param name="status" value="${transfer.status}"/></jsp:include>
+        <jsp:include page="transfer-status-badge.jsp"><jsp:param name="status" value="${transfer.status}"/></jsp:include>
     </div>
     <div class="card-body py-3">
         <div class="row g-3">

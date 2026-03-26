@@ -45,6 +45,6 @@ public class PhysicalProductDetailServlet extends HttpServlet {
 
         request.setAttribute("product", product);
         request.setAttribute("pageTitle", "Physical Product Detail");
-        request.getRequestDispatcher("/views/inventory/physicalProductDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/physical-product-detail.jsp").forward(request, response);
     }
 }

@@ -84,7 +84,7 @@ public class InvoiceCreateServlet extends HttpServlet {
 
             // Tạo hóa đơn riêng cho tab này
             InvoiceDAO dao = new InvoiceDAO();
-            int invoiceId = dao.createInvoice(form, items, branchId, cashierId, saveCustomer);
+            int invoiceId = dao.createInvoice(form, items, branchId, cashierId, saveCustomer, form.getRedeemPoints());
 
             if (invoiceId <= 0) {
                 System.err.println("[InvoiceCreate] FAILED for invKey=" + invKey);
@@ -165,6 +165,12 @@ public class InvoiceCreateServlet extends HttpServlet {
             String disc = request.getParameter("discountAmount");
             if (disc != null && !disc.trim().isEmpty()) {
                 form.setDiscountAmount(new BigDecimal(disc.trim()));
+            }
+        } catch (NumberFormatException ignored) {}
+        try {
+            String rp = request.getParameter("redeemPoints");
+            if (rp != null && !rp.trim().isEmpty()) {
+                form.setRedeemPoints(Integer.parseInt(rp.trim()));
             }
         } catch (NumberFormatException ignored) {}
         return form;

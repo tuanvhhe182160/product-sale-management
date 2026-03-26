@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import com.techshop.dao.LoyaltyDAO;
 
 /**
  * DAO xử lý nghiệp vụ tạo hóa đơn bán hàng.
@@ -34,6 +35,15 @@ public class InvoiceDAO extends DBContext {
                              int branchId,
                              int cashierId,
                              boolean saveCustomer) {
+        return createInvoice(form, items, branchId, cashierId, saveCustomer, 0);
+    }
+
+    public int createInvoice(InvoiceCustomerForm form,
+                             List<CashierSaleItem> items,
+                             int branchId,
+                             int cashierId,
+                             boolean saveCustomer,
+                             int redeemPoints) {
         if (items == null || items.isEmpty()) return -1;
 
         try {
@@ -48,8 +58,12 @@ public class InvoiceDAO extends DBContext {
             for (CashierSaleItem item : items) {
                 totalAmount = totalAmount.add(item.getSubtotal());
             }
-            BigDecimal discountAmount = form.getDiscountAmount() != null
-                    ? form.getDiscountAmount() : BigDecimal.ZERO;
+            // Giảm giá chỉ tính từ đổi điểm (server-side), bỏ qua form.discountAmount để tránh tính đúp
+            BigDecimal discountAmount = BigDecimal.ZERO;
+            if (redeemPoints > 0) {
+                discountAmount = LoyaltyDAO.calculateRedeemDiscount(redeemPoints);
+            }
+
             BigDecimal finalAmount = totalAmount.subtract(discountAmount).max(BigDecimal.ZERO);
 
             // Bước 3: Tạo invoice_code
@@ -81,6 +95,23 @@ public class InvoiceDAO extends DBContext {
                     markAsSold(physicalId);
                     insertInventoryTransaction(physicalId, branchId, invoiceId, cashierId);
                 }
+            }
+
+            // Bước 6: Đổi điểm (REDEEM) nếu có
+            if (redeemPoints > 0) {
+                LoyaltyDAO loyaltyDAO = new LoyaltyDAO();
+                boolean redeemed = loyaltyDAO.redeemPoints(connection, customerId, invoiceId, redeemPoints);
+                if (!redeemed) {
+                    System.err.println("[InvoiceDAO] Redeem points FAILED for customer=" + customerId);
+                    connection.rollback();
+                    return -1;
+                }
+            }
+
+            // Bước 7: Tích điểm (EARN) từ finalAmount
+            {
+                LoyaltyDAO loyaltyDAO = new LoyaltyDAO();
+                loyaltyDAO.earnPoints(connection, customerId, invoiceId, finalAmount);
             }
 
             connection.commit();

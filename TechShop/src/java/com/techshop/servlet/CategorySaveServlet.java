@@ -63,7 +63,7 @@ public class CategorySaveServlet extends HttpServlet {
                 request.setAttribute("description", desc);
             }
 
-            request.getRequestDispatcher("/views/Admin/categoryForm.jsp")
+            request.getRequestDispatcher("/views/Admin/category-form.jsp")
                    .forward(request, response);
             return;
         }

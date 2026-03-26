@@ -129,7 +129,7 @@ public class AdminProductSalesServlet extends HttpServlet {
         request.setAttribute("reportData",       data);
         request.setAttribute("pageTitle",        "Báo cáo Doanh số Sản phẩm - Admin");
 
-        request.getRequestDispatcher("/views/Admin/admin_product_sales.jsp")
+        request.getRequestDispatcher("/views/Admin/admin-product-sales.jsp")
                .forward(request, response);
     }
 

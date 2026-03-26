@@ -72,7 +72,7 @@ public class InvoicePrintServlet extends HttpServlet {
         // Luôn set list để JSP mới dùng
         request.setAttribute("invoices", invoices);
 
-        request.getRequestDispatcher("/views/cashier/invoice_print.jsp")
+        request.getRequestDispatcher("/views/cashier/invoice-print.jsp")
                .forward(request, response);
     }
 }

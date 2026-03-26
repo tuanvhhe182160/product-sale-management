@@ -61,7 +61,7 @@ public class VariantFormServlet extends HttpServlet {
                 request.setAttribute("attributes", attributes);
             }
 
-            request.getRequestDispatcher("/views/variant/variantForm.jsp")
+            request.getRequestDispatcher("/views/variant/variant-form.jsp")
                     .forward(request, response);
 
         } catch (Exception e) {

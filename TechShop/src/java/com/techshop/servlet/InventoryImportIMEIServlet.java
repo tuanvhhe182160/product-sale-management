@@ -66,7 +66,7 @@ public class InventoryImportIMEIServlet extends HttpServlet {
         request.setAttribute("serials", new String[quantity]);
         request.setAttribute("errors", new String[quantity]);
         request.setAttribute("pageTitle", "Import Products - Enter IMEIs");
-        request.getRequestDispatcher("/views/inventory/importStep2.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/import-step2.jsp").forward(request, response);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class InventoryImportIMEIServlet extends HttpServlet {
             request.setAttribute("errors", rowErrors);
             request.setAttribute("dateError", dateError);
             request.setAttribute("pageTitle", "Import Products - Enter IMEIs");
-            request.getRequestDispatcher("/views/inventory/importStep2.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/inventory/import-step2.jsp").forward(request, response);
             return;
         }
 

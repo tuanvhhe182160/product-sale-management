@@ -79,7 +79,7 @@ public class ProductDetailServlet extends HttpServlet {
         request.setAttribute("backSku",          backSku);
         request.setAttribute("backPage",         backPage);
 
-        request.getRequestDispatcher("/views/cashier/productDetail.jsp")
+        request.getRequestDispatcher("/views/cashier/product-detail.jsp")
                 .forward(request, response);
     }
 }

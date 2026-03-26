@@ -32,7 +32,7 @@ public class AdminVariantCreateServlet extends HttpServlet {
             List<ProductModel> models = variantDAO.getAllActiveModels();
             request.setAttribute("models", models);
             request.setAttribute("pageTitle", "Tạo Variant mới");
-            request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
@@ -66,7 +66,7 @@ public class AdminVariantCreateServlet extends HttpServlet {
                 List<ProductModel> models = variantDAO.getAllActiveModels();
                 request.setAttribute("models", models);
                 request.setAttribute("pageTitle", "Tạo Variant mới");
-                request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
                 return;
             }
 
@@ -89,21 +89,21 @@ public class AdminVariantCreateServlet extends HttpServlet {
                 List<ProductModel> models = variantDAO.getAllActiveModels();
                 request.setAttribute("models", models);
                 request.setAttribute("pageTitle", "Tạo Variant mới");
-                request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+                request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Dữ liệu không hợp lệ: " + e.getMessage());
             List<ProductModel> models = variantDAO.getAllActiveModels();
             request.setAttribute("models", models);
             request.setAttribute("pageTitle", "Tạo Variant mới");
-            request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
             List<ProductModel> models = variantDAO.getAllActiveModels();
             request.setAttribute("models", models);
             request.setAttribute("pageTitle", "Tạo Variant mới");
-            request.getRequestDispatcher("/views/variant/variantForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/variant/variant-form.jsp").forward(request, response);
         }
     }
 

@@ -22,7 +22,7 @@
         <%-- Transfer code + status --%>
         <div class="d-flex align-items-center gap-3 mb-4">
             <span class="font-monospace fs-5 fw-semibold">${transfer.transferCode}</span>
-            <jsp:include page="transferStatusBadge.jsp">
+            <jsp:include page="transfer-status-badge.jsp">
                 <jsp:param name="status" value="${transfer.status}"/>
             </jsp:include>
         </div>

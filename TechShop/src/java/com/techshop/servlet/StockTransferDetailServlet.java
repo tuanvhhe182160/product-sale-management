@@ -57,6 +57,6 @@ public class StockTransferDetailServlet extends HttpServlet {
         request.setAttribute("transfer", transfer);
         request.setAttribute("items", items);
         request.setAttribute("pageTitle", "Transfer Detail");
-        request.getRequestDispatcher("/views/inventory/transferDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/inventory/transfer-detail.jsp").forward(request, response);
     }
 }

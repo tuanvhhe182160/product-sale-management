@@ -81,7 +81,7 @@ public class CategoryFormServlet extends HttpServlet {
         }
 
         // forward chung 1 form
-        request.getRequestDispatcher("/views/Admin/categoryForm.jsp")
+        request.getRequestDispatcher("/views/Admin/category-form.jsp")
                 .forward(request, response);
     }
 
