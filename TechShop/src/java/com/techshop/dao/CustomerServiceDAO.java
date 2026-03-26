@@ -70,7 +70,7 @@ public class CustomerServiceDAO extends DBContext {
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
 
     String sqlHistory = "INSERT INTO WarrantyHistory (request_id, status, note, updated_by, updated_at) " +
-            "VALUES (?, ?, 'Khởi tạo yêu cầu bảo hành', ?, GETDATE())";
+            "VALUES (?, ?, N'Khởi tạo yêu cầu bảo hành', ?, GETDATE())";
 
     try {
         connection.setAutoCommit(false);

@@ -97,7 +97,6 @@ public class TechnicianDAO extends DBContext {
     }
 
     // 3. Lấy lịch sử cập nhật của phiếu bảo hành
-    // Lưu ý: Bạn cần tạo class WarrantyHistory (gồm updatedAt, status, updatedByName, note) trong model nhé.
     public List<WarrantyHistory> getWarrantyHistory(int requestId) {
         List<WarrantyHistory> list = new ArrayList<>();
         String sql = "SELECT wh.*, u.full_name AS updated_by_name " +

@@ -133,13 +133,11 @@ public class WarrantyServlet extends HttpServlet {
                 return;
             }
 
-            // Xử lý ảnh (không bắt buộc)
             String imageUrl = null;
             Part filePart = request.getPart("image");
 
             if (filePart != null && filePart.getSize() > 0) {
 
-                // Validate MIME type
                 String ct = filePart.getContentType();
                 if (ct == null || !ct.startsWith("image/")) {
                     redirect(response, request.getContextPath()
@@ -148,7 +146,6 @@ public class WarrantyServlet extends HttpServlet {
                     return;
                 }
 
-                // Validate extension
                 String origName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                 String ext      = getExt(origName).toLowerCase();
                 if (!isAllowed(ext)) {

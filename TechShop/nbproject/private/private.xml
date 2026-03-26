@@ -3,14 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/AdminAnalyticsServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/InvoiceCreateServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/AdminBranchSalesServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierCartServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/model/CashierSaleItem.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/CategoryFormServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/CashierServlet.java</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/product-sale-management-test/product-sale-management/TechShop/src/java/com/techshop/servlet/AccountingInvoiceServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/dao/InvoiceDAO.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/InvoiceCreateServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/WarrantyServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/web/views/Admin/adminListCategory.jsp</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/util/EmailUtil.java</file>
         </group>
     </open-files>
 </project-private>
