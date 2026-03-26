@@ -71,11 +71,11 @@ public class EmailUtil {
                     }
                 });
                 
-                Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(config.getProperty("mail.smtp.user"), "TechShop Warranty Center"));
+                MimeMessage message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(config.getProperty("mail.smtp.user"), "TechShop Warranty Center", "UTF-8"));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-                message.setHeader("Content-Type", "text/html; charset=UTF-8");
-                message.setSubject("[TechShop] Cập nhật trạng thái bảo hành #" + requestCode);
+                //message.setHeader("Content-Type", "text/html; charset=UTF-8");
+                message.setSubject("[TechShop] Cập nhật trạng thái bảo hành #" + requestCode, "UTF-8");
 
                 // Dịch trạng thái sang tiếng Việt
                 String statusVN = "Đang xử lý"; // Mặc định
@@ -92,17 +92,21 @@ public class EmailUtil {
                     // Bỏ qua nếu newStatus không khớp Enum
                 }
 
-                StringBuilder html = new StringBuilder();
-                html.append("<h3>Xin chào ").append(customerName).append(",</h3>");
-                html.append("<p>Yêu cầu bảo hành mã <strong>").append(requestCode).append("</strong> của bạn vừa được cập nhật trạng thái.</p>");
-                html.append("<p>Trạng thái hiện tại: <strong style='color:blue;'>").append(statusVN).append("</strong></p>");
+                String htmlContent = "<h3>Xin chào " + customerName + ",</h3>"
+                        + "<p>Yêu cầu bảo hành mã <strong>" + requestCode + "</strong> của bạn vừa được cập nhật trạng thái.</p>"
+                        + "<p>Trạng thái hiện tại: <strong style='color:blue;'>" + statusVN + "</strong></p>"
+                        + "<p>Ghi chú từ Kỹ thuật viên: <em>" + resolutionNote + "</em></p>"
+                        + "<p>Cảm ơn bạn đã tin tưởng dịch vụ của TechShop!</p>" ;
+                //html.append("<h3>Xin chào ").append(customerName).append(",</h3>");
+                //html.append("<p>Yêu cầu bảo hành mã <strong>").append(requestCode).append("</strong> của bạn vừa được cập nhật trạng thái.</p>");
+                //html.append("<p>Trạng thái hiện tại: <strong style='color:blue;'>").append(statusVN).append("</strong></p>");
                 
-                if (resolutionNote != null && !resolutionNote.isEmpty()) {
-                    html.append("<p>Ghi chú từ Kỹ thuật viên: <em>").append(resolutionNote).append("</em></p>");
-                }
-                html.append("<p>Cảm ơn bạn đã tin tưởng dịch vụ của TechShop!</p>");
+//                if (resolutionNote != null && !resolutionNote.isEmpty()) {
+//                    html.append("<p>Ghi chú từ Kỹ thuật viên: <em>").append(resolutionNote).append("</em></p>");
+//                }
+                //html.append("<p>Cảm ơn bạn đã tin tưởng dịch vụ của TechShop!</p>");
                 
-                message.setContent(html.toString(), "text/html; charset=UTF-8");
+                message.setContent(htmlContent, "text/html; charset=UTF-8");
                 Transport.send(message);
                 System.out.println("Email bảo hành đã gửi tới: " + toEmail);
                 
@@ -126,11 +130,11 @@ public class EmailUtil {
                     }
                 });
                 
-                Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(config.getProperty("mail.smtp.user"), "TechShop Warranty Center"));
+                MimeMessage message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(config.getProperty("mail.smtp.user"), "TechShop Warranty Center", "UTF-8"));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
                 message.setHeader("Content-Type", "text/html; charset=UTF-8");
-                message.setSubject("[TechShop] Tiếp nhận yêu cầu bảo hành máy " + productName);
+                message.setSubject("[TechShop] Tiếp nhận yêu cầu bảo hành máy " + productName, "UTF-8");
 
                 StringBuilder html = new StringBuilder();
                 html.append("<h3>Xin chào ").append(customerName).append(",</h3>");
