@@ -30,9 +30,6 @@ import java.util.Map;
 /**
  * Báo cáo doanh số theo Sản phẩm dành cho Admin.
  * URL: /admin/product-report
- *
- * Tách hoàn toàn khỏi AdminSaleReportServlet để có filter chuyên biệt:
- * Category → Model → Variant cascade.
  */
 @WebServlet(name = "AdminProductSalesServlet", urlPatterns = {"/admin/product-report"})
 public class AdminProductSalesServlet extends HttpServlet {
