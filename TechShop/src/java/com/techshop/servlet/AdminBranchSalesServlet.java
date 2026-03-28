@@ -20,7 +20,6 @@ import java.util.Map;
 /**
  * Báo cáo Tổng quan & Doanh số theo Chi nhánh dành cho Admin.
  * URL: /admin/branch-report
- * * Đã gộp từ RevenueOverviewServlet và AdminBranchSalesServlet cũ.
  */
 @WebServlet(name = "AdminBranchSalesServlet", urlPatterns = {"/admin/branch-report"})
 public class AdminBranchSalesServlet extends HttpServlet {
@@ -50,9 +49,7 @@ public class AdminBranchSalesServlet extends HttpServlet {
         Integer branchId = parseIntOrNull(request.getParameter("branchId"));
         String action    = request.getParameter("action");
 
-        // ==========================================
         // 3. XỬ LÝ API JSON CHO BIỂU ĐỒ (AJAX)
-        // ==========================================
         if ("chart".equals(action)) {
             response.setContentType("application/json;charset=UTF-8");
             PrintWriter out = response.getWriter();
@@ -61,12 +58,10 @@ public class AdminBranchSalesServlet extends HttpServlet {
             List<Map<String, Object>> chartData = reportDAO.getBranchSalesChart(startDate, endDate);
             out.print(gson.toJson(chartData));
             out.flush();
-            return; // Dừng tại đây, không load JSP
+            return; 
         }
 
-        // ==========================================
         // 4. CHUẨN BỊ DỮ LIỆU BÁO CÁO CHO TRANG JSP
-        // ==========================================
         
         // 4.1. Thống kê tổng quan
         Map<String, Object> overallStats = reportDAO.getBranchOverallStats(startDate, endDate);
@@ -76,13 +71,10 @@ public class AdminBranchSalesServlet extends HttpServlet {
         List<Map<String, Object>> branchSales = reportDAO.getBranchSalesChart(startDate, endDate);
         request.setAttribute("branchSales", branchSales);
 
-        // (ĐÃ XÓA đoạn dailyRevenue ở đây)
 
         // 4.3 & 4.4. Xử lý khi chọn cụ thể 1 chi nhánh
         List<Branch> branches = branchDAO.getAllActive();
-        if (branchId != null) {
-            
-            // Lấy doanh thu theo ngày (ĐÃ CHUYỂN VÀO ĐÂY ĐỂ TRÁNH LỖI NULL)
+        if (branchId != null) {           
             List<Map<String, Object>> dailyRevenue = reportDAO.getBranchDailyRevenue(startDate, endDate, branchId);
             request.setAttribute("dailyRevenue", dailyRevenue);
 
@@ -97,9 +89,7 @@ public class AdminBranchSalesServlet extends HttpServlet {
                     .ifPresent(b -> request.setAttribute("selectedBranchName", b.getBranchName()));
         }
 
-        // ==========================================
         // 5. ĐẨY DỮ LIỆU RA VIEW (JSP)
-        // ==========================================
         request.setAttribute("branches", branches);
         
         // Giữ trạng thái form
