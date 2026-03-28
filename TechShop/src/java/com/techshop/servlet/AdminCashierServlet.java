@@ -166,7 +166,8 @@ public class AdminCashierServlet extends HttpServlet {
         newUser.setBranchId(targetBranchId);
         newUser.setStatus("ACTIVE");
 
-        boolean ok = userDAO.insert(newUser);
+        int newUserId = userDAO.insert(newUser);
+        boolean ok = newUserId > 0;
         session.setAttribute(ok ? "mgmtSuccess" : "mgmtError",
             ok ? "Đã thêm cashier " + fullName.trim() + " thành công."
                : "Thêm cashier thất bại.");

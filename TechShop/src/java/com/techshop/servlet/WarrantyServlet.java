@@ -3,8 +3,11 @@ package com.techshop.servlet;
 import com.techshop.dao.CustomerServiceDAO;
 import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.TechnicianDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.User;
 import com.techshop.model.WarrantyCheckDTO;
+import com.techshop.model.WarrantyHistory;
 import com.techshop.model.WarrantyRequest;
 import com.techshop.util.EmailUtil;
 
@@ -68,7 +71,7 @@ public class WarrantyServlet extends HttpServlet {
                 int requestId = Integer.parseInt(request.getParameter("id"));
                 TechnicianDAO techDAO = new TechnicianDAO();
                 WarrantyRequest detail  = techDAO.getWarrantyDetail(requestId);
-                List<com.techshop.model.WarrantyHistory> history = techDAO.getWarrantyHistory(requestId);
+                List<WarrantyHistory> history = techDAO.getWarrantyHistory(requestId);
                 if (detail != null) {
                     request.setAttribute("reqDetail",   detail);
                     request.setAttribute("historyList", history);
@@ -175,10 +178,20 @@ public class WarrantyServlet extends HttpServlet {
             }
 
             // Lưu DB
-            boolean ok = csDAO.createWarrantyRequest(
+            int newRequestId = csDAO.createWarrantyRequest(
                     invoiceId, physicalId, customerId, csId, issueDesc, imageUrl);
-
-            if (ok) {
+            
+            if (newRequestId > 0) {
+                //viết audit log
+                String logDetails = "Tiếp nhận yêu cầu bảo hành mới cho IMEI: " + imei;
+                logDAO.logAction(
+                        csId, 
+                        LogAction.CREATE_WARRANTY_REQUEST,
+                        EntityType.WARRANTY_REQUEST, 
+                        newRequestId, 
+                        request.getRemoteAddr(), 
+                        logDetails
+                );
                 // Gửi email thông báo
                 try {
                     EmailUtil.sendNewWarrantyEmail(

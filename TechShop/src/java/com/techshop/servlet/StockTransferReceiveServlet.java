@@ -3,7 +3,10 @@ package com.techshop.servlet;
 import com.techshop.dao.InventoryTransactionDAO;
 import com.techshop.dao.PhysicalProductDAO;
 import com.techshop.dao.StockTransferDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
 import com.techshop.model.InventoryTransaction;
+import com.techshop.model.LogAction;
 import com.techshop.model.StockTransfer;
 import com.techshop.model.StockTransferItem;
 import com.techshop.model.User;
@@ -23,12 +26,14 @@ public class StockTransferReceiveServlet extends HttpServlet {
     private StockTransferDAO transferDAO;
     private PhysicalProductDAO physicalProductDAO;
     private InventoryTransactionDAO transactionDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         transferDAO = new StockTransferDAO();
         physicalProductDAO = new PhysicalProductDAO();
         transactionDAO = new InventoryTransactionDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -120,6 +125,19 @@ public class StockTransferReceiveServlet extends HttpServlet {
         }
 
         transferDAO.updateStatus(transfer.getTransferId(), "COMPLETED", null, user.getUserId());
+        try{
+           String logDetails = "Hoàn tất nhận hàng chuyển kho (Phiếu: " + transfer.getTransferCode() + ") với " + items.size() + " sản phẩm.";          
+            logDAO.logAction(
+                    user.getUserId(), 
+                    LogAction.RECEIVE_STOCK_TRANSFER,
+                    EntityType.INVENTORY_TRANSACTION,        
+                    transfer.getTransferId(), 
+                    request.getRemoteAddr(), 
+                    logDetails
+            ); 
+        } catch (Exception e) {
+            System.err.println("Lỗi ghi log nhận hàng: " + e.getMessage());
+        }      
         response.sendRedirect(request.getContextPath() + "/transfer?completed=1&qty=" + items.size());
     }
 }

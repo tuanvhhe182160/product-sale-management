@@ -112,7 +112,10 @@ public class TechnicianServlet extends HttpServlet {
             
             WarrantyStatus newStatus = null;
             String note = request.getParameter("note");
+            note = (note != null && !note.trim().isEmpty()) ? note.trim() : "Không có ghi chú thêm.";
+            
             String resolution = request.getParameter("resolution");
+            resolution = (resolution != null) ? resolution.trim() : "";
 
             // Phân loại Action theo yêu cầu bằng Enum
             if ("accept".equals(action)) {

@@ -79,19 +79,20 @@ public class CategorySaveServlet extends HttpServlet {
             c.setCategoryName(name);
             c.setDescription(desc);
             c.setStatus("ACTIVE"); 
-            dao.createCategory(c);
+            int newCategoryId = dao.createCategory(c);
             
-            // --- GHI LOG ---
-            logDAO.logAction(
-                userId, 
-                LogAction.CREATE_CATEGORY, 
-                EntityType.CATEGORY, 
-                null, 
-                request.getRemoteAddr(), 
-                "Thêm mới danh mục: " + name + " (Mã: " + code + ")"
-            );
-            // ----------------------------------
-            
+            if (newCategoryId > 0){
+                // --- GHI LOG ---
+                logDAO.logAction(
+                    userId, 
+                    LogAction.CREATE_CATEGORY, 
+                    EntityType.CATEGORY, 
+                    newCategoryId, 
+                    request.getRemoteAddr(), 
+                    "Thêm mới danh mục: " + name + " (Mã: " + code + ")"
+                );
+                // ----------------------------------
+            }                    
         } else {
             int id;
             try {

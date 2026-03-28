@@ -127,23 +127,27 @@ public class BranchServlet extends HttpServlet {
         branch.setPhone(phone);
         branch.setStatus(status);
 
-        branchDAO.insert(branch);
-        
-        //Ghi log action
-        HttpSession session = req.getSession(false);
-        User user = (session != null) ? (User) session.getAttribute("user") : null;
-        Integer userId = (user != null) ? user.getUserId() : null;
+        int newBranchId = branchDAO.insert(branch);
+        if (newBranchId > 0){
+            //Ghi log action
+            HttpSession session = req.getSession(false);
+            User user = (session != null) ? (User) session.getAttribute("user") : null;
+            Integer userId = (user != null) ? user.getUserId() : null;
 
-        logDAO.logAction(
-            userId, 
-            LogAction.CREATE_BRANCH, 
-            EntityType.BRANCH, 
-            null, 
-            req.getRemoteAddr(), 
-            "Thêm mới chi nhánh: " + name + " (Mã: " + code + ")"
-            );
-
-        resp.sendRedirect("branch");
+            logDAO.logAction(
+                userId, 
+                LogAction.CREATE_BRANCH, 
+                EntityType.BRANCH, 
+                newBranchId, 
+                req.getRemoteAddr(), 
+                "Thêm mới chi nhánh: " + name + " (Mã: " + code + ")"
+                );
+            resp.sendRedirect("branch");
+        } else{
+            errors.add("Không thể thêm chi nhánh vào cơ sở dữ liệu. Vui lòng thử lại!");
+            req.setAttribute("errorsList", errors);
+            showFormPage(req, resp);
+        }        
     }
 
     private void updateBranch(HttpServletRequest req, HttpServletResponse resp)

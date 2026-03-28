@@ -132,12 +132,11 @@ public class BranchDAO extends DBContext {
     /**
      * Insert a new branch
      */
-    public boolean insert(Branch branch) {
+    public int insert(Branch branch) {
         String sql = "INSERT INTO Branch (branch_code, branch_name, address, phone, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, GETDATE(), GETDATE())";
         
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, branch.getBranchCode());
             ps.setString(2, branch.getBranchName());
             ps.setString(3, branch.getAddress());
@@ -145,14 +144,19 @@ public class BranchDAO extends DBContext {
             ps.setString(5, branch.getStatus());
             
             int rowsAffected = ps.executeUpdate();
-            ps.close();
-            
-            return rowsAffected > 0;
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+            return -1;
             
         } catch (SQLException e) {
             System.err.println("BranchDAO.insert() Error: " + e.getMessage());
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
     

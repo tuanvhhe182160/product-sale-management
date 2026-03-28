@@ -97,8 +97,8 @@ public class UserManageServlet extends HttpServlet {
             newUser.setStatus(status);
 
             UserDAO userDAO = new UserDAO();
-            boolean success = userDAO.insert(newUser);
-            if (success) {
+            int newUserId = userDAO.insert(newUser);
+            if (newUserId > 0) {
                 // --- GHI LOG ---
                 User adminUser = (User) session.getAttribute("user");
                 Integer adminId = (adminUser != null) ? adminUser.getUserId() : null;
@@ -107,7 +107,7 @@ public class UserManageServlet extends HttpServlet {
                     adminId, 
                     LogAction.CREATE_USER, 
                     EntityType.USER, 
-                    null, 
+                    newUserId, 
                     request.getRemoteAddr(), 
                     "Thêm mới tài khoản nhân sự: " + fullName + " (" + email + ")"
                 );

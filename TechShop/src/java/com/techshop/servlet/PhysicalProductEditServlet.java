@@ -1,7 +1,10 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.PhysicalProductDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.PhysicalProduct;
 import com.techshop.model.ProductVariant;
 import com.techshop.model.User;
@@ -23,11 +26,13 @@ public class PhysicalProductEditServlet extends HttpServlet {
 
     private PhysicalProductDAO physicalProductDAO;
     private VariantDAO variantDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         physicalProductDAO = new PhysicalProductDAO();
         variantDAO = new VariantDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -127,6 +132,22 @@ public class PhysicalProductEditServlet extends HttpServlet {
         product.setVariantId(variantId);
 
         physicalProductDAO.updatePhysicalProduct(product);
+        try {
+            String logDetails = "Cập nhật sản phẩm kho (ID: " + product.getPhysicalId() + "). IMEI: " + imei.trim() + " | Trạng thái: " + status;
+            HttpSession session = request.getSession(false);
+            User user = (session != null) ? (User) session.getAttribute("user") : null;
+            Integer userId = (user != null) ? user.getUserId() : null;
+            logDAO.logAction(
+                    userId, 
+                    LogAction.UPDATE_PHYSICAL_PRODUCT, 
+                    EntityType.PHYSICAL_PRODUCT,      
+                    product.getPhysicalId(), 
+                    request.getRemoteAddr(), 
+                    logDetails
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi ghi log cập nhật sản phẩm kho: " + e.getMessage());
+        }
 
         response.sendRedirect(request.getContextPath() + "/inventory/detail?id=" + product.getPhysicalId() + "&updated=true");
     }

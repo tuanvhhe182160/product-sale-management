@@ -62,7 +62,7 @@ public class CustomerServiceDAO extends DBContext {
 
     // 3. TẠO YÊU CẦU BẢO HÀNH (Transaction)
     // Yêu cầu: "Create Warranty Request"
-    public boolean createWarrantyRequest(int invoiceId, int physicalId, int customerId,
+    public int createWarrantyRequest(int invoiceId, int physicalId, int customerId,
                                      int csUserId, String issueDescription, String imageUrl) {
 
     String sqlRequest = "INSERT INTO WarrantyRequest " +
@@ -103,16 +103,16 @@ public class CustomerServiceDAO extends DBContext {
             }
         } else {
             connection.rollback();
-            return false;
+            return -1;
         }
 
         connection.commit();
-        return true;
+        return newRequestId;
 
     } catch (Exception e) {
         try { connection.rollback(); } catch (Exception ex) {}
         e.printStackTrace();
-        return false;
+        return -1;
     } finally {
         try { connection.setAutoCommit(true); } catch (Exception e) {}
     }

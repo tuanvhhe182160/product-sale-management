@@ -9,13 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TechnicianDAO extends DBContext {
-
-    // Hàm "All-in-one" xử lý mọi cập nhật từ Technician
     public boolean processWarrantyRequest(int requestId, int techId, WarrantyStatus newStatus, String note, String resolution) {
         String updateReq = "UPDATE WarrantyRequest SET status = ?, resolution = ISNULL(?, resolution), " +
                            "technician_id = ISNULL(technician_id, ?), updated_at = GETDATE()";
         
-        // So sánh trực tiếp bằng Enum thay vì chuỗi
         if (newStatus == WarrantyStatus.COMPLETED || newStatus == WarrantyStatus.REJECTED) {
             updateReq += ", completion_date = GETDATE() ";
         }
@@ -28,7 +25,7 @@ public class TechnicianDAO extends DBContext {
             connection.setAutoCommit(false);
 
             try (PreparedStatement psReq = connection.prepareStatement(updateReq)) {
-                psReq.setString(1, newStatus.name()); // Lấy tên chuỗi của Enum (VD: "COMPLETED")
+                psReq.setString(1, newStatus.name()); 
                 psReq.setString(2, resolution);
                 psReq.setInt(3, techId);
                 psReq.setInt(4, requestId);
@@ -37,7 +34,7 @@ public class TechnicianDAO extends DBContext {
 
             try (PreparedStatement psHist = connection.prepareStatement(insertHist)) {
                 psHist.setInt(1, requestId);
-                psHist.setString(2, newStatus.name()); // Lấy tên chuỗi của Enum
+                psHist.setString(2, newStatus.name()); 
                 psHist.setString(3, note != null ? note : resolution);
                 psHist.setInt(4, techId);
                 psHist.executeUpdate();
@@ -46,7 +43,6 @@ public class TechnicianDAO extends DBContext {
             connection.commit();
             return true;
         } catch (SQLException e) {
-            // ... (phần catch/finally giữ nguyên như cũ)
             try { connection.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             e.printStackTrace();
             return false;
@@ -55,7 +51,7 @@ public class TechnicianDAO extends DBContext {
         }
     }
     
-    // 2. Lấy chi tiết 1 yêu cầu bảo hành (Gom thông tin từ 5 bảng)
+    // 2. Lấy chi tiết yêu cầu bảo hành
     public WarrantyRequest getWarrantyDetail(int requestId) {
         String sql = "SELECT wr.*, c.full_name, c.email, c.phone, pp.imei, pv.variant_name, pv.variant_id, i.invoice_code, i.invoice_date " +
                      "FROM WarrantyRequest wr " +
@@ -118,7 +114,7 @@ public class TechnicianDAO extends DBContext {
         return list;
     }
     
-    // 1. Đếm số ca đang chờ của Chi nhánh
+    // Đếm số ca đang chờ của Chi nhánh hiện tại
     public int countPendingRequests(int branchId) {
         String sql = "SELECT COUNT(*) FROM WarrantyRequest wr " +
                      "LEFT JOIN [User] cs ON wr.customer_service_id = cs.user_id " +
@@ -133,7 +129,7 @@ public class TechnicianDAO extends DBContext {
         return 0;
     }
 
-    // 2. Đếm số ca Kỹ thuật viên đang ôm
+    // Đếm số ca Kỹ thuật viên đang ôm
     public int countInProgressRequests(int techId) {
         String sql = "SELECT COUNT(*) FROM WarrantyRequest WHERE technician_id = ? AND status = 'IN_PROGRESS'";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -145,7 +141,7 @@ public class TechnicianDAO extends DBContext {
         return 0;
     }
 
-    // 3. SỬA LẠI hàm List: Thêm tham số keyword và JOIN bảng PhysicalProduct để tìm IMEI
+    // List
     public List<WarrantyRequest> getWarrantyRequests(int branchId, String keyword, String status, String fromDate, String toDate) {
         List<WarrantyRequest> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(

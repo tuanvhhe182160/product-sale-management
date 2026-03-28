@@ -6,7 +6,11 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.ProductModelDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.ProductModel;
+import com.techshop.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,6 +22,7 @@ import java.io.IOException;
 public class AdminModelFormServlet extends HttpServlet {
 
     private final ProductModelDAO dao = new ProductModelDAO();
+    private final SystemLogDAO logDAO = new SystemLogDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -113,6 +118,34 @@ public class AdminModelFormServlet extends HttpServlet {
             dao.updateModel(m);
         } else {
             dao.insertModel(m);
+        }
+        //Ghi log
+        try {
+            jakarta.servlet.http.HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("user") != null) {
+                User user = (com.techshop.model.User) session.getAttribute("user");
+                
+                // Tự động phân loại hành động dựa vào modelId
+                String actionName = (modelId > 0) ? "Cập nhật" : "Thêm mới";
+                String logDetails = actionName + " dòng sản phẩm (Mã: " + code + "). Tên: " + name + " | Hãng: " + brand;
+                
+                LogAction logAction = (modelId > 0) 
+                        ? LogAction.UPDATE_PRODUCT_MODEL 
+                        : LogAction.CREATE_PRODUCT_MODEL;
+                
+                Integer entityId = (modelId > 0) ? modelId : null;
+                
+                logDAO.logAction(
+                        user.getUserId(), 
+                        logAction,
+                        EntityType.PRODUCT_MODEL,
+                        entityId, 
+                        request.getRemoteAddr(), 
+                        logDetails
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi ghi log Model: " + e.getMessage());
         }
 
         response.sendRedirect(request.getContextPath() + "/model?categoryId=" + categoryId);

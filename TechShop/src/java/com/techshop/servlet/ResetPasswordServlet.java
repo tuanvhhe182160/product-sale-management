@@ -69,7 +69,7 @@ public class ResetPasswordServlet extends HttpServlet {
         if (success) {
             // --- GHI LOG ---
             logDAO.logAction(
-                userId, // Lấy được ID của người dùng sở hữu token
+                userId, 
                 LogAction.RESET_PASSWORD, 
                 EntityType.USER, 
                 userId, 

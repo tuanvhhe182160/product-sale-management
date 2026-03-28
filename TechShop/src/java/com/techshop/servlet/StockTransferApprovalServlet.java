@@ -3,7 +3,10 @@ package com.techshop.servlet;
 import com.techshop.dao.InventoryTransactionDAO;
 import com.techshop.dao.PhysicalProductDAO;
 import com.techshop.dao.StockTransferDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
 import com.techshop.model.InventoryTransaction;
+import com.techshop.model.LogAction;
 import com.techshop.model.PhysicalProduct;
 import com.techshop.model.StockTransfer;
 import com.techshop.model.User;
@@ -23,12 +26,14 @@ public class StockTransferApprovalServlet extends HttpServlet {
     private StockTransferDAO transferDAO;
     private PhysicalProductDAO physicalProductDAO;
     private InventoryTransactionDAO transactionDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         transferDAO = new StockTransferDAO();
         physicalProductDAO = new PhysicalProductDAO();
         transactionDAO = new InventoryTransactionDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -168,10 +173,26 @@ public class StockTransferApprovalServlet extends HttpServlet {
             tx.setReferenceId(transfer.getTransferId());
             tx.setPerformedBy(user.getUserId());
             tx.setNote("Transfer " + transfer.getTransferCode());
-            transactionDAO.insert(tx);
+            transactionDAO.insert(tx);            
         }
 
         transferDAO.updateStatus(transfer.getTransferId(), "APPROVED", user.getUserId(), null);
+        //Ghi Log
+        try {
+            String logDetails = "Duyệt xuất kho (Phiếu: " + transfer.getTransferCode() + ") với " + selectedIds.length + " sản phẩm.";
+            
+            logDAO.logAction(
+                    user.getUserId(), 
+                    com.techshop.model.LogAction.APPROVE_STOCK_TRANSFER,
+                    com.techshop.model.EntityType.INVENTORY_TRANSACTION, 
+                    transfer.getTransferId(), 
+                    request.getRemoteAddr(), 
+                    logDetails
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi ghi log duyệt xuất kho: " + e.getMessage());
+        }
+        
         response.sendRedirect(request.getContextPath() + "/transfer?approved=1");
     }
 
@@ -181,6 +202,23 @@ public class StockTransferApprovalServlet extends HttpServlet {
         if (rejectNote != null) rejectNote = rejectNote.trim();
 
         transferDAO.updateStatus(transfer.getTransferId(), "REJECTED", user.getUserId(), null);
+        //Ghi log
+        try {
+            String reason = (rejectNote != null && !rejectNote.isEmpty()) ? rejectNote : "Không có lý do";
+            String logDetails = "Từ chối yêu cầu chuyển kho (Phiếu: " + transfer.getTransferCode() + "). Lý do: " + reason;
+            
+            logDAO.logAction(
+                    user.getUserId(), 
+                    LogAction.REJECT_STOCK_TRANSFER, 
+                    EntityType.INVENTORY_TRANSACTION, 
+                    transfer.getTransferId(), 
+                    request.getRemoteAddr(), 
+                    logDetails
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi ghi log từ chối xuất kho: " + e.getMessage());
+        }
+        
         response.sendRedirect(request.getContextPath() + "/transfer?rejected=1");
     }
 

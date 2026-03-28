@@ -50,7 +50,7 @@
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
                     <h1 class="display-3 text-warning fw-bold mb-0">${loyaltyPoints}</h1>
                     <p class="text-muted fs-5 mt-2">Điểm hiện có</p>
-                    <button class="btn btn-outline-warning mt-3 w-100">Xem lịch sử tích điểm</button>
+<!--                    <button class="btn btn-outline-warning mt-3 w-100">Xem lịch sử tích điểm</button>-->
                 </div>
             </div>
         </div>

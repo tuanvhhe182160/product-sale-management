@@ -1,8 +1,12 @@
 package com.techshop.servlet;
 
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.ProductModel;
 import com.techshop.model.ProductVariant;
+import com.techshop.model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,15 +15,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "AdminVariantEditServlet", urlPatterns = {"/variant/edit"})
 public class AdminVariantEditServlet extends HttpServlet {
 
     private VariantDAO variantDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         variantDAO = new VariantDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -100,6 +107,26 @@ public class AdminVariantEditServlet extends HttpServlet {
             boolean success = variantDAO.updateVariant(variant);
 
             if (success) {
+                //Ghi log
+                try {
+                    HttpSession session = request.getSession(false);
+                    if (session != null && session.getAttribute("user") != null) {
+                        User user = (User) session.getAttribute("user");
+                        String logDetails = "Cập nhật phiên bản sản phẩm (ID: " + variantId + " | SKU: " + sku + "). Trạng thái: " + status + " | Giá bán: " + basePrice;
+                        
+                        logDAO.logAction(
+                                user.getUserId(), 
+                                LogAction.UPDATE_PRODUCT_VARIANT,
+                                EntityType.PRODUCT_VARIANT, 
+                                variantId, 
+                                request.getRemoteAddr(), 
+                                logDetails
+                        );
+                    }
+                } catch (Exception e) {
+                    System.err.println("Lỗi ghi log cập nhật phiên bản sản phẩm: " + e.getMessage());
+                }
+                
                 response.sendRedirect(request.getContextPath() + "/variant?success=update");
             } else {
                 request.setAttribute("error", "Không thể cập nhật variant!");

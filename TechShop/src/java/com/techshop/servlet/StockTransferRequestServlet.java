@@ -2,8 +2,11 @@ package com.techshop.servlet;
 
 import com.techshop.dao.BranchDAO;
 import com.techshop.dao.StockTransferDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.VariantDAO;
 import com.techshop.model.Branch;
+import com.techshop.model.EntityType;
+import com.techshop.model.LogAction;
 import com.techshop.model.ProductVariant;
 import com.techshop.model.StockTransfer;
 import com.techshop.model.User;
@@ -24,12 +27,14 @@ public class StockTransferRequestServlet extends HttpServlet {
     private BranchDAO branchDAO;
     private VariantDAO variantDAO;
     private StockTransferDAO transferDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         branchDAO = new BranchDAO();
         variantDAO = new VariantDAO();
         transferDAO = new StockTransferDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -132,6 +137,17 @@ public class StockTransferRequestServlet extends HttpServlet {
 
         int transferId = transferDAO.create(transfer);
         if (transferId > 0) {
+            //ghi log
+            String logDetails = "Tạo yêu cầu chuyển kho: Xuất " + quantity + " sản phẩm (Variant ID: " + variantId + ") từ Chi nhánh " + fromBranchId + " về Chi nhánh " + myBranchId;
+            
+            logDAO.logAction(
+                    user.getUserId(), 
+                    LogAction.CREATE_STOCK_TRANSFER_REQUEST,
+                    EntityType.INVENTORY_TRANSACTION,       
+                    transferId, 
+                    request.getRemoteAddr(), 
+                    logDetails
+            );
             response.sendRedirect(request.getContextPath() + "/transfer?created=1");
         } else {
             forwardWithError(request, response, "Failed to create transfer request. Please try again.", myBranchId);

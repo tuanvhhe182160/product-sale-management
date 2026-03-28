@@ -2,8 +2,11 @@ package com.techshop.servlet;
 
 import com.techshop.dao.InventoryTransactionDAO;
 import com.techshop.dao.PhysicalProductDAO;
+import com.techshop.dao.SystemLogDAO;
 import com.techshop.dao.VariantDAO;
+import com.techshop.model.EntityType;
 import com.techshop.model.InventoryTransaction;
+import com.techshop.model.LogAction;
 import com.techshop.model.PhysicalProduct;
 import com.techshop.model.ProductVariant;
 import com.techshop.model.User;
@@ -27,12 +30,14 @@ public class InventoryImportIMEIServlet extends HttpServlet {
     private VariantDAO variantDAO;
     private PhysicalProductDAO physicalProductDAO;
     private InventoryTransactionDAO inventoryTransactionDAO;
+    private SystemLogDAO logDAO;
 
     @Override
     public void init() throws ServletException {
         variantDAO = new VariantDAO();
         physicalProductDAO = new PhysicalProductDAO();
         inventoryTransactionDAO = new InventoryTransactionDAO();
+        logDAO = new SystemLogDAO();
     }
 
     @Override
@@ -178,6 +183,23 @@ public class InventoryImportIMEIServlet extends HttpServlet {
             }
         }
 
+        if (savedCount > 0) {
+            try {
+                String logDetails = "Nhập kho lô hàng mới: " + savedCount + " sản phẩm (SKU: " + variant.getSku() + "). Tên SP: " + variant.getVariantName();
+                
+                logDAO.logAction(
+                        user.getUserId(), 
+                        LogAction.IMPORT_INVENTORY, 
+                        EntityType.PRODUCT_VARIANT, 
+                        variantId, 
+                        request.getRemoteAddr(), 
+                        logDetails
+                );
+            } catch (Exception e) {
+                System.err.println("Lỗi ghi log nhập kho: " + e.getMessage());
+            }
+        }
+        
         String variantName = URLEncoder.encode(variant.getVariantName(), "UTF-8");
         response.sendRedirect(request.getContextPath() + "/inventory/list?imported=" + savedCount + "&variantName=" + variantName);
     }

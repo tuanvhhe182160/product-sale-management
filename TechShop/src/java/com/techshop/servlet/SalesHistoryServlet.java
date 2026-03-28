@@ -1,7 +1,10 @@
 package com.techshop.servlet;
 
 import com.techshop.dao.SalesHistoryDAO;
+import com.techshop.dao.SystemLogDAO;
+import com.techshop.model.EntityType;
 import com.techshop.model.Invoice;
+import com.techshop.model.LogAction;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,6 +27,7 @@ import java.util.List;
 public class SalesHistoryServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 15;
+    private SystemLogDAO logDAO = new SystemLogDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -54,6 +58,21 @@ public class SalesHistoryServlet extends HttpServlet {
         // Phân luồng: export CSV hoặc hiển thị trang
         String action = request.getParameter("action");
         if ("export".equals(action)) {
+            try {                
+                String range = (dateFrom != null ? dateFrom : "Bắt đầu") + " đến " + (dateTo != null ? dateTo : "Hiện tại");
+                String logDetails = "Thu ngân xuất file CSV Lịch sử bán hàng. Khoảng thời gian: " + range;
+                
+                logDAO.logAction(
+                        cashierId, 
+                        LogAction.EXPORT_SALES_HISTORY, 
+                        EntityType.REPORT,  
+                        null, 
+                        request.getRemoteAddr(), 
+                        logDetails
+                );
+            } catch (Exception e) {
+                System.err.println("Lỗi ghi log xuất file bán hàng: " + e.getMessage());
+            }
             handleExport(response, cashierId, cashierName, search, dateFrom, dateTo, status);
         } else {
             handleList(request, response, cashierId, search, dateFrom, dateTo, status);

@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import javax.imageio.ImageIO;
 
 @WebServlet("/profile")
@@ -131,23 +133,40 @@ public class ProfileServlet extends HttpServlet {
             request.setAttribute("error", "Vui lòng chọn ảnh.");
             return;
         }
-        
-        if(!part.getContentType().endsWith("jpeg") && !part.getContentType().endsWith("png")){
-            request.setAttribute("error", "Vui lòng chọn ảnh đuôi JPEG hoặc PNG.");
+        //Mime type
+        String contentType = part.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            request.setAttribute("error", "Định dạng file không được hỗ trợ. Vui lòng chọn file ảnh.");
             return;
         }
-        
-        InputStream input = part.getInputStream(); //đọc dữ liệu dạng byte
-        BufferedImage image = ImageIO.read(input); //đọc từ inputstream, chuyển thành BufferedImage (đối tượng ảnh trong Java) nếu ảnh hợp lệ
-
-        if(image == null) {
-            request.setAttribute("error", "Ảnh không hợp lệ");
-            return;
-        }
-        
+        //Lấy đuôi chuẩn
         String fileName = Paths.get(part.getSubmittedFileName())
                            .getFileName()
                            .toString();
+        
+        String extension = "";
+        if (fileName != null && fileName.lastIndexOf('.') > 0) {
+            extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        }
+        
+        //Giới hạn đuôi file
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png");
+        if (!allowedExtensions.contains(extension)) {
+            request.setAttribute("error", "Vui lòng chọn ảnh có đuôi jpg, jpeg, png hoặc webp.");
+            return;
+        }
+        
+        try (InputStream input = part.getInputStream()) {
+            BufferedImage image = ImageIO.read(input); 
+            
+            if (image == null) {
+                request.setAttribute("error", "Nội dung file không hợp lệ, không thể đọc được ảnh.");
+                return;
+            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Có lỗi xảy ra trong quá trình kiểm tra file.");
+            return;
+        }        
 
         String newFileName = System.currentTimeMillis() + "_" + fileName;
 

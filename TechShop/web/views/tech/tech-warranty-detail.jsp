@@ -107,57 +107,73 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow-sm border-primary">
-                <div class="card-header bg-primary text-white fw-bold text-center">Thao Tác Kỹ Thuật</div>
-                <div class="card-body">
+    <div class="card shadow-sm border-primary">
+        <div class="card-header bg-primary text-white fw-bold text-center">Thao Tác Kỹ Thuật</div>
+        <div class="card-body">
+            
+            <c:if test="${reqDetail.status == 'PENDING'}">
+                <%-- FORM CHỜ TIẾP NHẬN --%>
+                <form action="${pageContext.request.contextPath}/tech/warranty" method="POST">
+                    <input type="hidden" name="requestId" value="${reqDetail.requestId}">
+                    <input type="hidden" name="requestCode" value="${reqDetail.requestCode}">
+                    <input type="hidden" name="customerEmail" value="${reqDetail.customerEmail}">
+                    <input type="hidden" name="customerName" value="${reqDetail.customerName}">
+
+                    <div class="alert alert-warning text-center">Yêu cầu này chưa có người xử lý.</div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú ban đầu (Tuỳ chọn)</label>
+                        <textarea name="note" class="form-control" rows="2" placeholder="VD: Đã nhận máy, chuẩn bị bung seal..."></textarea>
+                    </div>
+                    <button type="submit" name="action" value="accept" class="btn btn-warning w-100 fw-bold">Tiếp Nhận Xử Lý</button>
+                </form>
+            </c:if>
+
+            <c:if test="${reqDetail.status == 'IN_PROGRESS'}">
+                <div class="alert alert-info text-center">Bạn đang xử lý yêu cầu này.</div>
+                
+                <%-- FORM 1: CẬP NHẬT TIẾN ĐỘ (Không bắt buộc nhập hướng giải quyết) --%>
+                <form action="${pageContext.request.contextPath}/tech/warranty" method="POST" class="mb-4 p-3 border rounded bg-light">
+                    <input type="hidden" name="requestId" value="${reqDetail.requestId}">
+                    <input type="hidden" name="requestCode" value="${reqDetail.requestCode}">
+                    <input type="hidden" name="customerEmail" value="${reqDetail.customerEmail}">
+                    <input type="hidden" name="customerName" value="${reqDetail.customerName}">
                     
-                    <form action="${pageContext.request.contextPath}/tech/warranty" method="POST">
-                        <input type="hidden" name="requestId" value="${reqDetail.requestId}">
-                        <input type="hidden" name="requestCode" value="${reqDetail.requestCode}">
-                        <input type="hidden" name="customerEmail" value="${reqDetail.customerEmail}">
-                        <input type="hidden" name="customerName" value="${reqDetail.customerName}">
+                    <label class="form-label fw-bold text-primary">Cập nhật tiến độ (Gửi Email cho khách)</label>
+                    <textarea name="note" class="form-control mb-2" rows="2" placeholder="VD: Đang chờ linh kiện màn hình về..."></textarea>
+                    <button type="submit" name="action" value="update" class="btn btn-sm btn-outline-primary w-100">Ghi nhận tiến độ</button>
+                </form>
 
-                        <c:if test="${reqDetail.status == 'PENDING'}">
-                            <div class="alert alert-warning text-center">Yêu cầu này chưa có người xử lý.</div>
-                            <div class="mb-3">
-                                <label class="form-label">Ghi chú ban đầu (Tuỳ chọn)</label>
-                                <textarea name="note" class="form-control" rows="2" placeholder="VD: Đã nhận máy, chuẩn bị bung seal..."></textarea>
-                            </div>
-                            <button type="submit" name="action" value="accept" class="btn btn-warning w-100 fw-bold">Tiếp Nhận Xử Lý</button>
-                        </c:if>
+                <hr>
+                
+                <%-- FORM 2: ĐÓNG YÊU CẦU BẢO HÀNH (Bắt buộc nhập Hướng giải quyết) --%>
+                <form action="${pageContext.request.contextPath}/tech/warranty" method="POST">
+                    <input type="hidden" name="requestId" value="${reqDetail.requestId}">
+                    <input type="hidden" name="requestCode" value="${reqDetail.requestCode}">
+                    <input type="hidden" name="customerEmail" value="${reqDetail.customerEmail}">
+                    <input type="hidden" name="customerName" value="${reqDetail.customerName}">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-success">Hướng giải quyết cuối cùng (Sẽ lưu vào hồ sơ)</label>
+                        <%-- Thuộc tính 'required' đảm bảo không thể bấm Hoàn Thành/Từ chối nếu ô này trống --%>
+                        <textarea name="resolution" class="form-control" rows="3" required placeholder="VD: Đã thay Mainboard mới. Test OK."></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="action" value="complete" class="btn btn-success flex-grow-1 fw-bold">Hoàn Thành</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger flex-grow-1 fw-bold" onclick="return confirm('Bạn chắc chắn muốn TỪ CHỐI bảo hành ca này?');">Từ Chối</button>
+                    </div>
+                </form>
+            </c:if>
 
-                        <c:if test="${reqDetail.status == 'IN_PROGRESS'}">
-                            <div class="alert alert-info text-center">Bạn đang xử lý yêu cầu này.</div>
-                            
-                            <div class="mb-4 p-3 border rounded bg-light">
-                                <label class="form-label fw-bold text-primary">Cập nhật tiến độ (Gửi Email cho khách)</label>
-                                <textarea name="note" class="form-control mb-2" rows="2" placeholder="VD: Đang chờ linh kiện màn hình về..."></textarea>
-                                <button type="submit" name="action" value="update" class="btn btn-sm btn-outline-primary w-100">Ghi nhận tiến độ</button>
-                            </div>
-
-                            <hr>
-                            
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-success">Hướng giải quyết cuối cùng (Sẽ lưu vào hồ sơ)</label>
-                                <textarea name="resolution" class="form-control" rows="3" required placeholder="VD: Đã thay Mainboard mới. Test OK."></textarea>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button type="submit" name="action" value="complete" class="btn btn-success flex-grow-1 fw-bold">Hoàn Thành</button>
-                                <button type="submit" name="action" value="reject" class="btn btn-danger flex-grow-1 fw-bold" onclick="return confirm('Bạn chắc chắn muốn TỪ CHỐI bảo hành ca này?');">Từ Chối</button>
-                            </div>
-                        </c:if>
-
-                        <c:if test="${reqDetail.status == 'COMPLETED' || reqDetail.status == 'REJECTED'}">
-                            <div class="alert alert-secondary text-center mb-0">
-                                Yêu cầu này đã đóng.<br>
-                                <strong>Kết luận:</strong> ${reqDetail.resolution}
-                            </div>
-                        </c:if>
-                    </form>
-
+            <c:if test="${reqDetail.status == 'COMPLETED' || reqDetail.status == 'REJECTED'}">
+                <div class="alert alert-secondary text-center mb-0">
+                    Yêu cầu này đã đóng.<br>
+                    <strong>Kết luận:</strong> ${reqDetail.resolution}
                 </div>
-            </div>
+            </c:if>
+
         </div>
+    </div>
+</div>
     </div>
 </div>
 

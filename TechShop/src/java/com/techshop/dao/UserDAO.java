@@ -59,7 +59,7 @@ public class UserDAO extends DBContext {
         return queryUsers(sql, CASHIER_ROLE_ID, branchId);
     }
 
-    public boolean insert(User user) {
+    public int insert(User user) {
         String sql = "INSERT INTO [User] (email, full_name, phone, role_id, branch_id, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -69,10 +69,19 @@ public class UserDAO extends DBContext {
             ps.setInt(4, user.getRoleId());
             setNullableInt(ps, 5, user.getBranchId());
             ps.setString(6, user.getStatus() != null ? user.getStatus() : "ACTIVE");
-            return ps.executeUpdate() > 0;
+            
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+            return -1;
         } catch (SQLException e) {
             logError("insert", e);
-            return false;
+            return -1;
         }
     }
 
