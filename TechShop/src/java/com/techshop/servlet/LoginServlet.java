@@ -180,7 +180,7 @@ public class LoginServlet extends HttpServlet {
         User user = userDAO.getByEmail(email.trim()); //kiểm tra quyền của user (data trong db)
         String loginType = request.getParameter("loginType");
         
-        //không có quyền = cook
+        //không có quyền
         if (user == null) {
             // --- GHI LOG CẢNH BÁO TRUY CẬP ---
             logDAO.logAction(

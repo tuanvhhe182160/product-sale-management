@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/AuditLogServlet.java</file>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/dao/SystemLogDAO.java</file>
-            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/ClosePeriodServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/LoginServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/AccountingInvoiceServlet.java</file>
+            <file>file:/C:/SWP391/Resolve_Conflict/product-sale-management/TechShop/src/java/com/techshop/servlet/InvoiceDetailServlet.java</file>
         </group>
     </open-files>
 </project-private>

@@ -23,7 +23,7 @@ public class InvoiceDAOForAccounting extends DBContext{
                  "LEFT JOIN [User] u ON i.cashier_id = u.user_id " +
                  "LEFT JOIN Customer c ON i.customer_id = c.customer_id " +
                  "LEFT JOIN Branch b ON i.branch_id = b.branch_id " +
-                 "WHERE 1=1 AND i.branch_id = ? ";
+                 "WHERE 1=1 AND (? = 0 OR i.branch_id = ?) ";
 
         boolean hasStart = (startDate != null && !startDate.trim().isEmpty());
         boolean hasEnd = (endDate != null && !endDate.trim().isEmpty());
@@ -44,6 +44,7 @@ public class InvoiceDAOForAccounting extends DBContext{
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int paramIndex = 1;
+            ps.setInt(paramIndex++, currentBranchId);
             ps.setInt(paramIndex++, currentBranchId);
             
             if (hasStart) ps.setString(paramIndex++, startDate);
@@ -107,12 +108,13 @@ public class InvoiceDAOForAccounting extends DBContext{
         LEFT JOIN Customer c ON i.customer_id = c.customer_id
         LEFT JOIN Branch b ON i.branch_id = b.branch_id
         WHERE i.invoice_id = ?
-          AND i.branch_id = ?
+          AND (? = 0 OR i.branch_id = ?) 
     """;
 
     try (PreparedStatement ps = connection.prepareStatement(sql)) {
         ps.setInt(1, invoiceId);
         ps.setInt(2, currentBranchId);
+        ps.setInt(3, currentBranchId);
 
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
@@ -165,12 +167,13 @@ public class InvoiceDAOForAccounting extends DBContext{
         LEFT JOIN PhysicalProduct p ON ii.physical_id = p.physical_id
         INNER JOIN Invoice i ON ii.invoice_id = i.invoice_id
         WHERE ii.invoice_id = ?
-          AND i.branch_id = ?
+          AND (? = 0 OR i.branch_id = ?) 
     """;
 
     try (PreparedStatement ps = connection.prepareStatement(sql)) {
         ps.setInt(1, invoiceId);
         ps.setInt(2, currentBranchId);
+        ps.setInt(3, currentBranchId);
 
         try (ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
