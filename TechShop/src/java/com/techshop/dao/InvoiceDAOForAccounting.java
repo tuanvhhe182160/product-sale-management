@@ -15,7 +15,8 @@ import java.sql.*;
  * @author justi
  */
 public class InvoiceDAOForAccounting extends DBContext{
-    public List<Invoice> getInvoicesForAccounting(String startDate, String endDate, Integer currentBranchId, String status, String paymentMethod, String searchKeyword) {
+    public List<Invoice> getInvoicesForAccounting(String startDate, String endDate, Integer currentBranchId, String status, 
+            String paymentMethod, String searchKeyword, int page, int pageSize) {
         List<Invoice> list = new ArrayList<>();
         // JOIN để lấy thêm thông tin khách hàng phục vụ tìm kiếm
         String sql = "SELECT i.*, u.full_name AS cashier_name, c.full_name AS customer_name, c.phone, c.email, b.branch_name " +
@@ -41,6 +42,10 @@ public class InvoiceDAOForAccounting extends DBContext{
         }
 
         sql += " ORDER BY i.invoice_date DESC";
+        
+        if (pageSize > 0) {
+            sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        }
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int paramIndex = 1;
@@ -58,6 +63,11 @@ public class InvoiceDAOForAccounting extends DBContext{
                 ps.setString(paramIndex++, keyword); // cho customer_name
                 ps.setString(paramIndex++, keyword); // cho phone
                 ps.setString(paramIndex++, keyword); // cho email
+            }
+            
+            if (pageSize > 0) {
+                ps.setInt(paramIndex++, (page - 1) * pageSize);
+                ps.setInt(paramIndex++, pageSize);
             }
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -252,5 +262,50 @@ public class InvoiceDAOForAccounting extends DBContext{
             e.printStackTrace();
         }
         return list;
+    }
+    
+    public int countInvoicesForAccounting(String startDate, String endDate, Integer currentBranchId, String status, String paymentMethod, String searchKeyword) {
+        String sql = "SELECT COUNT(*) " +
+                 "FROM Invoice i " +
+                 "LEFT JOIN Customer c ON i.customer_id = c.customer_id " +
+                 "WHERE 1=1 AND (? = 0 OR i.branch_id = ?) ";
+
+        boolean hasStart = (startDate != null && !startDate.trim().isEmpty());
+        boolean hasEnd = (endDate != null && !endDate.trim().isEmpty());
+        boolean hasStatus = (status != null && !status.trim().isEmpty() && !status.equals("ALL"));
+        boolean hasPM = (paymentMethod != null && !paymentMethod.trim().isEmpty() && !paymentMethod.equals("ALL"));
+        boolean hasSearch = (searchKeyword != null && !searchKeyword.trim().isEmpty());
+
+        if (hasStart) sql += " AND CAST(i.invoice_date AS DATE) >= ? ";
+        if (hasEnd) sql += " AND CAST(i.invoice_date AS DATE) <= ? ";
+        if (hasStatus) sql += " AND i.status = ? ";
+        if (hasPM) sql += " AND i.payment_method = ? ";
+        if (hasSearch) sql += " AND (i.invoice_code LIKE ? OR c.full_name LIKE ? OR c.phone LIKE ? OR c.email LIKE ?) ";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, currentBranchId);
+            ps.setInt(paramIndex++, currentBranchId);
+            
+            if (hasStart) ps.setString(paramIndex++, startDate);
+            if (hasEnd) ps.setString(paramIndex++, endDate);
+            if (hasStatus) ps.setString(paramIndex++, status);
+            if (hasPM) ps.setString(paramIndex++, paymentMethod);
+            
+            if (hasSearch) {
+                String keyword = "%" + searchKeyword.trim() + "%";
+                ps.setString(paramIndex++, keyword); 
+                ps.setString(paramIndex++, keyword); 
+                ps.setString(paramIndex++, keyword); 
+                ps.setString(paramIndex++, keyword); 
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
