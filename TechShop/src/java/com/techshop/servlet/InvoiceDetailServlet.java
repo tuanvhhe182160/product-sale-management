@@ -34,9 +34,10 @@ public class InvoiceDetailServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("user");
+        int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
 
-        Invoice invoice = invoiceDAO.getInvoiceDetail(invoiceId, user.getBranchId());
-        List<InvoiceItem> items = invoiceDAO.getInvoiceItems(invoiceId, user.getBranchId());
+        Invoice invoice = invoiceDAO.getInvoiceDetail(invoiceId, branchId);
+        List<InvoiceItem> items = invoiceDAO.getInvoiceItems(invoiceId, branchId);
 
         if (invoice == null) {
             response.sendRedirect(request.getContextPath() + "/accounting/invoices");
