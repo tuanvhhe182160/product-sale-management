@@ -131,6 +131,33 @@
                     </tbody>
                 </table>
             </div>
+            <c:if test="${totalPages > 0}">
+                <div class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm shadow-sm">
+                            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" href="?startDate=${startDate}&endDate=${endDate}&status=${status}&payment_method=${pm}&searchKeyword=${searchKeyword}&page=${currentPage - 1}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            
+                            <c:forEach begin="1" end="${totalPages}" var="i">
+                                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                    <a class="page-link" href="?startDate=${startDate}&endDate=${endDate}&status=${status}&payment_method=${pm}&searchKeyword=${searchKeyword}&page=${i}">
+                                        ${i}
+                                    </a>
+                                </li>
+                            </c:forEach>
+                            
+                            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" href="?startDate=${startDate}&endDate=${endDate}&status=${status}&payment_method=${pm}&searchKeyword=${searchKeyword}&page=${currentPage + 1}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </c:if>
         </div>
     </div>
 </div>

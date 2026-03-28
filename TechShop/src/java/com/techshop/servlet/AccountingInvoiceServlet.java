@@ -49,18 +49,26 @@ public class AccountingInvoiceServlet extends HttpServlet {
         if (pm == null) {
             pm = "ALL";
         }
+        
+        int page = 1;
+        int pageSize = 15;
+        
+        try {
+            String pageStr = request.getParameter("page");
+            if (pageStr != null) page = Integer.parseInt(pageStr);
+        } catch (Exception ignored) {}
 
         // 2. Lấy dữ liệu
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("user");
         // Fix: Admin có branchId = null → 0 = tất cả chi nhánh
         int branchId = (user.getBranchId() != null) ? user.getBranchId() : 0;
-        List<Invoice> invoices = invoiceDAO.getInvoicesForAccounting(startDate, endDate, branchId, status, pm, searchKeyword);
 
         // 3. Xử lý Export CSV
         String action = request.getParameter("action");
         if ("export".equals(action)) {
-            exportInvoiceCSV(response, invoices, startDate, endDate);
+            List<Invoice> exportList = invoiceDAO.getInvoicesForAccounting(startDate, endDate, branchId, status, pm, searchKeyword, 1, 0);
+            exportInvoiceCSV(response, exportList, startDate, endDate);
             //Ghi Log
             String details = "Xuất danh sách hóa đơn kế toán từ " + startDate + " đến " + endDate + " (CN: " + branchId + ")";
             systemLogDAO.logAction(
@@ -73,6 +81,10 @@ public class AccountingInvoiceServlet extends HttpServlet {
             );
             return; // Ngừng thực thi để tải file
         }
+        
+        List<Invoice> invoices = invoiceDAO.getInvoicesForAccounting(startDate, endDate, branchId, status, pm, searchKeyword, page, pageSize);
+        int totalItems = invoiceDAO.countInvoicesForAccounting(startDate, endDate, branchId, status, pm, searchKeyword);
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
         // 4. Đẩy sang JSP
         request.setAttribute("startDate", startDate);
@@ -81,6 +93,8 @@ public class AccountingInvoiceServlet extends HttpServlet {
         request.setAttribute("status", status);
         request.setAttribute("pm", pm);
         request.setAttribute("invoices", invoices);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.getRequestDispatcher("/views/accounting/invoice-list.jsp").forward(request, response);
     }
 
